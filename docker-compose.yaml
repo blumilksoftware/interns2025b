@@ -1,7 +1,7 @@
 networks:
   interns2025b-dev:
     driver: bridge
-  traefik-proxy-blumilk-local:
+  traefik-proxy-blumilk-local-environment:
     external: true
 
 volumes:
@@ -20,16 +20,26 @@ services:
         - USER_ID=${DOCKER_HOST_USER_ID:-1000}
     labels:
       - "traefik.enable=true"
-      - "traefik.blumilk.environment=true"
+      - "traefik.blumilk.local.environment=true"
       # HTTP
-      - "traefik.http.routers.interns2025b-http-router.rule=Host(`interns2025b.blumilk.localhost`)"
+      - "traefik.http.routers.interns2025b-http-router.rule=Host(`${APP_DOCKER_HOST_NAME}`)"
       - "traefik.http.routers.interns2025b-http-router.entrypoints=web"
+      - "traefik.http.routers.interns2025b-http-router.service=interns2025b-app"
       # HTTP to HTTPS redirect
-      #      - "traefik.http.routers.interns2025b-http-router.middlewares=https-redirect@file"
+      # - "traefik.http.routers.intenrs2025b-http-router.middlewares=https-redirect@file"
       # HTTPS
-      - "traefik.http.routers.interns2025b-https-router.rule=Host(`interns2025b.blumilk.localhost`)"
+      - "traefik.http.routers.interns2025b-https-router.rule=Host(`$(APP_DOCKER_HOST_NAME)`)"
       - "traefik.http.routers.interns2025b-https-router.entrypoints=websecure"
       - "traefik.http.routers.interns2025b-https-router.tls=true"
+      - "traefik.http.routers.interns2025b-https-router.service=interns2025-app"
+      # APP LOADBALANCER
+      - "traefik.http.services.interns2025b-app.loadbalancer.server.port=80"
+      # VITE DEV SERVER
+      - "traefik.http.routers.interns2025b-vite-dev-server-https-router.rule=Host(`${VITE_DEV_SERVER_DOCKER_HOST_NAME}`)"
+      - "traefik.http.routers.interns2025b-vite-dev-server-https-router.entrypoints=websecure"
+      - "traefik.http.routers.interns2025b-vite-dev-server-https-router.tls=true"
+      - "traefik.http.routers.interns2025b-vite-dev-server-https-router.service=interns2025b-vite-dev-server"
+      - "traefik.http.services.interns2025b-vite-dev-server.loadbalancer.server.port=5173"
     container_name: interns2025b-app-dev
     working_dir: /application
     volumes:
@@ -42,7 +52,7 @@ services:
       - ${DOCKER_APP_HOST_PORT:-63851}:80
     networks:
       - interns2025b-dev
-      - traefik-proxy-blumilk-local
+      - traefik-proxy-blumilk-local-environment
     restart: unless-stopped
     depends_on:
       database:
@@ -74,21 +84,21 @@ services:
     container_name: interns2025b-mailpit-dev
     labels:
       - "traefik.enable=true"
-      - "traefik.blumilk.environment=true"
+      - "traefik.blumilk.local.environment=true"
       # HTTP
-      - "traefik.http.routers.interns2025b-mailpit-http-router.rule=Host(`interns2025b-mailpit.blumilk.localhost`)"
+      - "traefik.http.routers.interns2025b-mailpit-http-router.rule=Host(`${MAILPIT_DOCKER_HOST_NAME}`)"
       - "traefik.http.routers.interns2025b-mailpit-http-router.entrypoints=web"
       # HTTP to HTTPS redirect
       #      - "traefik.http.routers.erasmus-mailpit-http-router.middlewares=https-redirect@file"
       # HTTPS
-      - "traefik.http.routers.interns2025b-mailpit-https-router.rule=Host(`interns2025b-mailpit.blumilk.localhost`)"
+      - "traefik.http.routers.interns2025b-mailpit-https-router.rule=Host(`${MAILPIT_DOCKER_HOST_NAME}`)"
       - "traefik.http.routers.interns2025b-mailpit-https-router.entrypoints=websecure"
       - "traefik.http.routers.interns2025b-mailpit-https-router.tls=true"
       # LOADBALANCER MAILPIT PORT
       - "traefik.http.services.interns2025b-mailpit.loadbalancer.server.port=8025"
     networks:
       - interns2025b-dev
-      - traefik-proxy-blumilk-local
+      - traefik-proxy-blumilk-local-environment
     ports:
       - ${DOCKER_MAILPIT_DASHBOARD_HOST_PORT:-63854}:8025
     restart: unless-stopped
