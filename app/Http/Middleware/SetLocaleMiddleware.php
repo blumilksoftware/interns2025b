@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Interns2025b\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+
+class SetLocaleMiddleware
+{
+    public function handle(Request $request, Closure $next)
+    {
+        $acceptLanguage = $request->header("Accept-Language");
+
+        $locale = config("app.locale");
+
+        if ($acceptLanguage) {
+            $languages = explode(",", $acceptLanguage);
+
+            if (!empty($languages)) {
+                $primaryLang = substr($languages[0], 0, 2);
+
+                if (in_array($primaryLang, ["en", "pl"], true)) {
+                    $locale = $primaryLang;
+                }
+            }
+        }
+
+        App::setLocale($locale);
+
+        return $next($request);
+    }
+}

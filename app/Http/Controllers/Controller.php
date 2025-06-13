@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ExampleApp\Http\Controllers;
+namespace Interns2025b\Http\Controllers;
 
 abstract class Controller
 {
