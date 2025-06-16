@@ -35,6 +35,8 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         "surname",
         "email",
         "password",
+        "facebook_id",
+        "avatar",
     ];
     protected $hidden = [
         "password",

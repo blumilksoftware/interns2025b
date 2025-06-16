@@ -57,13 +57,12 @@ class RegisterUserTest extends TestCase
     {
         $response = $this->postJson("/api/auth/register", [
             "firstname" => "",
-            "surname" => "",
             "email" => "not-an-email",
             "password" => "short",
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors(["firstname", "surname", "email", "password"]);
+        $response->assertJsonValidationErrors(["firstname", "email", "password"]);
     }
 
     public function testUserCanNotRegisterWithTooLongEmail(): void
