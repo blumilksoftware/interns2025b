@@ -14,7 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- * @property string $id
+ * @property int $id
  * @property string $firstname
  * @property string $surname
  * @property string $email
