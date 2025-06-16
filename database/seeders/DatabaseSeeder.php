@@ -13,9 +13,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RoleSeeder::class);
+        $this->call(OrganizationUserSeeder::class);
 
         if (User::query()->where("email", "=", "admin@example.com")->count() === 0) {
-            $user = User::factory([
+            User::factory([
                 "email" => "admin@example.com",
                 "password" => Hash::make("password"),
             ])->superAdmin()->create();
