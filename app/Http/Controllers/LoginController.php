@@ -7,7 +7,7 @@ namespace Interns2025b\Http\Controllers;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Http\JsonResponse;
 use Interns2025b\Http\Requests\LoginRequest;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as Status;
 
 class LoginController extends Controller
 {
@@ -19,7 +19,7 @@ class LoginController extends Controller
             if ($loginRequest->expectsJson()) {
                 return response()->json([
                     "message" => "auth.failed",
-                ], Response::HTTP_FORBIDDEN);
+                ], Status::HTTP_FORBIDDEN);
             }
         }
 
