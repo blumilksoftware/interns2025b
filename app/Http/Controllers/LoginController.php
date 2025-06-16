@@ -30,6 +30,6 @@ class LoginController extends Controller
             "message" => "success",
             "token" => $token,
             "user_id" => $user->id,
-        ], Response::HTTP_OK);
+        ], Status::HTTP_OK);
     }
 }
