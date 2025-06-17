@@ -10,6 +10,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -51,6 +52,16 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     public function organizations(): BelongsToMany
     {
         return $this->belongsToMany(Organization::class, "organization_user");
+    }
+
+    public function ownedEvents(): MorphMany
+    {
+        return $this->morphMany(Event::class, "owner");
+    }
+
+    public function events(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, "event_user");
     }
 
     protected function casts(): array
