@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Interns2025b\Http\Controllers\EventController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
@@ -22,6 +23,7 @@ Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendReset
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
 
 Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
+    Route::get("/events", [EventController::class, "index"]);
     Route::get("/organizations", [OrganizationController::class, "index"]);
     Route::get("/organizations/{id}", [OrganizationController::class, "show"]);
 });
