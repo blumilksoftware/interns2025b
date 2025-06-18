@@ -15,8 +15,6 @@ class ResetPasswordTest extends TestCase
 {
     public function testUserCanResetPasswordWithValidToken(): void
     {
-        Notification::fake();
-
         $user = User::factory()->create([
             "password" => bcrypt("old-password"),
         ]);
