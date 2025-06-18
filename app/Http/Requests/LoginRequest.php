@@ -13,7 +13,7 @@ class LoginRequest extends FormRequest
     {
         return [
             "email" => ["required", "email:rfc,dns", "max:225", "string"],
-            "password" => ["required", Password::min(8)],
+            "password" => ["required", "min:8", "max:225", "string"],
         ];
     }
 }

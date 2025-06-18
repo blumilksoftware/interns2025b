@@ -12,7 +12,7 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "email" => "required|email|max:225",
+            "email" => ["required", "email", "max:225", "string"],
             "password" => ["required", "confirmed", Password::min(8)],
             "token" => "required|string",
         ];

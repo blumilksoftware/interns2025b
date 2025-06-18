@@ -13,8 +13,6 @@ class ForgotPasswordTest extends TestCase
 {
     public function testUserCanRequestPasswordResetLink(): void
     {
-        Notification::fake();
-
         $user = User::factory()->create();
 
         $response = $this->postJson("/api/auth/forgot-password", [

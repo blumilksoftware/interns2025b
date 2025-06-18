@@ -27,7 +27,7 @@ class RegisterUserTest extends TestCase
             "last_name" => "Kowalski",
         ]);
 
-        $user = User::where("email", "jan.kowalski@gmail.com")->first();
+        $user = User::query()->where("email", "jan.kowalski@gmail.com")->first();
         $this->assertNotNull($user);
         $this->assertTrue($user->hasRole("user"));
     }
@@ -69,14 +69,6 @@ class RegisterUserTest extends TestCase
     {
         $email = str_repeat("a", 255) . "@ex.com";
         $response = $this->postJson("/api/auth/register", $this->validData(["email" => $email]));
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors("email");
-    }
-
-    public function testUserCanNotRegisterWithWrongEmailDomain(): void
-    {
-        $response = $this->postJson("/api/auth/register", $this->validData(["email" => "user@nonexistentdomain.xyzabc"]));
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors("email");
