@@ -40,10 +40,14 @@ class FacebookController extends Controller
             [
                 "first_name" => $firstName,
                 "email" => $email,
-                "email_verified_at" => now(),
                 "password" => null,
             ],
         );
+
+        if (!$user->email_verified_at) {
+            $user->email_verified_at = now();
+            $user->save();
+        }
 
         $token = $user->createToken("token")->plainTextToken;
 
