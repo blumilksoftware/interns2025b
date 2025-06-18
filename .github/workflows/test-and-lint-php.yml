@@ -62,4 +62,4 @@ jobs:
 
       - name: Execute tests
         run:
-          php artisan test --env.ci
+          php artisan test --env=ci
