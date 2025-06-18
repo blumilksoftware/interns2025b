@@ -33,13 +33,12 @@ class FacebookController extends Controller
         }
 
         $nameParts = explode(" ", $facebookUser->getName(), 2);
-        $firstname = $nameParts[0] ?? "Facebook";
+        $firstName = $nameParts[0] ?? "Facebook";
 
         $user = User::firstOrCreate(
             ["facebook_id" => $facebookUser->getId()],
             [
-                "firstname" => $firstname,
-                "surname" => "",
+                "first_name" => $firstName,
                 "email" => $email,
                 "email_verified_at" => now(),
                 "password" => null,

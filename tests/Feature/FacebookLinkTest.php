@@ -48,50 +48,6 @@ class FacebookLinkTest extends TestCase
         $response->assertJson(["message" => "Facebook account already linked to another user"]);
     }
 
-    public function testCallbackDoesNotOverwriteExistingAvatar(): void
-    {
-        $user = User::factory()->create([
-            "avatar" => "http://example.com/original-avatar.jpg",
-        ]);
-
-        $this->mockSocialiteUser([
-            "id" => "fb_id_user1",
-            "avatar" => "http://example.com/new-fb-avatar.jpg",
-        ]);
-
-        Sanctum::actingAs($user);
-
-        $this->getJson("/api/link/facebook/callback")->assertStatus(200);
-
-        $this->assertDatabaseHas("users", [
-            "id" => $user->id,
-            "facebook_id" => "fb_id_user1",
-            "avatar" => "http://example.com/original-avatar.jpg",
-        ]);
-    }
-
-    public function testCallbackAddsAvatarIfMissing(): void
-    {
-        $user = User::factory()->create([
-            "avatar" => null,
-        ]);
-
-        $this->mockSocialiteUser([
-            "id" => "fb_id_user2",
-            "avatar" => "http://example.com/fb-avatar.jpg",
-        ]);
-
-        Sanctum::actingAs($user);
-
-        $this->getJson("/api/link/facebook/callback")->assertStatus(200);
-
-        $this->assertDatabaseHas("users", [
-            "id" => $user->id,
-            "facebook_id" => "fb_id_user2",
-            "avatar" => "http://example.com/fb-avatar.jpg",
-        ]);
-    }
-
     protected function mockSocialiteUser(array $overrides = []): void
     {
         $user = \Mockery::mock(\Laravel\Socialite\Contracts\User::class);

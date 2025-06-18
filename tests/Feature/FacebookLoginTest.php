@@ -28,7 +28,10 @@ class FacebookLoginTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonStructure(["message", "token", "user_id"]);
-        $this->assertDatabaseHas("users", ["facebook_id" => "1234567890"]);
+        $this->assertDatabaseHas("users", [
+            "facebook_id" => "1234567890",
+            "first_name" => "Test",
+        ]);
     }
 
     public function testCallbackReturnsExistingUser(): void
@@ -37,7 +40,9 @@ class FacebookLoginTest extends TestCase
 
         $existingUser = User::factory()->create([
             "facebook_id" => "1234567890",
-            "firstname" => "John",
+            "first_name" => "Test",
+            "last_name" => "User",
+            "email" => "test@example.com",
         ]);
 
         $response = $this->getJson("/api/auth/facebook/callback");
