@@ -14,9 +14,9 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- * @property string $id
- * @property string $firstname
- * @property string $surname
+ * @property int $id
+ * @property string $first_name
+ * @property string $last_name
  * @property string $email
  * @property string $password
  * @property string|null $facebook_id
@@ -32,8 +32,8 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     use HasRoles;
 
     protected $fillable = [
-        "firstname",
-        "surname",
+        "first_name",
+        "last_name",
         "email",
         "password",
         "facebook_id",

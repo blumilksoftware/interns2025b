@@ -45,7 +45,7 @@ class LoginUserTest extends TestCase
 
         $response->assertStatus(403)
             ->assertJson([
-                "message" => "auth.failed",
+                "message" => __("auth.failed"),
             ]);
     }
 

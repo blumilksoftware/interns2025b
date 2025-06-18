@@ -42,7 +42,7 @@ return [
         "store" => "default",
     ],
 
-    "permission_roles" => [
+    "roles" => [
         Role::SuperAdministrator,
         Role::Administrator,
         Role::User,

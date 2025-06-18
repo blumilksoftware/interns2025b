@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Interns2025b\Enums\Role as RoleEnum;
 use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        $roles = \Interns2025b\Enums\Role::casesToSelect();
-
-        foreach ($roles as $role) {
-            Role::query()->firstOrCreate(["name" => $role["label"]]);
+        foreach (RoleEnum::casesToSelect() as $role) {
+            Role::firstOrCreate(["name" => $role["label"]]);
         }
     }
 }
