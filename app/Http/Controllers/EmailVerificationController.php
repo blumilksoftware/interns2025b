@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response as Status;
 
 class EmailVerificationController extends Controller
 {
-    public function verify(Request $request, $id, $hash): JsonResponse
+    public function verify(Request $request, int $id, string $hash): JsonResponse
     {
         $user = User::find($id);
 

@@ -25,7 +25,7 @@ class ResetPasswordTest extends TestCase
             "email" => $user->email,
         ]);
 
-        Notification::assertSentTo($user, ResetPassword::class, function ($notification) use (&$token) {
+        Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $notification) use (&$token): bool {
             $token = $notification->token;
 
             return true;
