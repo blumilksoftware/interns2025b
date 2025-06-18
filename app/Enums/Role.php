@@ -29,6 +29,6 @@ enum Role: string
 
     public function permissions(): array
     {
-        return config("permission.permission_roles");
+        return config("permission.roles");
     }
 }

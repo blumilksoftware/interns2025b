@@ -9,7 +9,7 @@ return [
     "url" => env("APP_URL", "http://localhost"),
     "timezone" => env("APP_TIMEZONE", "UTC"),
     "locale" => env("APP_LOCALE", "pl"),
-    "fallback_locale" => env("APP_FALLBACK_LOCALE", "pl"),
+    "fallback_locale" => env("APP_FALLBACK_LOCALE", "en"),
     "faker_locale" => env("APP_FAKER_LOCALE", "en_US"),
     "cipher" => "AES-256-CBC",
     "key" => env("APP_KEY"),

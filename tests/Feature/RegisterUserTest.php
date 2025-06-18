@@ -110,6 +110,15 @@ class RegisterUserTest extends TestCase
             ->assertJsonValidationErrors("password");
     }
 
+    public function testUserCanNotRegisterWithTooShortPassword(): void
+    {
+        $shortPassword = str_repeat("p", 4);
+        $response = $this->postJson("/api/auth/register", $this->validData(["password" => $shortPassword]));
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors("password");
+    }
+
     private function validData(array $overrides = []): array
     {
         return array_merge([
@@ -117,6 +126,7 @@ class RegisterUserTest extends TestCase
             "last_name" => "Kowalski",
             "email" => "jan.kowalski@gmail.com",
             "password" => "securePassword123",
+            "password_confirmation" => "securePassword123",
         ], $overrides);
     }
 }

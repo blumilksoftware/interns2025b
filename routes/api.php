@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Interns2025b\Http\Controllers\EmailVerificationController;
@@ -11,7 +12,7 @@ use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 
 Route::middleware("auth:sanctum")->group(function (): void {
-    Route::get("/user", fn(Request $request) => $request->user());
+    Route::get("/user", fn(Request $request): JsonResponse => $request->user());
     Route::post("/auth/logout", LogoutController::class);
 });
 
@@ -24,3 +25,8 @@ Route::post("/auth/register", [RegisterController::class, "register"]);
 
 Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
+
+Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([
+    "message" => "Temporary password reset.",
+    "token" => $token,
+]))->name("password.reset");
