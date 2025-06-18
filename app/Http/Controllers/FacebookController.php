@@ -21,7 +21,16 @@ class FacebookController extends Controller
 
     public function loginCallback(): JsonResponse
     {
-        $facebookUser = Socialite::driver("facebook")->stateless()->user();
+        $facebookUser = Socialite::driver("facebook")->user();
+        $email = $facebookUser->getEmail();
+
+        $existingUser = User::where("email", $email)->first();
+
+        if ($existingUser && $existingUser->facebook_id === null) {
+            return response()->json([
+                "message" => "Email already registered. Please log in with your password first.",
+            ], Response::HTTP_FORBIDDEN);
+        }
 
         $nameParts = explode(" ", $facebookUser->getName(), 2);
         $firstname = $nameParts[0] ?? "Facebook";
@@ -31,16 +40,11 @@ class FacebookController extends Controller
             [
                 "firstname" => $firstname,
                 "surname" => "",
-                "email" => $facebookUser->getEmail(),
-                "avatar" => $facebookUser->getAvatar(),
+                "email" => $email,
+                "email_verified_at" => now(),
                 "password" => null,
             ],
         );
-
-        if (!$user->avatar) {
-            $user->avatar = $facebookUser->getAvatar();
-            $user->save();
-        }
 
         $token = $user->createToken("token")->plainTextToken;
 
@@ -53,7 +57,7 @@ class FacebookController extends Controller
 
     public function linkCallback(): JsonResponse
     {
-        $facebookUser = Socialite::driver("facebook")->stateless()->user();
+        $facebookUser = Socialite::driver("facebook")->user();
         $user = Auth::user();
 
         if (User::where("facebook_id", $facebookUser->getId())->where("id", "!=", $user->id)->exists()) {
@@ -63,10 +67,6 @@ class FacebookController extends Controller
         }
 
         $user->facebook_id = $facebookUser->getId();
-
-        if (!$user->avatar) {
-            $user->avatar = $facebookUser->getAvatar();
-        }
 
         $user->save();
 

@@ -25,7 +25,6 @@ class UserFactory extends Factory
             "password" => Hash::make("password"),
             "remember_token" => Str::random(10),
             "facebook_id" => null,
-            "avatar" => null,
         ];
     }
 
