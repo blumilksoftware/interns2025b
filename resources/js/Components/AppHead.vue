@@ -14,8 +14,4 @@ const props = defineProps<Props>()
     <title>{{ title }}</title>
     <meta name="description" :content="description || 'Default description'">
   </Head>
-
-  <div>
-    <h1>head</h1>
-  </div>
 </template>

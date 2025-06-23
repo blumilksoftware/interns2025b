@@ -6,6 +6,6 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Response;
 
 Route::get("/", fn(): Response => inertia("Welcome"));
-Route::get("/register", fn(): Response => inertia("LoginPage"));
-Route::get("/login", fn(): Response => inertia("RegisterPage"));
+Route::get("/login", fn(): Response => inertia("Auth/LoginPage"));
+Route::get("/register", fn(): Response => inertia("Auth/RegisterPage"));
 
