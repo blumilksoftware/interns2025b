@@ -25,7 +25,7 @@ class AdminSeeder extends Seeder
         );
         $admin->assignRole("administrator");
 
-        $super_admin = User::firstOrCreate(
+        $superAdmin = User::firstOrCreate(
             ["email" => "superadmin@example.com"],
             [
                 "first_name" => "Super_Admin",
@@ -35,6 +35,6 @@ class AdminSeeder extends Seeder
                 "remember_token" => Str::random(10),
             ],
         );
-        $super_admin->assignRole("superAdministrator");
+        $superAdmin->assignRole("superAdministrator");
     }
 }

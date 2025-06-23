@@ -7,14 +7,13 @@ namespace Interns2025b\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
-class ResetPasswordRequest extends FormRequest
+class UpdatePasswordRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            "email" => ["required", "email", "max:225", "string"],
-            "password" => ["required", "confirmed", Password::min(8)],
-            "token" => "required|string",
+            "current_password" => ["required", "current_password"],
+            "new_password" => ["required", "confirmed", Password::min(8)],
         ];
     }
 }

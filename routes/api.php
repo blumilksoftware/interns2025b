@@ -2,22 +2,39 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Interns2025b\Http\Controllers\EmailVerificationController;
 use Interns2025b\Http\Controllers\EventController;
+use Interns2025b\Http\Controllers\FacebookController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
+use Interns2025b\Http\Controllers\UpdatePasswordController;
+use Interns2025b\Http\Controllers\UserProfileController;
 
 Route::middleware("auth:sanctum")->group(function (): void {
-    Route::get("/user", fn(Request $request) => $request->user());
+    Route::get("/user", fn(Request $request): JsonResponse => $request->user());
     Route::post("/auth/logout", LogoutController::class);
+    Route::get("/profile", [UserProfileController::class, "show"]);
+    Route::put("/profile", [UserProfileController::class, "update"]);
+    Route::put("/auth/change-password", [UpdatePasswordController::class, "updatePassword"]);
 });
+
+Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])
+    ->middleware("signed")
+    ->name("verification.verify");
 
 Route::post("/auth/login", [LoginController::class, "login"])->name("login");
 Route::post("/auth/register", [RegisterController::class, "register"]);
+
+Route::get("/auth/facebook/redirect", [FacebookController::class, "redirect"]);
+Route::get("/auth/facebook/callback", [FacebookController::class, "loginCallback"]);
+
+Route::middleware("auth:sanctum")->get("/link/facebook/callback", [FacebookController::class, "linkCallback"]);
 
 Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
@@ -27,3 +44,8 @@ Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:admin
     Route::get("/organizations", [OrganizationController::class, "index"]);
     Route::get("/organizations/{id}", [OrganizationController::class, "show"]);
 });
+
+Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([
+    "message" => "Temporary password reset.",
+    "token" => $token,
+]))->name("password.reset");
