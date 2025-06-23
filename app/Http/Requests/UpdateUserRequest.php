@@ -6,13 +6,13 @@ namespace Interns2025b\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            "email" => ["required", "email:rfc,dns", "max:225", "string"],
-            "password" => ["required", "min:8", "max:225", "string"],
+            "first_name" => ["required", "string", "max:225"],
+            "last_name" => ["nullable", "string", "max:255"],
         ];
     }
 }
