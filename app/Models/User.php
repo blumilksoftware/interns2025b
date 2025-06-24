@@ -6,12 +6,12 @@ namespace Interns2025b\Models;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\CanResetPassword;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -67,7 +67,7 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 
     public function followingUsers(): MorphToMany
     {
-        return $this->morphedByMany(User::class, "followable", "followables");
+        return $this->morphedByMany(self::class, "followable", "followables");
     }
 
     public function followingOrganizations(): MorphToMany
@@ -82,9 +82,8 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 
     public function followers(): MorphToMany
     {
-        return $this->morphToMany(User::class, "followable", "followables");
+        return $this->morphToMany(self::class, "followable", "followables");
     }
-
 
     protected function casts(): array
     {
