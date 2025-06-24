@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\DefaultTeamResolver;
 use Spatie\Permission\Models\Permission;
 
 return [
     "models" => [
         "permission" => Permission::class,
-        "role" => Spatie\Permission\Models\Role::class,
+        "role" => Role::class,
     ],
 
     "table_names" => [
