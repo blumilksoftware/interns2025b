@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use Interns2025b\Enums\Role;
 use Spatie\Permission\DefaultTeamResolver;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 return [
     "models" => [
         "permission" => Permission::class,
-        "role" => Spatie\Permission\Models\Role::class,
+        "role" => Role::class,
     ],
 
     "table_names" => [
@@ -40,11 +40,5 @@ return [
         "expiration_time" => DateInterval::createFromDateString("24 hours"),
         "key" => "spatie.permission.cache",
         "store" => "default",
-    ],
-
-    "permission_roles" => [
-        Role::SuperAdministrator,
-        Role::Administrator,
-        Role::User,
     ],
 ];

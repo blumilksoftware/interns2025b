@@ -22,6 +22,8 @@ class RegisterController extends Controller
             $user->password = Hash::make($validated["password"]);
             $user->save();
             $user->assignRole("user");
+
+            $user->sendEmailVerificationNotification();
         }
 
         return response()->json([

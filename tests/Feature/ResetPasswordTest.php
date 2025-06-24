@@ -15,17 +15,15 @@ class ResetPasswordTest extends TestCase
 {
     public function testUserCanResetPasswordWithValidToken(): void
     {
-        Notification::fake();
-
         $user = User::factory()->create([
-            "password" => bcrypt("old-password"),
+            "password" => Hash::make("old-password"),
         ]);
 
         $this->postJson("/api/auth/forgot-password", [
             "email" => $user->email,
         ]);
 
-        Notification::assertSentTo($user, ResetPassword::class, function ($notification) use (&$token) {
+        Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $notification) use (&$token): bool {
             $token = $notification->token;
 
             return true;
