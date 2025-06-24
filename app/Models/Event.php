@@ -7,6 +7,7 @@ namespace Interns2025b\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
@@ -63,5 +64,10 @@ class Event extends Model
     public function owner(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function participants(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, "event_user");
     }
 }

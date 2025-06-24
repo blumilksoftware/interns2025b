@@ -6,6 +6,7 @@ namespace Interns2025b\Models;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -63,6 +64,27 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     {
         return $this->belongsToMany(Event::class, "event_user");
     }
+
+    public function followingUsers(): MorphToMany
+    {
+        return $this->morphedByMany(User::class, "followable", "followables");
+    }
+
+    public function followingOrganizations(): MorphToMany
+    {
+        return $this->morphedByMany(Organization::class, "followable", "followables");
+    }
+
+    public function followingEvents(): MorphToMany
+    {
+        return $this->morphedByMany(Event::class, "followable", "followables");
+    }
+
+    public function followers(): MorphToMany
+    {
+        return $this->morphToMany(User::class, "followable", "followables");
+    }
+
 
     protected function casts(): array
     {
