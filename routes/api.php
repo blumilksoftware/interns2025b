@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Interns2025b\Http\Controllers\AdminManagementController;
 use Interns2025b\Http\Controllers\EmailVerificationController;
 use Interns2025b\Http\Controllers\EventController;
 use Interns2025b\Http\Controllers\FacebookController;
@@ -49,6 +50,14 @@ Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:admin
     Route::post("/users", [UserManagementController::class, "store"])->name("users.store");
     Route::put("/users/{user}", [UserManagementController::class, "update"])->name("users.update");
     Route::delete("/users/{user}", [UserManagementController::class, "destroy"])->name("users.destroy");
+});
+
+Route::group(["prefix" => "superadmin", "middleware" => ["auth:sanctum", "role:superAdministrator"]], function (): void {
+    Route::get("/admins", [AdminManagementController::class, "index"])->name("admins.index");
+    Route::get("/admins/{admin}", [AdminManagementController::class, "show"])->name("admins.show");
+    Route::post("/admins", [AdminManagementController::class, "store"])->name("admins.store");
+    Route::put("/admins/{admin}", [AdminManagementController::class, "update"])->name("admins.update");
+    Route::delete("/admins/{admin}", [AdminManagementController::class, "destroy"])->name("admins.destroy");
 });
 
 Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([
