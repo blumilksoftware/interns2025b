@@ -38,7 +38,6 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user): void {
             $user->assignRole(Role::Administrator);
-            $user->syncPermissions(Role::Administrator->permissions());
         });
     }
 
