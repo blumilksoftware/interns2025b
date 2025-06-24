@@ -18,7 +18,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            "first_name" => fake()->name(),
+            "first_name" => fake()->firstName(),
             "last_name" => fake()->lastName,
             "email" => fake()->unique()->safeEmail(),
             "email_verified_at" => now(),
@@ -26,6 +26,13 @@ class UserFactory extends Factory
             "remember_token" => Str::random(10),
             "facebook_id" => null,
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $user->assignRole(Role::User);
+        });
     }
 
     public function unverified(): static
@@ -39,7 +46,7 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user): void {
             $user->assignRole(Role::Administrator);
-            $user->syncPermissions(Role::Administrator->permissions());
+            $user->syncPermissions(Role::Administrator);
         });
     }
 

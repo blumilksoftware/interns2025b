@@ -14,6 +14,7 @@ use Interns2025b\Http\Controllers\OrganizationController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 use Interns2025b\Http\Controllers\UpdatePasswordController;
+use Interns2025b\Http\Controllers\UserManagementController;
 use Interns2025b\Http\Controllers\UserProfileController;
 
 Route::middleware("auth:sanctum")->group(function (): void {
@@ -43,6 +44,11 @@ Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:admin
     Route::get("/events", [EventController::class, "index"]);
     Route::get("/organizations", [OrganizationController::class, "index"]);
     Route::get("/organizations/{id}", [OrganizationController::class, "show"]);
+    Route::get("/users", [UserManagementController::class, "index"])->name("users.index");
+    Route::get("/users/{user}", [UserManagementController::class, "show"])->name("users.show");
+    Route::post("/users", [UserManagementController::class, "store"])->name("users.store");
+    Route::put("/users/{user}", [UserManagementController::class, "update"])->name("users.update");
+    Route::delete("/users/{user}", [UserManagementController::class, "destroy"])->name("users.destroy");
 });
 
 Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([

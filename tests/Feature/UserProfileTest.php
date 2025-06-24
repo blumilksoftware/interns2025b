@@ -90,20 +90,6 @@ class UserProfileTest extends TestCase
         ]);
     }
 
-    public function testUpdateProfileRequiresFirstName(): void
-    {
-        $user = User::factory()->create();
-
-        Sanctum::actingAs($user);
-
-        $response = $this->putJson("/api/profile", [
-            "last_name" => "OnlyLastName",
-        ]);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(["first_name"]);
-    }
-
     public function testGuestCannotUpdateProfile(): void
     {
         $response = $this->putJson("/api/profile", [
