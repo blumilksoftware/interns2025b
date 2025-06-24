@@ -48,7 +48,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-dependencies
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@cf4cade2721270509d5b1c766ab3549210a39a2a # 2.33.0 # https://github.com/shivammathur/setup-php
+        uses: shivammathur/setup-php@27853eb8b46dc01c33bf9fef67d98df2683c3be2 # 2.33.0 # https://github.com/shivammathur/setup-php
         with:
           php-version: 8.3
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_pgsql, intl
@@ -61,6 +61,5 @@ jobs:
         run: composer cs
 
       - name: Execute tests
-        run: |
-          cp .env.ci .env
-          php artisan test
+        run:
+          php artisan test --env=ci

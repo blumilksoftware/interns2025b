@@ -16,11 +16,9 @@ class LoginController extends Controller
         $credentials = $loginRequest->validated();
 
         if (!$auth->attempt($credentials)) {
-            if ($loginRequest->expectsJson()) {
-                return response()->json([
-                    "message" => __("auth.failed"),
-                ], Status::HTTP_FORBIDDEN);
-            }
+            return response()->json([
+                "message" => __("auth.failed"),
+            ], Status::HTTP_FORBIDDEN);
         }
 
         $user = $auth->user();

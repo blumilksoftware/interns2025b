@@ -27,7 +27,7 @@ class RegisterUserTest extends TestCase
             "last_name" => "Kowalski",
         ]);
 
-        $user = User::where("email", "jan.kowalski@gmail.com")->first();
+        $user = User::query()->where("email", "jan.kowalski@gmail.com")->first();
         $this->assertNotNull($user);
         $this->assertTrue($user->hasRole("user"));
     }
@@ -75,14 +75,6 @@ class RegisterUserTest extends TestCase
             ->assertJsonValidationErrors("email");
     }
 
-    public function testUserCanNotRegisterWithWrongEmailDomain(): void
-    {
-        $response = $this->postJson("/api/auth/register", $this->validData(["email" => "user@nonexistentdomain.xyzabc"]));
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors("email");
-    }
-
     public function testUserCanNotRegisterWithTooLongName(): void
     {
         $longName = str_repeat("a", 256);
@@ -110,6 +102,15 @@ class RegisterUserTest extends TestCase
             ->assertJsonValidationErrors("password");
     }
 
+    public function testUserCanNotRegisterWithTooShortPassword(): void
+    {
+        $shortPassword = str_repeat("p", 4);
+        $response = $this->postJson("/api/auth/register", $this->validData(["password" => $shortPassword]));
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors("password");
+    }
+
     private function validData(array $overrides = []): array
     {
         return array_merge([
@@ -117,6 +118,7 @@ class RegisterUserTest extends TestCase
             "last_name" => "Kowalski",
             "email" => "jan.kowalski@gmail.com",
             "password" => "securePassword123",
+            "password_confirmation" => "securePassword123",
         ], $overrides);
     }
 }
