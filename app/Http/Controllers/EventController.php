@@ -16,4 +16,13 @@ class EventController extends Controller
         return response()->json([
             "data" => $events]);
     }
+
+    public function show(int $id): JsonResponse
+    {
+        $event = Event::with(["owner"])->findOrFail($id);
+
+        return response()->json([
+            "data" => $event,
+        ]);
+    }
 }

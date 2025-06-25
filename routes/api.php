@@ -33,8 +33,10 @@ Route::get("/reset-password/{token}", fn(string $token): JsonResponse => respons
     "token" => $token,
 ]))->name("password.reset");
 
+Route::get("/events", [EventController::class, "index"]);
+Route::get("/events/{id}", [EventController::class, "show"]);
+
 Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
-    Route::get("/events", [EventController::class, "index"]);
     Route::get("/organizations", [OrganizationController::class, "index"]);
     Route::get("/organizations/{id}", [OrganizationController::class, "show"]);
 });
