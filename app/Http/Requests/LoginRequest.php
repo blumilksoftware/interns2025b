@@ -9,7 +9,6 @@ use Illuminate\Validation\Rules\Password;
 
 class LoginRequest extends FormRequest
 {
-
     public function rules(): array
     {
         return [
