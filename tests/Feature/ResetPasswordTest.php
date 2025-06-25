@@ -16,7 +16,7 @@ class ResetPasswordTest extends TestCase
     public function testUserCanResetPasswordWithValidToken(): void
     {
         $user = User::factory()->create([
-            "password" => bcrypt("old-password"),
+            "password" => Hash::make("old-password"),
         ]);
 
         $this->postJson("/api/auth/forgot-password", [
