@@ -12,4 +12,7 @@ return [
     "invalid_verification_hash" => "Nieprawidłowy hash weryfikacyjny.",
     "email_already_verified" => "Adres e-mail jest już zweryfikowany.",
     "email_verified_successfully" => "Adres e-mail został pomyślnie zweryfikowany.",
+    "email_already_registered" => "Adres e-mail jest już zarejestrowany. Zaloguj się najpierw hasłem.",
+    "facebook_account_already_linked" => "Konto Facebook jest już powiązane z innym użytkownikiem.",
+    "facebook_link_success" => "Konto Facebook zostało pomyślnie powiązane.",
 ];

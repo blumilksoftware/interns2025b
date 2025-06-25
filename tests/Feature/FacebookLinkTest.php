@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Laravel\Socialite\Facades\Socialite;
@@ -12,8 +11,6 @@ use Tests\TestCase;
 
 class FacebookLinkTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testCallbackLinksFacebookAccountSuccessfully(): void
     {
         $this->mockSocialiteUser(["id" => "new_fb_id"]);
@@ -25,7 +22,7 @@ class FacebookLinkTest extends TestCase
         $response = $this->getJson("/api/link/facebook/callback");
 
         $response->assertStatus(200);
-        $response->assertJson(["message" => "Facebook account linked successfully"]);
+        $response->assertJson(["message" => __("auth.facebook_link_success")]);
 
         $this->assertDatabaseHas("users", [
             "id" => $user->id,
@@ -45,7 +42,7 @@ class FacebookLinkTest extends TestCase
         $response = $this->getJson("/api/link/facebook/callback");
 
         $response->assertStatus(409);
-        $response->assertJson(["message" => "Facebook account already linked to another user"]);
+        $response->assertJson(["message" => __("auth.facebook_account_already_linked")]);
     }
 
     protected function mockSocialiteUser(array $overrides = []): void

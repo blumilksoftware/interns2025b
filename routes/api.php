@@ -15,6 +15,7 @@ use Interns2025b\Http\Controllers\ResetPasswordController;
 Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/user", fn(Request $request): JsonResponse => $request->user());
     Route::post("/auth/logout", LogoutController::class);
+    Route::get("/link/facebook/callback", [FacebookController::class, "linkCallback"]);
 });
 
 Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])
@@ -26,8 +27,6 @@ Route::post("/auth/register", [RegisterController::class, "register"]);
 
 Route::get("/auth/facebook/redirect", [FacebookController::class, "redirect"]);
 Route::get("/auth/facebook/callback", [FacebookController::class, "loginCallback"]);
-
-Route::middleware("auth:sanctum")->get("/link/facebook/callback", [FacebookController::class, "linkCallback"]);
 
 Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);

@@ -28,7 +28,7 @@ class FacebookController extends Controller
 
         if ($existingUser && $existingUser->facebook_id === null) {
             return response()->json([
-                "message" => "Email already registered. Please log in with your password first.",
+                "message" => __("auth.email_already_registered"),
             ], Response::HTTP_FORBIDDEN);
         }
 
@@ -65,7 +65,7 @@ class FacebookController extends Controller
 
         if (User::where("facebook_id", $facebookUser->getId())->where("id", "!=", $user->id)->exists()) {
             return response()->json([
-                "message" => "Facebook account already linked to another user",
+                "message" => __("auth.facebook_account_already_linked"),
             ], Response::HTTP_CONFLICT);
         }
 
@@ -74,7 +74,7 @@ class FacebookController extends Controller
         $user->save();
 
         return response()->json([
-            "message" => "Facebook account linked successfully",
+            "message" => __("auth.facebook_link_success"),
         ], Response::HTTP_OK);
     }
 }
