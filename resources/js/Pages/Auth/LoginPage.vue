@@ -1,31 +1,46 @@
 <script setup lang="ts">
 import AuthLayout from '@/Layouts/AuthLayout.vue'
+import BaseInput from '@/Components/BaseInput.vue'
+import BaseButton from '@/Components/BaseButton.vue'
+import { ref } from 'vue'
 
+const email = ref('')
+const password = ref('')
 </script>
 
 <template>
   <AuthLayout>
-    <template #auth>
-      <div class=" flex-auto bg-gray-50 min-w-[300px] max-w-screen-md rounded-lg">
-        <div class="[&>*]:ml-9 pb-20 text-xl text-white bg-gradient-to-tr from-[#025F60] to-[#093637] rounded-lg">
-          <h2 class=" font-bold">Zaloguj się</h2>
-          <p class=" font-semibold">Nie posidasz konta? <a href="" class="text-white font-bold"><span class="underline font-bold align">Zarejestruj się</span></a></p>
+    <template #form>
+      <form action="#" method="post"
+            class="flex flex-col items-center justify-center w-full mt-6 space-y-6 text-xl"
+      >
+        <div class="w-5/6">
+          <BaseInput
+            id="email"
+            v-model="email"
+            name="email"
+            label="Email"
+            type="email"
+          />
+          <BaseInput
+            id="password"
+            v-model="password"
+            name="password"
+            label="Hasło"
+            type="password"
+          />
         </div>
-        <form class="[&>*]:ml-9 text-xl mt-4" action="#" method="post">
-          <p class="text-base text-gray-500">Email</p>
-          <input class=" font-extrabold bg-gradient-to-tr from-[#025F60] to-[#025F60] bg-clip-text text-transparent border rounded-md">
-          <p class="text-base text-gray-500">Hasło</p>
-          <input class=" font-extrabold bg-gradient-to-tr from-[#025F60] to-[#025F60] bg-clip-text text-transparent border rounded-md"><br>
-          <input id="remember_password" type="checkbox" name="remember_password">
-          <label for="remember_password">Zapamiętaj mnie</label>
-          <p>zapomniałeś hasła?</p>
-          <br>
-          <button class="bg-black rounded-lg w-1/2 h-8 text-white" type="submit">Zaloguj się</button>
-        </form>
-        <div>
-          <p>Zaloguj się za pomocą Facebook</p>
+        <div class="flex items-center justify-between w-5/6">
+          <label class="flex items-center">
+            <input id="remember_password" name="remember_password" type="checkbox" class="mr-2">
+            <span class="text-base text-gray-700">Zapamiętaj mnie</span>
+          </label>
+          <a href="#" class="font-bold text-base text-[#025F60]">Zapomniałeś hasła?</a>
         </div>
-      </div>
+        <BaseButton class="w-5/6" type="submit" @click="Submit">
+          Zaloguj się
+        </BaseButton>
+      </form>
     </template>
   </AuthLayout>
 </template>

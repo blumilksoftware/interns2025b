@@ -1,28 +1,35 @@
 <template>
-  <div>
-    <label v-if="label">{{ label }}</label>
-    <input
-      class="bg-gray-100 rounded-md "
-      :type="type"
-      :placeholder="placeholder"
-      :value="modelValue"
-      v-bind="attrs"
-      @input="$emit('update:modelValue', $event.target.value)"
-    >
-    <p v-if="error" class="text-red-700 size-2">{{ error }}</p>
-  </div>
+  <label
+    class="block text-base text-gray-500 mb-2"
+    :for="id"
+  >
+    {{ label }}
+  </label>
+  <input
+    :id="id"
+    :name="name"
+    :type="type"
+    :placeholder="placeholder"
+    :value="modelValue"
+    class="w-full h-12 px-4 font-semibold text-[#025F60] border-2 rounded-lg focus:outline-none"
+    @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+  >
 </template>
 
-<script setup lang="ts">
-import { useAttrs, defineProps } from 'vue'
+<script lang="ts" setup>
+import { defineProps, defineEmits } from 'vue'
+
+type InputType = 'text' | 'email' | 'password' | 'number' | 'search'
 
 const props = defineProps<{
   modelValue: string
+  id: string
+  name: string
+  label: string
+  type?: InputType
   placeholder?: string
-  type?: string
-  label?: string
-  error?: string
 }>()
 
-const attrs = useAttrs()
+const emit = defineEmits<(e: 'update:modelValue', value: string) => void>()
+
 </script>
