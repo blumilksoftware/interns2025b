@@ -11,7 +11,7 @@ class OrganizationController extends Controller
 {
     public function index(): JsonResponse
     {
-        $organizations = Organization::with(["owner", "users"])->get();
+        $organizations = Organization::query()->with(["owner", "users"])->get();
 
         return response()->json([
             "data" => $organizations,
@@ -20,7 +20,7 @@ class OrganizationController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        $organization = Organization::with(["owner", "users"])->findOrFail($id);
+        $organization = Organization::query()->with(["owner", "users"])->findOrFail($id);
 
         return response()->json([
             "data" => $organization,
