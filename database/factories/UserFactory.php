@@ -27,6 +27,13 @@ class UserFactory extends Factory
         ];
     }
 
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $user->assignRole("user");
+        });
+    }
+
     public function unverified(): static
     {
         return $this->state(fn(array $attributes): array => [
@@ -37,14 +44,14 @@ class UserFactory extends Factory
     public function admin(): static
     {
         return $this->afterCreating(function (User $user): void {
-            $user->assignRole(Role::Administrator);
+            $user->syncRoles(Role::Administrator);
         });
     }
 
     public function superAdmin(): static
     {
         return $this->afterCreating(function (User $user): void {
-            $user->assignRole(Role::SuperAdministrator);
+            $user->syncRoles(Role::SuperAdministrator);
         });
     }
 }
