@@ -8,6 +8,9 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -19,6 +22,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $last_name
  * @property string $email
  * @property string $password
+ * @property string|null $facebook_id
  * @property Carbon $email_verified_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -35,11 +39,32 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         "last_name",
         "email",
         "password",
+        "facebook_id",
     ];
     protected $hidden = [
         "password",
         "remember_token",
     ];
+
+    public function ownedOrganizations(): HasMany
+    {
+        return $this->hasMany(Organization::class, "owner_id");
+    }
+
+    public function organizations(): BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class, "organization_user");
+    }
+
+    public function ownedEvents(): MorphMany
+    {
+        return $this->morphMany(Event::class, "owner");
+    }
+
+    public function events(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, "event_user");
+    }
 
     protected function casts(): array
     {
