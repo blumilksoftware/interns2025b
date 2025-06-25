@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Interns2025b\Models\User;
 use Tests\TestCase;
 
 class LoginUserTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testUserCanLoginSuccessfully(): void
     {
         $password = "securePassword123";
 
         User::factory()->create([
             "email" => "jan.kowalski@gmail.com",
-            "password" => bcrypt($password),
+            "password" => Hash::make($password),
         ]);
 
         $response = $this->postJson("/api/auth/login", $this->validData());
@@ -38,7 +36,7 @@ class LoginUserTest extends TestCase
     {
         User::factory()->create([
             "email" => "jan.kowalski@gmail.com",
-            "password" => bcrypt("correctPassword"),
+            "password" => Hash::make("correctPassword"),
         ]);
 
         $response = $this->postJson("/api/auth/login", $this->validData(["password" => "wrongPassword"]));
