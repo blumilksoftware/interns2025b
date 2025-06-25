@@ -18,7 +18,7 @@ class OrganizationUserSeeder extends Seeder
         ]);
 
         $organization->users()->attach($owner->id);
-        $additionalUsers = User::factory()->count(1)->create();
+        $additionalUsers = User::factory()->count(10)->create();
         $organization->users()->attach($additionalUsers->pluck("id")->toArray());
     }
 }

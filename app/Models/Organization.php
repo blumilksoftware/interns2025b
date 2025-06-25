@@ -13,9 +13,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 /**
  * @property int $id
  * @property string $name
- * @property string|null $group_url
- * @property string|null $avatar_url
- * @property int|null $owner_id
+ * @property ?string $group_url
+ * @property ?string $avatar_url
+ * @property ?int $owner_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
