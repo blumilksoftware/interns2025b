@@ -15,6 +15,10 @@ class EventObserver
             foreach ($event->participants as $user) {
                 event(new EventWasCanceled($event, $user));
             }
+            activity()
+                ->performedOn($event)
+                ->withProperties(["participants_count" => $event->participants->count()])
+                ->log("Wysłano powiadomienia o anulowaniu eventu '$event->title'");
         }
     }
 }

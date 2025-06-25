@@ -8,21 +8,29 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Interns2025b\Events\EventStartingSoon;
 use Interns2025b\Events\EventWasCanceled;
 use Interns2025b\Events\EventWasPublished;
-use Interns2025b\Listeners\SendEventCanceledNotification;
-use Interns2025b\Listeners\SendEventStartingSoonNotification;
-use Interns2025b\Listeners\SendNewEventPublishedNotification;
+use Interns2025b\Listeners\SendEventNotification;
+use Interns2025b\Notifications\EventCanceledNotification;
+use Interns2025b\Notifications\EventStartingSoonNotification;
+use Interns2025b\Notifications\NewEventPublishedNotification;
 
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
-        EventStartingSoon::class => [
-            SendEventStartingSoonNotification::class,
-        ],
-        EventWasPublished::class => [
-            SendNewEventPublishedNotification::class,
-        ],
-        EventWasCanceled::class => [
-            SendEventCanceledNotification::class,
-        ],
+        EventWasCanceled::class => [SendEventNotification::class],
+        EventWasPublished::class => [SendEventNotification::class],
+        EventStartingSoon::class => [SendEventNotification::class],
     ];
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        $this->app->when(SendEventNotification::class)
+            ->needs("\$map")
+            ->give([
+                EventWasCanceled::class => EventCanceledNotification::class,
+                EventWasPublished::class => NewEventPublishedNotification::class,
+                EventStartingSoon::class => EventStartingSoonNotification::class,
+            ]);
+    }
 }

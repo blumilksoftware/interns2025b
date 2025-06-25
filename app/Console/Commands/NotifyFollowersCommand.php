@@ -12,7 +12,6 @@ use Interns2025b\Models\Event;
 class NotifyFollowersCommand extends Command
 {
     protected $signature = "followers:notify";
-    protected $description = "Wywołuje eventy do powiadomień o zbliżających się eventach i nowo opublikowanych eventach";
 
     public function handle(): int
     {
@@ -32,6 +31,10 @@ class NotifyFollowersCommand extends Command
             foreach ($event->followers as $user) {
                 event(new EventStartingSoon($event, $user));
             }
+            activity()
+                ->performedOn($event)
+                ->withProperties(["followers_count" => $event->followers->count()])
+                ->log("Wysłano powiadomienia EventStartingSoon dla eventu '$event->title'");
         }
 
         $this->info("EventStartingSoon dispatched.");
@@ -50,6 +53,10 @@ class NotifyFollowersCommand extends Command
                 foreach ($owner->followers as $user) {
                     event(new EventWasPublished($event, $user));
                 }
+                activity()
+                    ->performedOn($event)
+                    ->withProperties(["followers_count" => $owner->followers->count()])
+                    ->log("Wysłano powiadomienia NewEventPublished dla eventu '$event->title'");
             }
         }
 

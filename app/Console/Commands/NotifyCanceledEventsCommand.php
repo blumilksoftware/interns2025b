@@ -11,7 +11,6 @@ use Interns2025b\Models\Event;
 class NotifyCanceledEventsCommand extends Command
 {
     protected $signature = "followers:notify-canceled";
-    protected $description = "Wysyła powiadomienia o anulowanych wydarzeniach do ich uczestników";
 
     public function handle(): int
     {
