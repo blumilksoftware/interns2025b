@@ -19,12 +19,19 @@ class UserFactory extends Factory
     {
         return [
             "first_name" => fake()->firstName(),
-            "last_name" => fake()->lastName,
+            "last_name" => fake()->lastName(),
             "email" => fake()->unique()->safeEmail(),
             "email_verified_at" => now(),
             "password" => Hash::make("password"),
             "remember_token" => Str::random(10),
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $user->assignRole("user");
+        });
     }
 
     public function unverified(): static
@@ -37,14 +44,14 @@ class UserFactory extends Factory
     public function admin(): static
     {
         return $this->afterCreating(function (User $user): void {
-            $user->assignRole(Role::Administrator);
+            $user->syncRoles(Role::Administrator);
         });
     }
 
     public function superAdmin(): static
     {
         return $this->afterCreating(function (User $user): void {
-            $user->assignRole(Role::SuperAdministrator);
+            $user->syncRoles(Role::SuperAdministrator);
         });
     }
 }
