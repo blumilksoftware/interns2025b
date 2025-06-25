@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Interns2025b\Models\User;
 use Tests\TestCase;
 
 class LoginUserTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testUserCanLoginSuccessfully(): void
     {
         $password = "securePassword123";
