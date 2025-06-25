@@ -18,17 +18,16 @@ class ResetPasswordController extends Controller
 {
     public function sendResetLinkEmail(PasswordResetLinkRequest $request): JsonResponse
     {
-        $status = Password::sendResetLink(
-            $request->only("email"),
-        );
+        $validated = $request->validated();
+        Password::sendResetLink($validated);
 
         activity()
             ->withProperties(["email" => $request->input("email")])
             ->log("Requested password reset link via API");
 
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(["message" => __("passwords.sent")], Status::HTTP_OK)
-            : response()->json(["message" => __("passwords.user")], Status::HTTP_BAD_REQUEST);
+        return response()->json([
+            "message" => __("passwords.sent"),
+        ], Status::HTTP_OK);
     }
 
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
