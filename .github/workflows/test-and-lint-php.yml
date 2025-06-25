@@ -10,6 +10,7 @@ on:
       - 'composer.lock'
       - 'phpunit.xml'
       - 'env.ci'
+      - 'test-and-lint-php.yml'
 
 jobs:
   test-and-lint-php:
@@ -21,7 +22,7 @@ jobs:
       pgsql:
         image: postgres:16.3-alpine3.18@sha256:64e18e8fb3e9c9aac89ac590c5dd8306b862478404f76cd9b5f7720d012b4c47 # https://hub.docker.com/_/postgres
         env:
-          POSTGRES_DB: interns2025b
+          POSTGRES_DB: interns2025b-test
           POSTGRES_USER: interns2025b
           POSTGRES_PASSWORD: password
         # Set health checks to wait until postgres has started
@@ -60,4 +61,5 @@ jobs:
         run: composer cs
 
       - name: Execute tests
-        run: php artisan test --env=ci
+        run:
+          php artisan test --env=ci

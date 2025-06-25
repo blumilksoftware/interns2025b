@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use ExampleApp\Models\User;
+use Interns2025b\Models\User;
 
 return [
     "defaults" => [

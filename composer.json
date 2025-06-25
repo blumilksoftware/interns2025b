@@ -8,10 +8,12 @@
         "php": "^8.3.4",
         "ext-pdo": "*",
         "guzzlehttp/guzzle": "^7.9.2",
+        "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.10",
-        "laravel/sanctum": "^4.0.8",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
-        "inertiajs/inertia-laravel": "^2.0"
+        "spatie/laravel-activitylog": "^4.10",
+        "spatie/laravel-permission": "^6.19"
     },
     "require-dev": {
         "blumilksoftware/codestyle": "^v3.3.0",
@@ -24,7 +26,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ExampleApp\\": "app/",
+            "Interns2025b\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
