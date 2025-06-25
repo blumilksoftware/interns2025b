@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\User;
 use Tests\TestCase;
 
 class RegisterUserTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testRegisterUserSuccessfully(): void
     {
         $response = $this->postJson("/api/auth/register", $this->validData());
