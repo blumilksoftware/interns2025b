@@ -12,23 +12,18 @@ class UpdateUserRequest extends FormRequest
 {
     public function rules(): array
     {
-        $rules = [
+        return [
             "first_name" => ["sometimes", "string", "max:225"],
             "last_name" => ["nullable", "string", "max:255"],
-        ];
-
-        if ($this->user()?->hasRole(["admin", "superAdministrator", "Administrator"])) {
-            $rules["email"] = [
+            "email" => [
                 "sometimes",
                 "email",
                 "max:225",
                 Rule::unique("users", "email")->ignore($this->route("user")?->id),
-            ];
-            $rules["password"] = ["nullable", "confirmed", Password::min(8)];
-            $rules["organization_ids"] = ["nullable", "array"];
-            $rules["organization_ids.*"] = ["exists:organizations,id"];
-        }
-
-        return $rules;
+            ],
+            "password" => ["nullable", "confirmed", Password::min(8)],
+            "organization_ids" => ["nullable", "array"],
+            "organization_ids.*" => ["exists:organizations,id"],
+        ];
     }
 }

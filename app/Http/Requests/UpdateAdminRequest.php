@@ -19,13 +19,6 @@ class UpdateAdminRequest extends FormRequest
             "last_name" => ["nullable", "string", "max:225"],
             "email" => ["sometimes", "email", "max:225", Rule::unique("users", "email")->ignore($adminId)],
             "password" => ["nullable", "confirmed", Password::min(8)],
-            "organization_ids" => ["nullable", "array"],
-            "organization_ids.*" => ["exists:organizations,id"],
         ];
-    }
-
-    public function authorize(): bool
-    {
-        return $this->user()->hasRole("superAdministrator");
     }
 }

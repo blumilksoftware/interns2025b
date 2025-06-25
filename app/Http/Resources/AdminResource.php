@@ -16,7 +16,6 @@ class AdminResource extends JsonResource
             "last_name" => $this->last_name,
             "email" => $this->email,
             "facebook_linked" => $this->facebook_id !== null,
-            "organizations" => $this->whenLoaded("organizations", fn() => $this->organizations->pluck("id")),
         ];
     }
 }

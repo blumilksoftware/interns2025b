@@ -45,15 +45,14 @@ class UserFactory extends Factory
     public function admin(): static
     {
         return $this->afterCreating(function (User $user): void {
-            $user->assignRole(Role::Administrator);
-            $user->syncPermissions(Role::Administrator);
+            $user->syncRoles(Role::Administrator);
         });
     }
 
     public function superAdmin(): static
     {
         return $this->afterCreating(function (User $user): void {
-            $user->assignRole(Role::SuperAdministrator);
+            $user->syncRoles(Role::SuperAdministrator);
         });
     }
 }

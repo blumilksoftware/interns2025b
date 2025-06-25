@@ -6,7 +6,7 @@ namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Interns2025b\Http\Requests\UpdateUserRequest;
+use Interns2025b\Http\Requests\UpdateOwnProfileRequest;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 class UserProfileController extends Controller
@@ -26,7 +26,7 @@ class UserProfileController extends Controller
         ])->setStatusCode(Status::HTTP_OK);
     }
 
-    public function update(UpdateUserRequest $request): JsonResponse
+    public function update(UpdateOwnProfileRequest $request): JsonResponse
     {
         $user = Auth::user();
         $user->update($request->validated());

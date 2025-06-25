@@ -74,10 +74,6 @@ class UserManagementController extends Controller
 
         $emailChanged = isset($data["email"]) && $data["email"] !== $user->email;
 
-        if ($emailChanged) {
-            $data["email_verified_at"] = null;
-        }
-
         if (isset($data["password"])) {
             $data["password"] = Hash::make($data["password"]);
         }
@@ -89,6 +85,8 @@ class UserManagementController extends Controller
         }
 
         if ($emailChanged) {
+            $user->email_verified_at = null;
+            $user->save();
             $user->sendEmailVerificationNotification();
         }
 

@@ -16,8 +16,7 @@ class AdminManagementController extends Controller
 {
     public function index(): JsonResponse
     {
-        $admins = User::with("organizations")
-            ->role(["administrator"])
+        $admins = User::role(["administrator"])
             ->orderBy("id")
             ->get();
 
@@ -29,8 +28,6 @@ class AdminManagementController extends Controller
         if (!$admin->hasAnyRole(["administrator"])) {
             abort(Status::HTTP_FORBIDDEN);
         }
-
-        $admin->load("organizations");
 
         return response()->json(new AdminResource($admin), Status::HTTP_OK);
     }
@@ -45,10 +42,6 @@ class AdminManagementController extends Controller
 
         $admin->assignRole("administrator");
 
-        if (isset($data["organization_ids"])) {
-            $admin->organizations()->sync($data["organization_ids"]);
-        }
-
         if (method_exists($admin, "sendEmailVerificationNotification")) {
             $admin->sendEmailVerificationNotification();
         }
@@ -58,17 +51,13 @@ class AdminManagementController extends Controller
 
     public function update(UpdateAdminRequest $request, User $admin): JsonResponse
     {
-        if (!$admin->hasAnyRole(["administrator"])) {
-            abort(Status::HTTP_FORBIDDEN);
+        if (!$admin->hasRole("administrator")) {
+            abort(Status::HTTP_FORBIDDEN, 'Only users with the "administrator" role can be managed here.');
         }
 
         $data = $request->validated();
 
         $emailChanged = isset($data["email"]) && $data["email"] !== $admin->email;
-
-        if ($emailChanged) {
-            $data["email_verified_at"] = null;
-        }
 
         if (isset($data["password"])) {
             $data["password"] = Hash::make($data["password"]);
@@ -76,11 +65,9 @@ class AdminManagementController extends Controller
 
         $admin->update($data);
 
-        if (isset($data["organization_ids"])) {
-            $admin->organizations()->sync($data["organization_ids"]);
-        }
-
-        if ($emailChanged && method_exists($admin, "sendEmailVerificationNotification")) {
+        if ($emailChanged) {
+            $admin->email_verified_at = null;
+            $admin->save();
             $admin->sendEmailVerificationNotification();
         }
 
