@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Interns2025b\Models\Event;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
 
 class EventFactory extends Factory
 {
-    protected $model = Event::class;
-
     public function definition(): array
     {
         $ownerType = fake()->randomElement([User::class, Organization::class]);
