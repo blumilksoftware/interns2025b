@@ -54,7 +54,6 @@ class FacebookLinkTest extends TestCase
         $user->shouldReceive("getId")->andReturn($overrides["id"] ?? "1234567890");
         $user->shouldReceive("getName")->andReturn($overrides["name"] ?? "John Doe");
         $user->shouldReceive("getEmail")->andReturn($overrides["email"] ?? "john@example.com");
-        $user->shouldReceive("getAvatar")->andReturn($overrides["avatar"] ?? "http://example.com/avatar.jpg");
 
         $socialiteDriver = \Mockery::mock();
         $socialiteDriver->shouldReceive("stateless")->andReturnSelf();
