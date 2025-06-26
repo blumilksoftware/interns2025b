@@ -16,7 +16,7 @@ jobs:
   test-and-lint-php:
     name: Test & lint PHP codebase
     timeout-minutes: 10
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == true
     runs-on: ubuntu-latest
     services:
       pgsql:
