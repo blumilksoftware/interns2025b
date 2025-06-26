@@ -23,7 +23,7 @@ class NotifyFollowersCommand extends Command
 
     protected function dispatchEventStartingSoon(): void
     {
-        $events = Event::where("status", "published")
+        $events = Event::query()->where("status", "published")
             ->whereBetween("start", [now(), now()->addDay()])
             ->get();
 
@@ -42,7 +42,7 @@ class NotifyFollowersCommand extends Command
 
     protected function dispatchNewlyPublishedEvents(): void
     {
-        $events = Event::where("status", "published")
+        $events = Event::query()->where("status", "published")
             ->whereDate("created_at", today())
             ->get();
 

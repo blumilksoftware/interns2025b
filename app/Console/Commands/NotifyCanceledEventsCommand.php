@@ -14,7 +14,7 @@ class NotifyCanceledEventsCommand extends Command
 
     public function handle(): int
     {
-        $events = Event::where("status", "canceled")
+        $events = Event::query()->where("status", "canceled")
             ->whereDate("updated_at", today())
             ->get();
 
