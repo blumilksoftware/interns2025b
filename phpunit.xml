@@ -17,16 +17,4 @@
             <directory>./app</directory>
         </include>
     </source>
-    <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="APP_KEY" value="base64:sCsJw8z+d/4ymp0OvzSip2h4Vp2hZZhpV2uOxgTqP94="/>
-        <env name="BCRYPT_ROUNDS" value="4"/>
-        <env name="CACHE_STORE" value="array"/>
-        <env name="DB_HOST" value="interns2025b-db-dev"/>
-        <env name="DB_DATABASE" value="interns2025b-test"/>
-        <env name="DB_USERNAME" value="interns2025b"/>
-        <env name="MAIL_MAILER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
-        <env name="SESSION_DRIVER" value="array"/>
-    </php>
 </phpunit>
