@@ -18,7 +18,7 @@ class EventObserver
             activity()
                 ->performedOn($event)
                 ->withProperties(["participants_count" => $event->participants->count()])
-                ->log("Wysłano powiadomienia o anulowaniu eventu '$event->title'");
+                ->log("Event cancellation notifications have been sent '$event->title'");
         }
     }
 }

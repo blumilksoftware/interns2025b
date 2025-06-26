@@ -34,7 +34,7 @@ class NotifyFollowersCommand extends Command
             activity()
                 ->performedOn($event)
                 ->withProperties(["followers_count" => $event->followers->count()])
-                ->log("Wysłano powiadomienia EventStartingSoon dla eventu '$event->title'");
+                ->log("EventStartingSoon notifications sent for event '$event->title'");
         }
 
         $this->info("EventStartingSoon dispatched.");
@@ -56,7 +56,7 @@ class NotifyFollowersCommand extends Command
                 activity()
                     ->performedOn($event)
                     ->withProperties(["followers_count" => $owner->followers->count()])
-                    ->log("Wysłano powiadomienia NewEventPublished dla eventu '$event->title'");
+                    ->log("NewEventPublished notifications sent for event '$event->title'");
             }
         }
 

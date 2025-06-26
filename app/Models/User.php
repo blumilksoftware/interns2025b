@@ -67,7 +67,13 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 
     public function followingUsers(): MorphToMany
     {
-        return $this->morphedByMany(self::class, "followable", "followables");
+        return $this->morphedByMany(
+            self::class,
+            "followable",
+            "followables",
+            "followable_id",
+            "user_id",
+        );
     }
 
     public function followingOrganizations(): MorphToMany
@@ -82,7 +88,13 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 
     public function followers(): MorphToMany
     {
-        return $this->morphToMany(self::class, "followable", "followables");
+        return $this->morphedByMany(
+            self::class,
+            "followable",
+            "followables",
+            "user_id",
+            "followable_id",
+        );
     }
 
     protected function casts(): array
