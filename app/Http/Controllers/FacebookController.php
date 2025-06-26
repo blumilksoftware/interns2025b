@@ -34,10 +34,17 @@ class FacebookController extends Controller
 
         $facebookId = $facebookUser->getId();
         $email = $facebookUser->getEmail();
+        $name = trim((string)$facebookUser->getName());
 
         if (!$facebookId) {
             return response()->json([
                 "message" => __("auth.facebook_id_required"),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if (empty($name)) {
+            return response()->json([
+                "message" => __("auth.facebook_name_required"),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -67,8 +74,7 @@ class FacebookController extends Controller
             ], Response::HTTP_FORBIDDEN);
         }
 
-        $nameParts = explode(" ", $facebookUser->getName(), 2);
-        $firstName = $nameParts[0] ?? "Facebook";
+        $firstName = explode(" ", $name, 2)[0];
 
         $newUser = User::create([
             "first_name" => $firstName,

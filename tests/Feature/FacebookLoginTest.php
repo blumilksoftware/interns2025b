@@ -100,4 +100,92 @@ class FacebookLoginTest extends TestCase
         $response->assertStatus(400);
         $response->assertJson(["message" => __("auth.facebook_error")]);
     }
+
+    public function testLoginCallbackCreatesUserWithFirstNameFromFullName(): void
+    {
+        $this->mockSocialiteUser([
+            "name" => "John Doe",
+            "email" => "john@example.com",
+            "id" => "fb123",
+        ]);
+
+        $response = $this->getJson("/api/auth/facebook/callback");
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas("users", [
+            "email" => "john@example.com",
+            "facebook_id" => "fb123",
+            "first_name" => "John",
+        ]);
+    }
+
+    public function testLoginCallbackCreatesUserWithFirstNameWhenSingleWordName(): void
+    {
+        $this->mockSocialiteUser([
+            "name" => "Cher",
+            "email" => "cher@example.com",
+            "id" => "fb456",
+        ]);
+
+        $response = $this->getJson("/api/auth/facebook/callback");
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas("users", [
+            "email" => "cher@example.com",
+            "facebook_id" => "fb456",
+            "first_name" => "Cher",
+        ]);
+    }
+
+    public function testLoginCallbackFailsWhenNameIsMissing(): void
+    {
+        $this->mockSocialiteUser([
+            "name" => null,
+            "email" => "noname@example.com",
+            "id" => "fb789",
+        ]);
+
+        $response = $this->getJson("/api/auth/facebook/callback");
+
+        $response->assertStatus(422);
+        $response->assertJson(["message" => __("auth.facebook_name_required")]);
+        $this->assertDatabaseMissing("users", [
+            "email" => "noname@example.com",
+        ]);
+    }
+
+    public function testLoginCallbackFailsWhenNameIsEmptyString(): void
+    {
+        $this->mockSocialiteUser([
+            "name" => "",
+            "email" => "emptyname@example.com",
+            "id" => "fb101",
+        ]);
+
+        $response = $this->getJson("/api/auth/facebook/callback");
+
+        $response->assertStatus(422);
+        $response->assertJson(["message" => __("auth.facebook_name_required")]);
+        $this->assertDatabaseMissing("users", [
+            "email" => "emptyname@example.com",
+        ]);
+    }
+
+    public function testLoginCallbackExtractsOnlyFirstNameWhenMultipleFirstNames(): void
+    {
+        $this->mockSocialiteUser([
+            "name" => "Mary Jane Smith",
+            "email" => "mary@example.com",
+            "id" => "fb202",
+        ]);
+
+        $response = $this->getJson("/api/auth/facebook/callback");
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas("users", [
+            "email" => "mary@example.com",
+            "facebook_id" => "fb202",
+            "first_name" => "Mary",
+        ]);
+    }
 }
