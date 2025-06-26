@@ -33,6 +33,7 @@ class FollowController
     public function followings(Request $request): JsonResponse
     {
         $user = $request->user();
+        $user->load("followingUsers", "followingOrganizations", "followingEvents");
 
         return response()->json([
             "users" => UserShortResource::collection($user->followingUsers),
