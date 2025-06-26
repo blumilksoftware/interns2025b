@@ -11,7 +11,7 @@ class EventController extends Controller
 {
     public function index(): JsonResponse
     {
-        $events = Event::with(["owner"])->latest()->get();
+        $events = Event::query()->with(["owner"])->latest()->get();
 
         return response()->json([
             "data" => $events]);
@@ -19,7 +19,7 @@ class EventController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        $event = Event::with(["owner"])->findOrFail($id);
+        $event = Event::query()->with(["owner"])->findOrFail($id);
 
         return response()->json([
             "data" => $event,
