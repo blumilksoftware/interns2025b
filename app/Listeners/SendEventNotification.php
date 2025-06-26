@@ -9,7 +9,7 @@ use Interns2025b\Events\BaseEventNotificationEvent;
 class SendEventNotification
 {
     public function __construct(
-        protected array $map = []
+        protected array $map = [],
     ) {}
 
     public function handle(BaseEventNotificationEvent $event): void
