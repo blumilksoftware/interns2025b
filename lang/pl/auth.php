@@ -15,4 +15,5 @@ return [
     "email_already_registered" => "Adres e-mail jest już zarejestrowany. Zaloguj się najpierw hasłem.",
     "facebook_account_already_linked" => "Konto Facebook jest już powiązane z innym użytkownikiem.",
     "facebook_link_success" => "Konto Facebook zostało pomyślnie powiązane.",
+    "email_required_from_facebook" => "Konto Facebook musi zawierać poprawny adres e-mail.",
 ];

@@ -7,11 +7,14 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\User;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 use Tests\TestCase;
+use Tests\Traits\MocksFacebookUser;
 
 class FacebookLoginTest extends TestCase
 {
     use RefreshDatabase;
+    use MocksFacebookUser;
 
     public function testRedirectReturnsFacebookUrl(): void
     {
@@ -51,19 +54,50 @@ class FacebookLoginTest extends TestCase
         $this->assertEquals($existingUser->id, $response->json("user_id"));
     }
 
-    protected function mockSocialiteUser(array $overrides = []): void
+    public function testCallbackFailsWhenFacebookEmailIsMissing(): void
     {
-        $user = \Mockery::mock(\Laravel\Socialite\Contracts\User::class);
-        $user->shouldReceive("getEmail")->andReturn("test@example.com");
-        $user->shouldReceive("getId")->andReturn("1234567890");
-        $user->shouldReceive("getName")->andReturn("Test User");
+        $this->mockSocialiteUser(["email" => null]);
 
-        $socialiteDriver = \Mockery::mock();
-        $socialiteDriver->shouldReceive("stateless")->andReturnSelf();
-        $socialiteDriver->shouldReceive("user")->andReturn($user);
+        $response = $this->getJson("/api/auth/facebook/callback");
 
+        $response->assertStatus(422);
+        $response->assertJson(["message" => __("auth.email_required_from_facebook")]);
+    }
+
+    public function testCallbackFailsWhenFacebookIdIsMissing(): void
+    {
+        $this->mockSocialiteUser(["id" => null]);
+
+        $response = $this->getJson("/api/auth/facebook/callback");
+
+        $response->assertStatus(422);
+        $response->assertJson(["message" => __("auth.facebook_id_required")]);
+    }
+
+    public function testCallbackFailsWhenEmailAlreadyExistsWithoutFacebookId(): void
+    {
+        User::factory()->create([
+            "email" => "test@example.com",
+            "facebook_id" => null,
+        ]);
+
+        $this->mockSocialiteUser();
+
+        $response = $this->getJson("/api/auth/facebook/callback");
+
+        $response->assertStatus(403);
+        $response->assertJson(["message" => __("auth.email_already_registered")]);
+    }
+
+    public function testCallbackHandlesFacebookException(): void
+    {
         Socialite::shouldReceive("driver")
             ->with("facebook")
-            ->andReturn($socialiteDriver);
+            ->andThrow(new InvalidStateException("Invalid state"));
+
+        $response = $this->getJson("/api/auth/facebook/callback");
+
+        $response->assertStatus(400);
+        $response->assertJson(["message" => __("auth.facebook_error")]);
     }
 }
