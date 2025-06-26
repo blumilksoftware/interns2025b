@@ -25,7 +25,7 @@ readonly class ToggleFollowAction
             throw new InvalidArgumentException(__("follow.cannot_follow_self"));
         }
 
-        if (!$modelClass::where("id", $id)->exists()) {
+        if (!$modelClass::query()->where("id", $id)->exists()) {
             throw new InvalidArgumentException(__("follow.error"));
         }
 
