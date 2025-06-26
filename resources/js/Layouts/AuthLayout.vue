@@ -19,7 +19,7 @@ import LoginFacebook from '@/Components/LoginFacebook.vue'
             </p>
           </div>
 
-          <slot name="form" />
+          <slot />
           <div class="flex flex-col items-center justify-center w-full mt-6 space-y-6 text-xl">
             <div class="flex items-center w-5/6 mt-8">
               <div class="grow h-px bg-gray-200" />
