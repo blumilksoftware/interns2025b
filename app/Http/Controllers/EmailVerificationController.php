@@ -15,7 +15,7 @@ class EmailVerificationController extends Controller
 {
     public function verify(Request $request, int $id, string $hash): JsonResponse
     {
-        $user = User::find($id);
+        $user = User::query()->find($id);
 
         if (!$user) {
             return response()->json([
@@ -29,7 +29,7 @@ class EmailVerificationController extends Controller
             ], Status::HTTP_FORBIDDEN);
         }
 
-        if (!hash_equals((string)$hash, sha1($user->getEmailForVerification()))) {
+        if (!hash_equals($hash, sha1($user->getEmailForVerification()))) {
             return response()->json([
                 "message" => __("auth.invalid_verification_hash"),
             ], Status::HTTP_FORBIDDEN);
