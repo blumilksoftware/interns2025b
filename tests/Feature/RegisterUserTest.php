@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Interns2025b\Models\User;
+use Symfony\Component\HttpFoundation\Response as Status;
 use Tests\TestCase;
 
 class RegisterUserTest extends TestCase
@@ -13,7 +14,7 @@ class RegisterUserTest extends TestCase
     {
         $response = $this->postJson("/api/auth/register", $this->validData());
 
-        $response->assertStatus(200)
+        $response->assertStatus(Status::HTTP_OK)
             ->assertJson([
                 "message" => "success",
             ]);
@@ -42,7 +43,7 @@ class RegisterUserTest extends TestCase
             "email" => "existing@gmail.com",
         ]));
 
-        $response->assertStatus(200);
+        $response->assertStatus(Status::HTTP_OK);
 
         $this->assertDatabaseHas("users", [
             "email" => "existing@gmail.com",
@@ -59,7 +60,7 @@ class RegisterUserTest extends TestCase
             "password" => "short",
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(Status::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(["first_name", "last_name", "email", "password"]);
     }
 
@@ -68,7 +69,7 @@ class RegisterUserTest extends TestCase
         $email = str_repeat("a", 255) . "@ex.com";
         $response = $this->postJson("/api/auth/register", $this->validData(["email" => $email]));
 
-        $response->assertStatus(422)
+        $response->assertStatus(Status::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors("email");
     }
 
@@ -77,7 +78,7 @@ class RegisterUserTest extends TestCase
         $longName = str_repeat("a", 256);
         $response = $this->postJson("/api/auth/register", $this->validData(["first_name" => $longName]));
 
-        $response->assertStatus(422)
+        $response->assertStatus(Status::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors("first_name");
     }
 
@@ -86,7 +87,7 @@ class RegisterUserTest extends TestCase
         $longSurname = str_repeat("b", 256);
         $response = $this->postJson("/api/auth/register", $this->validData(["last_name" => $longSurname]));
 
-        $response->assertStatus(422)
+        $response->assertStatus(Status::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors("last_name");
     }
 
@@ -95,7 +96,7 @@ class RegisterUserTest extends TestCase
         $longPassword = str_repeat("p", 256);
         $response = $this->postJson("/api/auth/register", $this->validData(["password" => $longPassword]));
 
-        $response->assertStatus(422)
+        $response->assertStatus(Status::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors("password");
     }
 
@@ -104,7 +105,7 @@ class RegisterUserTest extends TestCase
         $shortPassword = str_repeat("p", 4);
         $response = $this->postJson("/api/auth/register", $this->validData(["password" => $shortPassword]));
 
-        $response->assertStatus(422)
+        $response->assertStatus(Status::HTTP_UNPROCESSABLE_ENTITY)
             ->assertJsonValidationErrors("password");
     }
 

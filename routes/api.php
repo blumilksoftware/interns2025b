@@ -3,20 +3,26 @@
 declare(strict_types=1);
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Interns2025b\Http\Controllers\EmailVerificationController;
+use Interns2025b\Http\Controllers\EventController;
+use Interns2025b\Http\Controllers\EventParticipationController;
+use Interns2025b\Http\Controllers\FollowController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
+use Interns2025b\Http\Controllers\OrganizationController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 
 Route::middleware("auth:sanctum")->group(function (): void {
-    Route::get("/user", fn(Request $request): JsonResponse => $request->user());
     Route::post("/auth/logout", LogoutController::class);
+    Route::post("/events/{event}/participate", EventParticipationController::class)->name("participate");
+    Route::post("/follow/{type}/{id}", FollowController::class)->name("follow");
+    Route::get("/followings", [FollowController::class, "followings"])->name("followings");
+    Route::get("/followers", [FollowController::class, "followers"])->name("followers");
 });
 
-Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])
+Route::get("/auth/verify-email/{id}/", [EmailVerificationController::class, "verify"])
     ->middleware("signed")
     ->name("verification.verify");
 
@@ -30,3 +36,9 @@ Route::get("/reset-password/{token}", fn(string $token): JsonResponse => respons
     "message" => "Temporary password reset.",
     "token" => $token,
 ]))->name("password.reset");
+
+Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
+    Route::get("/events", [EventController::class, "index"]);
+    Route::get("/organizations", [OrganizationController::class, "index"]);
+    Route::get("/organizations/{id}", [OrganizationController::class, "show"]);
+});
