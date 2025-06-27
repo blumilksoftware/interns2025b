@@ -11,7 +11,6 @@ use Interns2025b\Http\Controllers\FacebookController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
-use Interns2025b\Http\Controllers\OrganizationManagementController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 use Interns2025b\Http\Controllers\UpdatePasswordController;
@@ -45,16 +44,14 @@ Route::prefix("auth")->group(function (): void {
 Route::group(["prefix" => "admin", "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
     Route::get("/events", [EventController::class, "index"]);
     Route::get("/organizations", [OrganizationController::class, "index"]);
-    Route::get("/organizations/{id}", [OrganizationController::class, "show"]);
     Route::get("/users", [UserManagementController::class, "index"])->name("users.index");
     Route::get("/users/{user}", [UserManagementController::class, "show"])->name("users.show");
     Route::post("/users", [UserManagementController::class, "store"])->name("users.store");
     Route::put("/users/{user}", [UserManagementController::class, "update"])->name("users.update");
     Route::delete("/users/{user}", [UserManagementController::class, "destroy"])->name("users.destroy");
-    Route::get("/organizations", [OrganizationManagementController::class, "index"])->name("organizations.index");
-    Route::post("/organizations", [OrganizationManagementController::class, "store"])->name("organizations.store");
-    Route::put("/organizations/{organization}", [OrganizationManagementController::class, "update"])->name("organizations.update");
-    Route::delete("/organizations/{organization}", [OrganizationManagementController::class, "destroy"])->name("organizations.destroy");
+    Route::post("/organizations", [OrganizationController::class, "store"])->name("organizations.store");
+    Route::put("/organizations/{organization}", [OrganizationController::class, "update"])->name("organizations.update");
+    Route::delete("/organizations/{organization}", [OrganizationController::class, "destroy"])->name("organizations.destroy");
 });
 
 Route::group(["prefix" => "superadmin", "middleware" => ["auth:sanctum", "role:superAdministrator"]], function (): void {
@@ -65,7 +62,7 @@ Route::group(["prefix" => "superadmin", "middleware" => ["auth:sanctum", "role:s
     Route::delete("/admins/{admin}", [AdminManagementController::class, "destroy"])->name("admins.destroy");
 });
 
-Route::get("/organizations/{organization}", [OrganizationManagementController::class, "show"])->name("organizations.show");
+Route::get("/organizations/{organization}", [OrganizationController::class, "show"])->name("organizations.show");
 
 Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([
     "message" => "Temporary password reset.",
