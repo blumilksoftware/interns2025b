@@ -15,17 +15,17 @@ class EventFactory extends Factory
         $ownerType = fake()->randomElement([User::class, Organization::class]);
 
         $ownerId = $ownerType::inRandomOrder()->value("id") ?? $ownerType::factory()->create()->id;
-        $isPaid = fake()->boolean;
+        $isPaid = fake()->boolean();
 
         return [
-            "title" => fake()->jobTitle,
-            "description" => fake()->text,
+            "title" => fake()->jobTitle(),
+            "description" => fake()->text(),
             "start" => fake()->dateTimeBetween("+1 days", "+10 days"),
             "end" => fake()->dateTimeBetween("+11 days", "+20 days"),
-            "location" => fake()->city,
-            "address" => fake()->address,
-            "latitude" => fake()->latitude,
-            "longitude" => fake()->longitude,
+            "location" => fake()->city(),
+            "address" => fake()->address(),
+            "latitude" => fake()->latitude(),
+            "longitude" => fake()->longitude(),
             "is_paid" => $isPaid,
             "price" => $isPaid ? fake()->randomFloat(2, 1, 100) : 0,
             "status" => fake()->randomElement(["draft", "published", "ongoing", "ended", "canceled"]),
