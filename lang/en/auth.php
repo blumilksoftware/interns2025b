@@ -16,4 +16,6 @@ return [
     "facebook_account_already_linked" => "Facebook account already linked to another user.",
     "facebook_link_success" => "Facebook account linked successfully.",
     "email_required_from_facebook" => "Facebook account must provide a valid email address.",
+    "facebook_name_required" => "Facebook account must have a valid name.",
+    "facebook_error" => "Could not authenticate using Facebook. Please try again.",
 ];

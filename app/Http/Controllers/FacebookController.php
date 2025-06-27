@@ -6,8 +6,8 @@ namespace Interns2025b\Http\Controllers;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Interns2025b\Models\User;
+use Interns2025b\Actions\Facebook\HandleFacebookLinkAction;
+use Interns2025b\Actions\Facebook\HandleFacebookLoginAction;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +21,7 @@ class FacebookController extends Controller
         return response()->json(["url" => $url]);
     }
 
-    public function loginCallback(): JsonResponse
+    public function loginCallback(HandleFacebookLoginAction $action): JsonResponse
     {
         try {
             $facebookUser = Socialite::driver("facebook")->stateless()->user();
@@ -32,68 +32,18 @@ class FacebookController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $facebookId = $facebookUser->getId();
-        $email = $facebookUser->getEmail();
-        $name = trim((string)$facebookUser->getName());
+        $result = $action->execute($facebookUser);
 
-        if (!$facebookId) {
+        if (isset($result["error"])) {
             return response()->json([
-                "message" => __("auth.facebook_id_required"),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+                "message" => __($result["error"]),
+            ], $result["status"]);
         }
 
-        if (empty($name)) {
-            return response()->json([
-                "message" => __("auth.facebook_name_required"),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $user = User::query()->where("facebook_id", $facebookId)->first();
-
-        if ($user) {
-            $token = $user->createToken("token")->plainTextToken;
-
-            return response()->json([
-                "message" => "success",
-                "token" => $token,
-                "user_id" => $user->id,
-            ], Response::HTTP_OK);
-        }
-
-        if (!$email) {
-            return response()->json([
-                "message" => __("auth.email_required_from_facebook"),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $existingUser = User::query()->where("email", $email)->first();
-
-        if ($existingUser) {
-            return response()->json([
-                "message" => __("auth.email_already_registered"),
-            ], Response::HTTP_FORBIDDEN);
-        }
-
-        $firstName = explode(" ", $name, 2)[0];
-
-        $newUser = User::create([
-            "first_name" => $firstName,
-            "email" => $email,
-            "facebook_id" => $facebookId,
-            "password" => null,
-            "email_verified_at" => now(),
-        ]);
-
-        $token = $newUser->createToken("token")->plainTextToken;
-
-        return response()->json([
-            "message" => "success",
-            "token" => $token,
-            "user_id" => $newUser->id,
-        ], Response::HTTP_OK);
+        return response()->json($result);
     }
 
-    public function linkCallback(): JsonResponse
+    public function linkCallback(HandleFacebookLinkAction $action): JsonResponse
     {
         try {
             $facebookUser = Socialite::driver("facebook")->stateless()->user();
@@ -104,46 +54,16 @@ class FacebookController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = Auth::user();
+        $result = $action->execute($facebookUser);
 
-        $facebookId = $facebookUser->getId();
-        $email = $facebookUser->getEmail();
-
-        if (!$facebookId) {
+        if (isset($result["error"])) {
             return response()->json([
-                "message" => __("auth.facebook_id_required"),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+                "message" => __($result["error"]),
+            ], $result["status"]);
         }
-
-        if (User::where("facebook_id", $facebookId)
-            ->where("id", "!=", $user->id)
-            ->exists()) {
-            return response()->json([
-                "message" => __("auth.facebook_account_already_linked"),
-            ], Response::HTTP_CONFLICT);
-        }
-
-        if (!$email) {
-            return response()->json([
-                "message" => __("auth.email_required_from_facebook"),
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $existingUser = User::where("email", $email)
-            ->where("id", "!=", $user->id)
-            ->first();
-
-        if ($existingUser && $existingUser->facebook_id === null) {
-            return response()->json([
-                "message" => __("auth.email_already_registered"),
-            ], Response::HTTP_FORBIDDEN);
-        }
-
-        $user->facebook_id = $facebookId;
-        $user->save();
 
         return response()->json([
-            "message" => __("auth.facebook_link_success"),
-        ], Response::HTTP_OK);
+            "message" => __($result["message"]),
+        ]);
     }
 }

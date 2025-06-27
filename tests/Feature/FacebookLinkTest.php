@@ -15,13 +15,18 @@ class FacebookLinkTest extends TestCase
     use RefreshDatabase;
     use MocksFacebookUser;
 
+    protected User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+        Sanctum::actingAs($this->user);
+    }
+
     public function testCallbackLinksFacebookAccountSuccessfully(): void
     {
         $this->mockSocialiteUser(["id" => "new_fb_id"]);
-
-        $user = User::factory()->create();
-
-        Sanctum::actingAs($user);
 
         $response = $this->getJson("/api/link/facebook/callback");
 
@@ -29,19 +34,16 @@ class FacebookLinkTest extends TestCase
         $response->assertJson(["message" => __("auth.facebook_link_success")]);
 
         $this->assertDatabaseHas("users", [
-            "id" => $user->id,
+            "id" => $this->user->id,
             "facebook_id" => "new_fb_id",
         ]);
     }
 
     public function testCallbackReturnsConflictIfFacebookIdLinkedToAnotherUser(): void
     {
-        $existingUser = User::factory()->create(["facebook_id" => "existing_fb_id"]);
-        $user = User::factory()->create();
+        User::factory()->create(["facebook_id" => "existing_fb_id"]);
 
         $this->mockSocialiteUser(["id" => "existing_fb_id"]);
-
-        Sanctum::actingAs($user);
 
         $response = $this->getJson("/api/link/facebook/callback");
 
@@ -56,10 +58,6 @@ class FacebookLinkTest extends TestCase
             "facebook_id" => null,
         ]);
 
-        $user = User::factory()->create();
-
-        Sanctum::actingAs($user);
-
         $this->mockSocialiteUser([
             "email" => "test@example.com",
             "id" => "some_facebook_id",
@@ -73,9 +71,6 @@ class FacebookLinkTest extends TestCase
 
     public function testCallbackFailsWhenFacebookIdIsMissing(): void
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-
         $this->mockSocialiteUser(["id" => null]);
 
         $response = $this->getJson("/api/link/facebook/callback");
@@ -86,9 +81,6 @@ class FacebookLinkTest extends TestCase
 
     public function testCallbackFailsWhenFacebookEmailIsMissing(): void
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-
         $this->mockSocialiteUser(["email" => null]);
 
         $response = $this->getJson("/api/link/facebook/callback");

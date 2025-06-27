@@ -16,4 +16,6 @@ return [
     "facebook_account_already_linked" => "Konto Facebook jest już powiązane z innym użytkownikiem.",
     "facebook_link_success" => "Konto Facebook zostało pomyślnie powiązane.",
     "email_required_from_facebook" => "Konto Facebook musi zawierać poprawny adres e-mail.",
+    "facebook_name_required" => "Konto Facebook musi zawierać poprawną nazwę.",
+    "facebook_error" => "Nie udało się uwierzytelnić przez Facebook. Spróbuj ponownie.",
 ];
