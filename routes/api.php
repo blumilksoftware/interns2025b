@@ -22,7 +22,7 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
 });
 
-Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])
+Route::get("/auth/verify-email/{id}/", [EmailVerificationController::class, "verify"])
     ->middleware("signed")
     ->name("verification.verify");
 
