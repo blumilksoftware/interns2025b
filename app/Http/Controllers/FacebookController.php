@@ -48,7 +48,7 @@ class FacebookController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $user = User::where("facebook_id", $facebookId)->first();
+        $user = User::query()->where("facebook_id", $facebookId)->first();
 
         if ($user) {
             $token = $user->createToken("token")->plainTextToken;
@@ -66,7 +66,7 @@ class FacebookController extends Controller
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $existingUser = User::where("email", $email)->first();
+        $existingUser = User::query()->where("email", $email)->first();
 
         if ($existingUser) {
             return response()->json([
