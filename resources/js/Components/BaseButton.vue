@@ -1,7 +1,7 @@
 <template>
   <button
     :type="type"
-    class="h-12 bg-black rounded-lg shadow-sm shadow-[#375DFB] text-white font-bold"
+    class="h-12 rounded-lg shadow-sm"
     @click="handleClick"
   >
     <slot />

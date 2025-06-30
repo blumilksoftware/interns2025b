@@ -3,6 +3,7 @@ import { useForm } from '@inertiajs/vue3'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
+import axios from 'axios'
 
 defineOptions({
   layout: AuthLayout,
@@ -13,19 +14,25 @@ const form = useForm({
   last_name: '',
   email: '',
   password: '',
+  password_confirmation: '',
 })
 
-function submit() {
-  form.post('/api/auth/register', {
-    onSuccess: () => {
-      form.reset()
-      window.location.href = '/login?notification=Registration successful! Please check your email for verification.'
-    },
-  })
+async function submit() {
+  try {
+    await axios.post('/api/auth/register', form.data())
+    form.reset()
+    window.location.href = '/login?notification=Registration successful! Please check your email for verification.'
+  } catch (error: any) {
+    if (error.response?.data?.errors) {
+      form.setError(error.response.data.errors)
+    }
+  }
 }
 </script>
 
+
 <template>
+  <AppHead title="Rejestracja" description="Strona rejestracji" />
   <form class="flex flex-col items-center justify-center w-full mt-6 space-y-6 text-xl"
         @submit.prevent="submit"
   >
@@ -87,7 +94,7 @@ function submit() {
     </div>
 
     <BaseButton
-      class="w-5/6"
+      class="w-5/6 h-12 bg-black shadow-[#375DFB] text-white font-bold"
       :disabled="form.processing"
       type="submit"
     >

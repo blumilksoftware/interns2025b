@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-import AppHead from '@/Components/AppHead.vue'
 import LoginFacebook from '@/Components/LoginFacebook.vue'
 
 </script>
 
 <template>
-  <AppHead title="Dashboard" description="This is the dashboard page" />
   <div class="flex flex-col items-center justify-center bg-gray-50 [min-width:448px]:h-screen ">
     <div class="w-full max-w-md">
       <div class="flex justify-center items-center bg-gray-100">

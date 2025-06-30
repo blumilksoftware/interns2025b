@@ -39,6 +39,7 @@ async function submit() {
 </script>
 
 <template>
+  <AppHead title="Logowanie" description="Strona Logowania" />
   <form class="flex flex-col items-center justify-center w-full mt-6 space-y-6 text-xl"
         @submit.prevent="submit"
   >
@@ -90,7 +91,7 @@ async function submit() {
     </div>
 
     <BaseButton
-      class="w-5/6"
+      class="w-5/6 h-12 bg-black shadow-[#375DFB] text-white font-bold"
       :disabled="form.processing"
       type="submit"
     >
