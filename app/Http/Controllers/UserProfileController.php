@@ -16,7 +16,7 @@ class UserProfileController extends Controller
         $user = Auth::user();
 
         return response()->json([
-            "message" => "User profile retrieved successfully.",
+            "message" => __("profile.retrieved"),
             "data" => [
                 "first_name" => $user->first_name,
                 "last_name" => $user->last_name,
@@ -32,7 +32,7 @@ class UserProfileController extends Controller
         $user->update($request->validated());
 
         return response()->json([
-            "message" => "Profile updated successfully.",
+            "message" => __("profile.updated"),
             "data" => [
                 "first_name" => $user->first_name,
                 "last_name" => $user->last_name,
