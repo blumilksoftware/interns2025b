@@ -6,25 +6,14 @@ namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Sanctum\PersonalAccessToken;
+use Interns2025b\Actions\LogoutUserAction;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 class LogoutController
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(Request $request, LogoutUserAction $action): JsonResponse
     {
-        $user = $request->user();
-        $token = $user->currentAccessToken();
-
-        if ($token instanceof PersonalAccessToken) {
-            $token->delete();
-        } else {
-            Auth::guard("web")->logout();
-
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        }
+        $action->execute($request->user());
 
         return response()->json([
             "message" => __("auth.logout"),
