@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import LoginFacebook from '@/Components/LoginFacebook.vue'
+import { Link } from '@inertiajs/vue3'
 
 </script>
 
@@ -9,11 +10,11 @@ import LoginFacebook from '@/Components/LoginFacebook.vue'
       <div class="flex justify-center items-center bg-gray-100">
         <div class="flex-auto min-w-[300px] pb-9 max-w-screen-md bg-gray-50 shadow-xl rounded-lg [max-width:448px]:rounded-b-lg">
           <div class="px-9 py-20 bg-gradient-to-tr from-[#025F60] to-[#093637] rounded-lg text-white text-xm [&>*]:mb-4">
-            <img class="mb-10" src="public/images/LogoWhite2.png" alt="LetsEvent">
+            <img class="mb-10" src="/images/LogoWhite2.png" alt="LetsEvent">
             <h2 class="font-bold text-3xl">Zaloguj się</h2>
             <p class="font-semibold">
               Nie posiadasz konta?
-              <a href="/register" class="underline font-bold">Zarejestruj się</a>
+              <Link href="/register" class="underline font-bold">Zarejestruj się</Link>
             </p>
           </div>
 

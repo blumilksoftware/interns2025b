@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import {router, useForm} from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
-import axios from 'axios'
+import { useApiForm } from '@/composables/useApiForm'
+import type { LoginForm, LoginResponse } from '@/types/types'
 
 defineOptions({
   layout: AuthLayout,
@@ -15,33 +16,40 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const form = useForm({
-  email: '',
-  password: '',
-  remember: false,
-})
-
-async function submit() {
-  try {
-    const response = await axios.post('/api/auth/login', form.data())
-    if (response.data.token) {
+const {
+  formData: form,
+  fieldErrors: errors,
+  isSubmitting,
+  submitForm,
+} = useApiForm<LoginForm, LoginResponse>(
+  {
+    email: '',
+    password: '',
+    remember: false,
+  },
+  {
+    endpoint: '/api/auth/login',
+    onSuccess: (response) => {
       localStorage.setItem('token', response.data.token)
-      router.visit('/')
-    }
-  } catch (error: any) {
-    if (error.response?.status === 403) {
-      form.setError('email', 'Invalid credentials')
-    } else if (error.response?.data?.errors) {
-      form.setError(error.response.data.errors)
-    }
-  }
-}
+      router.visit('/', {
+        method: 'get',
+        preserveState: false,
+        preserveScroll: false,
+      })
+    },
+    onError: (error) => {
+      if (error.response?.status === 403) {
+        errors.email = 'Invalid credentials'
+      }
+    },
+  },
+)
 </script>
 
 <template>
   <AppHead title="Logowanie" description="Strona Logowania" />
   <form class="flex flex-col items-center justify-center w-full mt-6 space-y-6 text-xl"
-        @submit.prevent="submit"
+        @submit.prevent="submitForm"
   >
     <div class="w-full">
       <div
@@ -60,8 +68,8 @@ async function submit() {
         label="Email"
         type="email"
       />
-      <small v-if="form.errors.email" class="text-red-600">
-        {{ form.errors.email }}
+      <small v-if="errors.email" class="text-red-600">
+        {{ errors.email }}
       </small>
 
       <BaseInput
@@ -71,8 +79,8 @@ async function submit() {
         label="Hasło"
         type="password"
       />
-      <small v-if="form.errors.password" class="text-red-600">
-        {{ form.errors.password }}
+      <small v-if="errors.password" class="text-red-600">
+        {{ errors.password }}
       </small>
     </div>
 
@@ -92,7 +100,7 @@ async function submit() {
 
     <BaseButton
       class="w-5/6 h-12 bg-black shadow-[#375DFB] text-white font-bold"
-      :disabled="form.processing"
+      :disabled="isSubmitting"
       type="submit"
     >
       Zaloguj się

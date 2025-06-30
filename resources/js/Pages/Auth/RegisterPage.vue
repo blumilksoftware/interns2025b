@@ -1,40 +1,51 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
-import axios from 'axios'
+import { useApiForm } from '@/composables/useApiForm'
+import type { RegisterForm } from '@/types/types'
+import {router} from '@inertiajs/vue3'
 
 defineOptions({
   layout: AuthLayout,
 })
 
-const form = useForm({
-  first_name: '',
-  last_name: '',
-  email: '',
-  password: '',
-  password_confirmation: '',
-})
+const {
+  formData: form,
+  fieldErrors: errors,
+  isSubmitting,
+  submitForm,
+  reset,
+} = useApiForm<RegisterForm>(
+  {
+    first_name: '',
+    last_name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+  },
+  {
+    endpoint: '/api/auth/register',
+    onSuccess: () => {
+      reset()
+      router.visit('/login', {
+        method: 'get',
+        preserveState: false,
+        preserveScroll: false,
+        data: {
+          notification: 'Registration successful! Please check your email for verification.',
+        },
+      })
+    },
+  },
+)
 
-async function submit() {
-  try {
-    await axios.post('/api/auth/register', form.data())
-    form.reset()
-    window.location.href = '/login?notification=Registration successful! Please check your email for verification.'
-  } catch (error: any) {
-    if (error.response?.data?.errors) {
-      form.setError(error.response.data.errors)
-    }
-  }
-}
 </script>
-
 
 <template>
   <AppHead title="Rejestracja" description="Strona rejestracji" />
   <form class="flex flex-col items-center justify-center w-full mt-6 space-y-6 text-xl"
-        @submit.prevent="submit"
+        @submit.prevent="submitForm"
   >
     <div class="w-5/6">
       <BaseInput
@@ -44,8 +55,8 @@ async function submit() {
         label="First Name"
         type="text"
       />
-      <small v-if="form.errors.first_name" class="text-red-600">
-        {{ form.errors.first_name }}
+      <small v-if="errors.first_name" class="text-red-600">
+        {{ errors.first_name }}
       </small>
 
       <BaseInput
@@ -55,8 +66,8 @@ async function submit() {
         label="Last Name"
         type="text"
       />
-      <small v-if="form.errors.last_name" class="text-red-600">
-        {{ form.errors.last_name }}
+      <small v-if="errors.last_name" class="text-red-600">
+        {{ errors.last_name }}
       </small>
 
       <BaseInput
@@ -66,8 +77,8 @@ async function submit() {
         label="Email"
         type="email"
       />
-      <small v-if="form.errors.email" class="text-red-600">
-        {{ form.errors.email }}
+      <small v-if="errors.email" class="text-red-600">
+        {{ errors.email }}
       </small>
 
       <BaseInput
@@ -77,8 +88,8 @@ async function submit() {
         label="Hasło"
         type="password"
       />
-      <small v-if="form.errors.password" class="text-red-600">
-        {{ form.errors.password }}
+      <small v-if="errors.password" class="text-red-600">
+        {{ errors.password }}
       </small>
 
       <BaseInput
@@ -88,14 +99,14 @@ async function submit() {
         label="Powtórz Hasło"
         type="password"
       />
-      <small v-if="form.errors.password_confirmation" class="text-red-600">
-        {{ form.errors.password_confirmation }}
+      <small v-if="errors.password_confirmation" class="text-red-600">
+        {{ errors.password_confirmation }}
       </small>
     </div>
 
     <BaseButton
       class="w-5/6 h-12 bg-black shadow-[#375DFB] text-white font-bold"
-      :disabled="form.processing"
+      :disabled="isSubmitting"
       type="submit"
     >
       Zarejestruj się

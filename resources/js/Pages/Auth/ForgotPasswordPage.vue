@@ -1,70 +1,54 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
-import axios from 'axios'
-import { router } from '@inertiajs/vue3'
+import { useApiForm } from '@/composables/useApiForm'
+import type { ForgotPasswordForm } from '@/types/types'
+
 
 defineOptions({
   layout: AuthLayout,
 })
 
-interface FormErrors {
-  email: string
-  general: string
-}
-
-const errors = ref<FormErrors>({
-  email: '',
-  general: '',
-})
-
-const email = ref('')
-const isProcessing = ref(false)
-
-async function handleSubmit() {
-  errors.value = { email: '', general: '' }
-  isProcessing.value = true
-
-  try {
-    await axios.post('/api/auth/forgot-password', {
-      email: email.value,
-    })
-
-    errors.value.general = 'Link do resetowania hasła został wysłany na podany adres email'
-  } catch (error: any) {
-    if (error.response?.status === 422) {
-      const validationErrors = error.response.data.errors
-      if (validationErrors) {
-        errors.value.email = validationErrors.email?.[0] || ''
-      }
-    } else {
-      errors.value.general = 'Wystąpił błąd podczas wysyłania linku resetującego'
-    }
-  } finally {
-    isProcessing.value = false
-  }
-}
-
-function goToLogin() {
-  router.visit('/login')
-}
+const {
+  formData: form,
+  fieldErrors: errors,
+  isSubmitting,
+  submitForm,
+  globalMessage,
+  isSuccess,
+} = useApiForm<ForgotPasswordForm>(
+  {
+    email: '',
+  },
+  {
+    endpoint: '/api/auth/forgot-password',
+    onSuccess: () => {
+      globalMessage.value = 'Link do resetowania hasła został wysłany na podany adres email'
+    },
+    onError: (error) => {
+      globalMessage.value = 'Wystąpił błąd podczas wysyłania linku resetującego'
+    },
+  },
+)
 </script>
 
 <template>
   <div class="w-full max-w-md mx-auto">
-    <div v-if="errors.general" class="mb-4 text-center" :class="{
-      'text-red-600': errors.general.includes('błąd'),
-      'text-green-600': errors.general.includes('został wysłany')
-    }"
+    <div
+      v-if="globalMessage"
+      class="mb-4 text-center"
+      :class="{
+        'text-red-600': globalMessage.includes('błąd'),
+        'text-green-600': globalMessage.includes('został wysłany')
+      }"
     >
-      {{ errors.general }}
+      {{ globalMessage }}
     </div>
 
     <form
       class="flex flex-col items-center justify-center w-full mt-6 space-y-6"
-      @submit.prevent="handleSubmit"
+      @submit.prevent="submitForm"
     >
       <div class="w-full">
         <h2 class="text-2xl font-bold mb-4">Reset hasła</h2>
@@ -74,7 +58,7 @@ function goToLogin() {
 
         <BaseInput
           id="forgot-password-email"
-          v-model="email"
+          v-model="form.email"
           name="email"
           label="Email"
           type="email"
@@ -85,18 +69,22 @@ function goToLogin() {
       </div>
 
       <div class="w-full flex gap-4">
-        <BaseButton
-          type="button"
+        <Link
+          href="/login"
           class="w-1/2"
-          @click="goToLogin"
         >
-          Powrót do logowania
-        </BaseButton>
+          <BaseButton
+            type="button"
+            class="w-full"
+          >
+            Powrót do logowania
+          </BaseButton>
+        </Link>
 
         <BaseButton
           type="submit"
           class="w-1/2"
-          :disabled="isProcessing"
+          :disabled="isSubmitting"
         >
           Wyślij link
         </BaseButton>
