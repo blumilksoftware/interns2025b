@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Interns2025b\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Interns2025b\Models\User;
+use Interns2025b\Actions\Facebook\HandleFacebookLinkAction;
+use Interns2025b\Actions\Facebook\HandleFacebookLoginAction;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 use Symfony\Component\HttpFoundation\Response;
 
 class FacebookController extends Controller
@@ -19,62 +21,49 @@ class FacebookController extends Controller
         return response()->json(["url" => $url]);
     }
 
-    public function loginCallback(): JsonResponse
+    public function loginCallback(HandleFacebookLoginAction $action): JsonResponse
     {
-        $facebookUser = Socialite::driver("facebook")->user();
-        $email = $facebookUser->getEmail();
-
-        $existingUser = User::where("email", $email)->first();
-
-        if ($existingUser && $existingUser->facebook_id === null) {
+        try {
+            $facebookUser = Socialite::driver("facebook")->stateless()->user();
+        } catch (InvalidStateException | Exception $e) {
             return response()->json([
-                "message" => "Email already registered. Please log in with your password first.",
-            ], Response::HTTP_FORBIDDEN);
+                "message" => __("auth.facebook_error"),
+                "error" => $e->getMessage(),
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        $nameParts = explode(" ", $facebookUser->getName(), 2);
-        $firstName = $nameParts[0] ?? "Facebook";
+        $result = $action->execute($facebookUser);
 
-        $user = User::firstOrCreate(
-            ["facebook_id" => $facebookUser->getId()],
-            [
-                "first_name" => $firstName,
-                "email" => $email,
-                "password" => null,
-            ],
-        );
-
-        if (!$user->email_verified_at) {
-            $user->email_verified_at = now();
-            $user->save();
+        if (isset($result["error"])) {
+            return response()->json([
+                "message" => __($result["error"]),
+            ], $result["status"]);
         }
 
-        $token = $user->createToken("token")->plainTextToken;
-
-        return response()->json([
-            "message" => "success",
-            "token" => $token,
-            "user_id" => $user->id,
-        ], Response::HTTP_OK);
+        return response()->json($result);
     }
 
-    public function linkCallback(): JsonResponse
+    public function linkCallback(HandleFacebookLinkAction $action): JsonResponse
     {
-        $facebookUser = Socialite::driver("facebook")->user();
-        $user = Auth::user();
-
-        if (User::where("facebook_id", $facebookUser->getId())->where("id", "!=", $user->id)->exists()) {
+        try {
+            $facebookUser = Socialite::driver("facebook")->stateless()->user();
+        } catch (InvalidStateException | Exception $e) {
             return response()->json([
-                "message" => "Facebook account already linked to another user",
-            ], Response::HTTP_CONFLICT);
+                "message" => __("auth.facebook_error"),
+                "error" => $e->getMessage(),
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        $user->facebook_id = $facebookUser->getId();
+        $result = $action->execute($facebookUser);
 
-        $user->save();
+        if (isset($result["error"])) {
+            return response()->json([
+                "message" => __($result["error"]),
+            ], $result["status"]);
+        }
 
         return response()->json([
-            "message" => "Facebook account linked successfully",
-        ], Response::HTTP_OK);
+            "message" => __($result["message"]),
+        ]);
     }
 }
