@@ -21,7 +21,7 @@ class OrganizationResource extends JsonResource
                 "first_name" => $this->owner?->first_name,
                 "last_name" => $this->owner?->last_name,
             ],
-            "users" => $this->users->map(fn($user) => [
+            "users" => $this->users->map(fn($user): array => [
                 "id" => $user->id,
                 "first_name" => $user->first_name,
                 "last_name" => $user->last_name,
