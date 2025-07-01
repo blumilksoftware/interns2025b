@@ -1,6 +1,6 @@
 import '../css/app.css'
 import { createApp, h, type DefineComponent } from 'vue'
-import { createInertiaApp } from '@inertiajs/vue3'
+import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import Layout from '@/Layouts/Layout.vue'
 import AppHead from '@/Components/AppHead.vue'
@@ -20,6 +20,7 @@ createInertiaApp({
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .component('AppHead', AppHead)
+      .component('InertiaLink', Link)
       .use(plugin)
       .mount(el)
   },

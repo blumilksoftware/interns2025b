@@ -17,19 +17,23 @@
 </template>
 
 <script lang="ts" setup>
+
 import { defineProps, defineEmits } from 'vue'
 
 type InputType = 'text' | 'email' | 'password' | 'number' | 'search'
 
-const props = defineProps<{
+defineProps<{
   modelValue: string
-  id: string
-  name: string
-  label: string
+  label?: string
   type?: InputType
+  name: string
+  id: string
   placeholder?: string
 }>()
 
-const emit = defineEmits<(e: 'update:modelValue', value: string) => void>()
+defineEmits<{
+  'update:modelValue': [value: string]
+}>()
+
 
 </script>

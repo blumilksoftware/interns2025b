@@ -5,7 +5,6 @@ import BaseButton from '@/Components/BaseButton.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { ForgotPasswordForm } from '@/types/types'
 
-
 defineOptions({
   layout: AuthLayout,
 })
@@ -16,7 +15,6 @@ const {
   isSubmitting,
   submitForm,
   globalMessage,
-  isSuccess,
 } = useApiForm<ForgotPasswordForm>(
   {
     email: '',
@@ -26,7 +24,7 @@ const {
     onSuccess: () => {
       globalMessage.value = 'Link do resetowania hasła został wysłany na podany adres email'
     },
-    onError: (error) => {
+    onError: () => {
       globalMessage.value = 'Wystąpił błąd podczas wysyłania linku resetującego'
     },
   },
@@ -69,7 +67,7 @@ const {
       </div>
 
       <div class="w-full flex gap-4">
-        <Link
+        <InertiaLink
           href="/login"
           class="w-1/2"
         >
@@ -79,7 +77,7 @@ const {
           >
             Powrót do logowania
           </BaseButton>
-        </Link>
+        </InertiaLink>
 
         <BaseButton
           type="submit"

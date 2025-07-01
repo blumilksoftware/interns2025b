@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import LoginFacebook from '@/Components/LoginFacebook.vue'
-import { Link } from '@inertiajs/vue3'
 
 </script>
 
@@ -14,7 +13,7 @@ import { Link } from '@inertiajs/vue3'
             <h2 class="font-bold text-3xl">Zaloguj się</h2>
             <p class="font-semibold">
               Nie posiadasz konta?
-              <Link href="/register" class="underline font-bold">Zarejestruj się</Link>
+              <InertiaLink href="/register" class="underline font-bold">Zarejestruj się</InertiaLink>
             </p>
           </div>
 

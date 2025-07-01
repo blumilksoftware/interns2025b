@@ -11,13 +11,11 @@
 <script lang="ts" setup>
 import { defineProps, defineEmits } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   type?: 'button' | 'submit' | 'reset'
 }>()
 
-const emit = defineEmits<{
-  (e: 'click', event: MouseEvent): void
-}>()
+const emit = defineEmits<(e: 'click', event: MouseEvent) => void>()
 
 const handleClick = (event: MouseEvent) => {
   emit('click', event)

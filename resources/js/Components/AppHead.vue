@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import { Head } from '@inertiajs/vue3'
 
-interface Props {
+defineProps<{
   title: string
   description?: string
-}
+}>()
 
-const props = defineProps<Props>()
 </script>
 
 <template>

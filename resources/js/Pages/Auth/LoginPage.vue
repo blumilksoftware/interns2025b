@@ -10,11 +10,10 @@ defineOptions({
   layout: AuthLayout,
 })
 
-interface Props {
+const { notification } = defineProps<{
   notification?: string
-}
+}>()
 
-const props = defineProps<Props>()
 
 const {
   formData: form,
