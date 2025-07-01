@@ -7,27 +7,33 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Interns2025b\Http\Controllers\EmailVerificationController;
 use Interns2025b\Http\Controllers\EventController;
+use Interns2025b\Http\Controllers\FacebookController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 
-Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])->middleware("signed")->name("verification.verify");
-
-Route::middleware(["guest"])->group(function (): void {
-    Route::post("/auth/login", [LoginController::class, "login"])->name("login");
-    Route::post("/auth/register", [RegisterController::class, "register"])->name("register");
-    Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"])->name("forgot-password");
+Route::middleware("auth:sanctum")->group(function (): void {
+    Route::get("/user", fn(Request $request): JsonResponse => $request->user())->name("user.profile");
+    Route::post("/auth/logout", LogoutController::class)->name("logout");
+    Route::get("/link/facebook/callback", [FacebookController::class, "linkCallback"]);
 });
 
-Route::middleware("auth:sanctum")
-    ->group(function (): void {
-        Route::get("/user", fn(Request $request): JsonResponse => $request->user())->name("user.profile");
-        Route::post("/auth/logout", LogoutController::class)->name("logout");
-    });
+Route::prefix("auth")->group(function (): void {
+    Route::post("/login", [LoginController::class, "login"])->name("login");
+    Route::post("/register", [RegisterController::class, "register"])->name("register");
 
-Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"])->name("reset-password");
+    Route::get("/facebook/redirect", [FacebookController::class, "redirect"]);
+    Route::get("/facebook/callback", [FacebookController::class, "loginCallback"]);
+
+    Route::post("/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"])->name("forgot.password");
+    Route::post("/reset-password", [ResetPasswordController::class, "resetPassword"]);
+
+    Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])->middleware("signed")->name("verification.verify");
+});
+
+Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
 Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([
     "message" => "Temporary password reset.",
     "token" => $token,
