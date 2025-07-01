@@ -7,6 +7,7 @@ namespace Interns2025b\Http\Controllers;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Http\JsonResponse;
 use Interns2025b\Http\Requests\LoginRequest;
+use Interns2025b\Http\Resources\UserResource;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 class LoginController extends Controller
@@ -27,7 +28,7 @@ class LoginController extends Controller
         return response()->json([
             "message" => "success",
             "token" => $token,
-            "user_id" => $user->id,
+            "user" => new UserResource($user),
         ], Status::HTTP_OK);
     }
 }
