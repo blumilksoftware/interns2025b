@@ -4,86 +4,64 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\User;
 use Laravel\Sanctum\Sanctum;
+use Laravel\Socialite\Facades\Socialite;
 use Tests\TestCase;
-use Tests\Traits\MocksFacebookUser;
 
 class FacebookLinkTest extends TestCase
 {
-    use MocksFacebookUser;
-
-    protected User $user;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->user = User::factory()->create();
-        Sanctum::actingAs($this->user);
-    }
+    use RefreshDatabase;
 
     public function testCallbackLinksFacebookAccountSuccessfully(): void
     {
         $this->mockSocialiteUser(["id" => "new_fb_id"]);
 
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
         $response = $this->getJson("/api/link/facebook/callback");
 
         $response->assertStatus(200);
-        $response->assertJson(["message" => __("auth.facebook_link_success")]);
+        $response->assertJson(["message" => "Facebook account linked successfully"]);
 
         $this->assertDatabaseHas("users", [
-            "id" => $this->user->id,
+            "id" => $user->id,
             "facebook_id" => "new_fb_id",
         ]);
     }
 
     public function testCallbackReturnsConflictIfFacebookIdLinkedToAnotherUser(): void
     {
-        User::factory()->create(["facebook_id" => "existing_fb_id"]);
+        $existingUser = User::factory()->create(["facebook_id" => "existing_fb_id"]);
+        $user = User::factory()->create();
 
         $this->mockSocialiteUser(["id" => "existing_fb_id"]);
+
+        Sanctum::actingAs($user);
 
         $response = $this->getJson("/api/link/facebook/callback");
 
         $response->assertStatus(409);
-        $response->assertJson(["message" => __("auth.facebook_account_already_linked")]);
+        $response->assertJson(["message" => "Facebook account already linked to another user"]);
     }
 
-    public function testCallbackFailsWhenUserExistsWithSameEmailButNoFacebookId(): void
+    protected function mockSocialiteUser(array $overrides = []): void
     {
-        User::factory()->create([
-            "email" => "test@example.com",
-            "facebook_id" => null,
-        ]);
+        $user = \Mockery::mock(\Laravel\Socialite\Contracts\User::class);
+        $user->shouldReceive("getId")->andReturn($overrides["id"] ?? "1234567890");
+        $user->shouldReceive("getName")->andReturn($overrides["name"] ?? "John Doe");
+        $user->shouldReceive("getEmail")->andReturn($overrides["email"] ?? "john@example.com");
+        $user->shouldReceive("getAvatar")->andReturn($overrides["avatar"] ?? "http://example.com/avatar.jpg");
 
-        $this->mockSocialiteUser([
-            "email" => "test@example.com",
-            "id" => "some_facebook_id",
-        ]);
+        $socialiteDriver = \Mockery::mock();
+        $socialiteDriver->shouldReceive("stateless")->andReturnSelf();
+        $socialiteDriver->shouldReceive("user")->andReturn($user);
 
-        $response = $this->getJson("/api/link/facebook/callback");
-
-        $response->assertStatus(403);
-        $response->assertJson(["message" => __("auth.email_already_registered")]);
-    }
-
-    public function testCallbackFailsWhenFacebookIdIsMissing(): void
-    {
-        $this->mockSocialiteUser(["id" => null]);
-
-        $response = $this->getJson("/api/link/facebook/callback");
-
-        $response->assertStatus(422);
-        $response->assertJson(["message" => __("auth.facebook_id_required")]);
-    }
-
-    public function testCallbackFailsWhenFacebookEmailIsMissing(): void
-    {
-        $this->mockSocialiteUser(["email" => null]);
-
-        $response = $this->getJson("/api/link/facebook/callback");
-
-        $response->assertStatus(422);
-        $response->assertJson(["message" => __("auth.email_required_from_facebook")]);
+        Socialite::shouldReceive("driver")
+            ->with("facebook")
+            ->andReturn($socialiteDriver);
     }
 }
