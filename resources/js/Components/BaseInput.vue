@@ -1,6 +1,6 @@
 <template>
   <label
-    class="block text-base text-gray-500 mb-2"
+    class="block text-base text-gray-500 mb-1"
     :for="id"
   >
     {{ label }}
@@ -11,7 +11,7 @@
     :type="type"
     :placeholder="placeholder"
     :value="modelValue"
-    class="w-full h-12 px-4 font-semibold text-[#025F60] border-2 rounded-lg focus:outline-none"
+    class="w-full h-12 px-4 font-semibold text-[#025F60] border-2 rounded-lg focus:outline-none mb-4"
     @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
   >
 </template>

@@ -3,6 +3,11 @@ import axios, { type AxiosError, type AxiosResponse } from 'axios'
 
 export type ValidationErrors<T> = Partial<Record<keyof T, string>>
 
+export interface ApiErrorResponse {
+  message: string
+  errors?: Record<string, string[]>
+}
+
 export interface ApiFormOptions<T, R = any> {
   endpoint: string
   method?: 'get' | 'post' | 'put' | 'patch' | 'delete'
@@ -22,9 +27,11 @@ export function useApiForm<T extends Record<string, any>, R = any>(
   const isSuccess = ref<boolean>(false)
 
   function resetErrors() {
-    Object.keys(fieldErrors).forEach(key => delete (fieldErrors as any)[key])
+    const emptyErrors = {} satisfies ValidationErrors<T>
+    Object.assign(fieldErrors, emptyErrors)
     globalMessage.value = ''
   }
+
 
   function reset() {
     Object.assign(formData, initialPayload)
@@ -48,15 +55,15 @@ export function useApiForm<T extends Record<string, any>, R = any>(
       options.onSuccess?.(response)
       return response
     } catch (e) {
-      const err = e as AxiosError
+      const err = e as AxiosError<ApiErrorResponse>
       if (err.response?.status === 422 && err.response.data?.errors) {
-        const errors = (err.response.data as any).errors as Record<string,string[]>
+        const errors = err.response.data.errors
         Object.entries(errors).forEach(([field, messages]) => {
-          (fieldErrors as any)[field] = messages[0]
+          (fieldErrors as ValidationErrors<T>)[field as keyof T] = messages[0]
         })
       } else {
         globalMessage.value =
-          (err.response?.data as any)?.message || 'An unexpected error occurred.'
+          err.response?.data?.message ?? 'An unexpected error occurred.'
         options.onError?.(err)
       }
       throw err
