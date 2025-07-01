@@ -28,7 +28,7 @@ class RegisterController extends Controller
 
         return response()->json([
             "message" => "success",
-            "notification" => "We have sent you a confirmation on your email address"
+            "notification" => "We have sent you a confirmation on your email address",
         ])->setStatusCode(Status::HTTP_OK);
     }
 }
