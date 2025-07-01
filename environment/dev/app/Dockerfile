@@ -5,7 +5,7 @@ FROM composer/composer:2.8.9-bin@sha256:c9bda63056674836406cacfbbdd8ef770fb4692a
 FROM node:22.14.0-bullseye-slim@sha256:73a9dfbb6c761aebdf4666cce2627635a30d1d4c20f67ff642d01b8f09e709a3 AS node
 
 # For other versions check: https://hub.docker.com/_/php/tags?page=1&name=fpm-bullseye
-FROM php:8.3.12-fpm-bullseye@sha256:b9b5efd7bfe05e65097e8253b038c4b711798d95f49c89e4337c0b330f9fc8ff
+FROM php:8.4.8-fpm-bullseye@sha256:290185e3a7edd5b149a0acedc57ad9677facaff99f72aa9956970f0ccd5a442b
 
 COPY --from=composer-bin ./composer /usr/bin/composer
 
