@@ -4,9 +4,8 @@ import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { RegisterForm } from '@/types/types'
-import {Link as InertiaLink, router} from '@inertiajs/vue3'
+import { Link as InertiaLink, router } from '@inertiajs/vue3'
 import LoginFacebook from '@/Components/LoginFacebook.vue'
-
 
 const {
   formData: form,
@@ -31,7 +30,8 @@ const {
         preserveState: false,
         preserveScroll: false,
         data: {
-          notification: 'Registration successful! Please check your email for verification.',
+          notification:
+            'Registration successful! Please check your email for verification.',
         },
       })
     },
@@ -42,10 +42,12 @@ const {
 <template>
   <AuthLayout>
     <template #header>
-      <h2 class="font-bold text-3xl">Rejestracja</h2>
-      <p class="font-semibold">
+      <h2 class="font-bold text-3xl">Zarejestruj się</h2>
+      <p class="font-medium">
         Posiadasz konto?
-        <InertiaLink href="/login" class="underline font-bold">Zaloguj się</InertiaLink>
+        <InertiaLink href="/login" class="underline font-semibold">
+          Zaloguj się
+        </InertiaLink>
       </p>
     </template>
 
@@ -59,7 +61,7 @@ const {
             id="first_name"
             v-model="form.first_name"
             name="first_name"
-            label="First Name"
+            label="Imię"
             type="text"
           />
           <small v-if="errors.first_name" class="text-red-600">
@@ -70,7 +72,7 @@ const {
             id="last_name"
             v-model="form.last_name"
             name="last_name"
-            label="Last Name"
+            label="Nazwisko (opcjonalnie)"
             type="text"
           />
           <small v-if="errors.last_name" class="text-red-600">
@@ -81,7 +83,7 @@ const {
             id="email"
             v-model="form.email"
             name="email"
-            label="Email"
+            label="E-mail"
             type="email"
           />
           <small v-if="errors.email" class="text-red-600">
@@ -109,9 +111,6 @@ const {
           <small v-if="errors.password_confirmation" class="text-red-600">
             {{ errors.password_confirmation }}
           </small>
-          <div class="flex items-center justify-end">
-            <InertiaLink href="/forgotpassword" class="font-bold text-base text-[#025F60]">Zapomniałeś hasła?</InertiaLink>
-          </div>
         </div>
 
         <BaseButton
@@ -131,7 +130,20 @@ const {
         <div class="grow h-px bg-gray-200" />
       </div>
       <login-facebook />
+      <div class="w-5/6">
+        <div class="text-center">
+          <p class="text-base text-gray-500 mt-6">
+            Rejestrując się wyrażasz zgodę na
+            <InertiaLink href="#" class="text-[#025F60] font-semibold">
+              Warunki świadczenia usług
+            </InertiaLink>
+            oraz
+            <InertiaLink href="#" class="text-[#025F60] font-semibold">
+              Umowę o przetwarzaniu danych
+            </InertiaLink>
+          </p>
+        </div>
+      </div>
     </template>
   </AuthLayout>
 </template>
-

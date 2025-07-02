@@ -1,7 +1,7 @@
 import { reactive, ref } from 'vue'
 import axios, { type AxiosError, type AxiosResponse } from 'axios'
 
-export type ValidationErrors<T> = Partial<Record<keyof T, string>>
+export type ValidationErrors<T> = Partial<Record<keyof T, string>>;
 
 export interface ApiErrorResponse {
   message: string
@@ -31,7 +31,6 @@ export function useApiForm<T extends Record<string, any>, R = any>(
     Object.assign(fieldErrors, emptyErrors)
     globalMessage.value = ''
   }
-
 
   function reset() {
     Object.assign(formData, initialPayload)

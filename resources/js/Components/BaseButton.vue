@@ -1,13 +1,3 @@
-<template>
-  <button
-    :type="type"
-    class="h-12 rounded-lg shadow-sm"
-    @click="handleClick"
-  >
-    <slot />
-  </button>
-</template>
-
 <script lang="ts" setup>
 import { defineProps, defineEmits } from 'vue'
 
@@ -21,3 +11,9 @@ const handleClick = (event: MouseEvent) => {
   emit('click', event)
 }
 </script>
+
+<template>
+  <button :type="type" class="h-12 rounded-lg shadow-sm" @click="handleClick">
+    <slot />
+  </button>
+</template>

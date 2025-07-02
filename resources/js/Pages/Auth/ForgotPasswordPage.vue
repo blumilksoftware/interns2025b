@@ -5,7 +5,6 @@ import BaseButton from '@/Components/BaseButton.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { ForgotPasswordForm } from '@/types/types'
 
-
 const {
   formData: form,
   fieldErrors: errors,
@@ -19,10 +18,12 @@ const {
   {
     endpoint: '/api/auth/forgot-password',
     onSuccess: () => {
-      globalMessage.value = 'Link do resetowania hasła został wysłany na podany adres email'
+      globalMessage.value =
+        'Link do resetowania hasła został wysłany na podany adres email'
     },
     onError: () => {
-      globalMessage.value = 'Wystąpił błąd podczas wysyłania linku resetującego'
+      globalMessage.value =
+        'Wystąpił błąd podczas wysyłania linku resetującego'
     },
   },
 )
@@ -31,35 +32,42 @@ const {
 <template>
   <auth-layout>
     <template #header>
-      <h2 class="font-bold text-3xl">Przypomnij Hasło</h2>
-      <p class="font-semibold">
+      <h2 class="font-bold text-3xl">Przypomnij hasło</h2>
+      <p class="font-medium">
         Pamiętasz hasło?
-        <InertiaLink href="/login" class="underline font-bold">Zaloguj się</InertiaLink><br>
+        <InertiaLink href="/login" class="underline font-semibold">
+          Zaloguj się
+        </InertiaLink><br>
         Chcesz założyć konto?
-        <InertiaLink href="/register" class="underline font-bold">Zarejestruj się</InertiaLink>
+        <InertiaLink href="/register" class="underline font-semibold">
+          Zarejestruj się
+        </InertiaLink>
       </p>
     </template>
     <template #form>
-      <div class="flex flex-col items-center justify-center mt-6 space-y-6 text-xl">
+      <div
+        class="flex flex-col items-center justify-center mt-6 space-y-6 text-xl"
+      >
         <div
           v-if="globalMessage"
           class="mb-4 text-center max-w-md mx-auto"
           :class="{
             'text-red-600': globalMessage.includes('błąd'),
-            'text-green-600': globalMessage.includes('został wysłany')
+            'text-green-600': globalMessage.includes('został wysłany'),
           }"
         >
           {{ globalMessage }}
         </div>
 
         <form
-          class="flex w-5/6 flex-col items-center justify-center max-w-md mx-auto mt-6 space-y-6"
+          class="flex w-5/6 flex-col justify-center max-w-md mx-auto mt-6 space-y-6"
           @submit.prevent="submitForm"
         >
-          <div class="w-full text-center">
+          <div class="w-full ">
             <h2 class="text-2xl font-bold mb-4">Reset hasła</h2>
             <p class="text-gray-600 mb-4">
-              Wprowadź swój adres email, a wyślemy Ci link do zresetowania hasła.
+              Wprowadź swój adres e-mail, a wyślemy Ci link do zresetowania
+              hasła.
             </p>
 
             <BaseInput

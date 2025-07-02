@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3'
+import { Link as InertiaLink, router } from '@inertiajs/vue3'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
@@ -10,7 +10,6 @@ import LoginFacebook from '@/Components/LoginFacebook.vue'
 const { notification } = defineProps<{
   notification?: string
 }>()
-
 
 const {
   formData: form,
@@ -46,14 +45,17 @@ const {
   <auth-layout>
     <template #header>
       <h2 class="font-bold text-3xl">Zaloguj się</h2>
-      <p class="font-semibold">
+      <p class="font-medium">
         Nie posiadasz konta?
-        <InertiaLink href="/login" class="underline font-bold">Zarejestruj się</InertiaLink>
+        <InertiaLink href="/register" class="underline font-semibold">
+          Zarejestruj się
+        </InertiaLink>
       </p>
     </template>
     <template #form>
-      <form class="flex flex-col items-center justify-center w-full mt-6 space-y-6 text-xl"
-            @submit.prevent="submitForm"
+      <form
+        class="flex flex-col items-center justify-center w-full mt-6 space-y-6 text-xl"
+        @submit.prevent="submitForm"
       >
         <div class="w-full">
           <div
@@ -69,7 +71,7 @@ const {
             id="email"
             v-model="form.email"
             name="email"
-            label="Email"
+            label="E-mail"
             type="email"
           />
           <small v-if="errors.email" class="text-red-600">
@@ -95,11 +97,11 @@ const {
               v-model="form.remember"
               name="remember_password"
               type="checkbox"
-              class="mr-2"
+              class="mr-2 size-4 accent-[#025F60] bg-gray-100 rounded-sm border-gray-300"
             >
             <span class="text-base text-gray-700">Zapamiętaj mnie</span>
           </label>
-          <a href="/forgotpassword" class="font-bold text-base text-[#025F60]">Zapomniałeś hasła?</a>
+          <inertia-link href="/forgot-password" class="font-bold text-base text-[#025F60]">Nie pamiętasz hasła?</inertia-link>
         </div>
 
         <BaseButton
@@ -118,6 +120,20 @@ const {
         <div class="grow h-px bg-gray-200" />
       </div>
       <login-facebook />
+      <div class="w-5/6">
+        <div class="text-center">
+          <p class="text-base text-gray-500 mt-6">
+            Rejestrując się wyrażasz zgodę na
+            <InertiaLink href="#" class="text-[#025F60] font-semibold">
+              Warunki świadczenia usług
+            </InertiaLink>
+            oraz
+            <InertiaLink href="#" class="text-[#025F60] font-semibold">
+              Umowę o przetwarzaniu danych
+            </InertiaLink>
+          </p>
+        </div>
+      </div>
     </template>
   </auth-layout>
 </template>
