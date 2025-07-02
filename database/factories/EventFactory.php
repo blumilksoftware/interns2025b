@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Interns2025b\Enums\EventStatus;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
 
@@ -28,7 +29,7 @@ class EventFactory extends Factory
             "longitude" => fake()->longitude(),
             "is_paid" => $isPaid,
             "price" => $isPaid ? fake()->randomFloat(2, 1, 100) : 0,
-            "status" => fake()->randomElement(["draft", "published", "ongoing", "ended", "canceled"]),
+            "status" => fake()->randomElement(EventStatus::cases()),
             "image_url" => fake()->imageUrl(),
             "age_category" => fake()->randomElement(["kids", "teens", "adults"]),
             "owner_type" => $ownerType,

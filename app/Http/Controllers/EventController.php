@@ -14,7 +14,7 @@ class EventController extends Controller
 {
     public function index(): JsonResponse
     {
-        $events = Event::query()->with(["owner"])->latest()->get();
+        $events = Event::loadWithOwnerRelations();
 
         return response()->json([
             "data" => EventResource::collection($events)]);
@@ -55,6 +55,8 @@ class EventController extends Controller
         ]);
 
         $event->update($data);
+
+        $event->loadOwnerRelations();
 
         return response()->json([
             "data" => new EventResource($event),
