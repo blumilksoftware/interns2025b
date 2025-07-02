@@ -72,6 +72,7 @@ Route::group(["prefix" => "superadmin", "middleware" => ["auth:sanctum", "role:s
     Route::delete("/admins/{admin}", [AdminManagementController::class, "destroy"])->name("admins.destroy");
 });
 
+Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
 Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([
     "message" => "Temporary password reset.",
     "token" => $token,
