@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Interns2025b\Console\Commands;
 
 use Illuminate\Console\Command;
+use Interns2025b\Enums\EventStatus;
 use Interns2025b\Events\EventStartingSoon;
 use Interns2025b\Events\EventWasPublished;
 use Interns2025b\Models\Event;
@@ -23,7 +24,7 @@ class NotifyFollowersCommand extends Command
 
     protected function dispatchEventStartingSoon(): void
     {
-        $events = Event::query()->where("status", "published")
+        $events = Event::query()->where("status", EventStatus::Published)
             ->whereBetween("start", [now(), now()->addDay()])
             ->get();
 
@@ -42,7 +43,7 @@ class NotifyFollowersCommand extends Command
 
     protected function dispatchNewlyPublishedEvents(): void
     {
-        $events = Event::query()->where("status", "published")
+        $events = Event::query()->where("status", EventStatus::Published)
             ->whereDate("created_at", today())
             ->get();
 

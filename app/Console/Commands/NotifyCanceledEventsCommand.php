@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Interns2025b\Console\Commands;
 
 use Illuminate\Console\Command;
+use Interns2025b\Enums\EventStatus;
 use Interns2025b\Events\EventWasCanceled;
 use Interns2025b\Models\Event;
 
@@ -14,7 +15,7 @@ class NotifyCanceledEventsCommand extends Command
 
     public function handle(): int
     {
-        $events = Event::query()->where("status", "canceled")
+        $events = Event::query()->where("status", EventStatus::Canceled)
             ->whereDate("updated_at", today())
             ->get();
 
