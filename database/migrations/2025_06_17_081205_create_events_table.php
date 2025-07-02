@@ -21,7 +21,7 @@ return new class() extends Migration {
             $table->decimal("longitude", 10, 7)->nullable();
             $table->boolean("is_paid")->default(false);
             $table->decimal("price", 8, 2)->nullable();
-            $table->enum("status", ["draft", "published", "ongoing", "ended", "canceled"])->default("draft");
+            $table->string("status")->default("draft");
             $table->string("image_url")->nullable();
             $table->string("age_category")->nullable();
             $table->string("owner_type");
