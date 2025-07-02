@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -42,6 +44,16 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         "password",
         "remember_token",
     ];
+
+    public function ownedOrganizations(): HasMany
+    {
+        return $this->hasMany(Organization::class, "owner_id");
+    }
+
+    public function organizations(): BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class, "organization_user");
+    }
 
     protected function casts(): array
     {
