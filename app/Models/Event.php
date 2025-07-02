@@ -70,10 +70,10 @@ class Event extends Model
 
     public function loadOwnerRelations(): self
     {
-        $this->load("owner");
+        $this->loadMissing("owner");
 
         if ($this->owner instanceof Organization) {
-            $this->owner->load("owner");
+            $this->owner->loadMissing("owner");
         }
 
         return $this;

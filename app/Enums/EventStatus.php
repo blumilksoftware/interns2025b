@@ -14,7 +14,7 @@ enum EventStatus: string
 
     public function label(): string
     {
-        return __("event_status." . $this->value);
+        return __("enums.event_status." . $this->value);
     }
 
     public static function options(): array
