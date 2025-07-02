@@ -13,13 +13,12 @@ class OrganizationUserSeeder extends Seeder
     public function run(): void
     {
         $owner = User::factory()->create();
-        Organization::factory()->create();
         $organization = Organization::factory()->create([
             "owner_id" => $owner->id,
         ]);
 
         $organization->users()->attach($owner->id);
-        $additionalUsers = User::factory()->count(1)->create();
+        $additionalUsers = User::factory()->count(10)->create();
         $organization->users()->attach($additionalUsers->pluck("id")->toArray());
     }
 }

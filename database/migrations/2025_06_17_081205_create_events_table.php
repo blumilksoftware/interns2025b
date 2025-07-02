@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Interns2025b\Enums\EventStatus;
 
 return new class() extends Migration {
     public function up(): void
@@ -21,7 +22,7 @@ return new class() extends Migration {
             $table->decimal("longitude", 10, 7)->nullable();
             $table->boolean("is_paid")->default(false);
             $table->decimal("price", 8, 2)->nullable();
-            $table->enum("status", ["draft", "published", "ongoing", "ended", "canceled"])->default("draft");
+            $table->string("status")->default(EventStatus::Draft);
             $table->string("image_url")->nullable();
             $table->string("age_category")->nullable();
             $table->string("owner_type");

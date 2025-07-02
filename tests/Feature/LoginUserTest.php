@@ -26,7 +26,15 @@ class LoginUserTest extends TestCase
             ->assertJsonStructure([
                 "message",
                 "token",
-                "user_id",
+                "user" => [
+                    "id",
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "email_verified_at",
+                    "created_at",
+                    "updated_at",
+                ],
             ])
             ->assertJson([
                 "message" => "success",

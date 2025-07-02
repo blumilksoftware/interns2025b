@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Interns2025b\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Interns2025b\Enums\EventStatus;
 
 /**
  * @property int $id
@@ -23,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property ?float $longitude
  * @property bool $is_paid
  * @property ?float $price
- * @property string $status
+ * @property EventStatus $status
  * @property ?string $image_url
  * @property ?string $age_category
  * @property string $owner_type
@@ -60,6 +62,7 @@ class Event extends Model
         "is_paid" => "boolean",
         "price" => "float",
         "owner_id" => "integer",
+        "status" => EventStatus::class,
     ];
 
     public function owner(): MorphTo
@@ -75,5 +78,28 @@ class Event extends Model
     public function followers(): MorphToMany
     {
         return $this->morphToMany(User::class, "followable", "followables");
+    }
+
+    public function loadOwnerRelations(): self
+    {
+        $this->loadMissing("owner");
+
+        if ($this->owner instanceof Organization) {
+            $this->owner->loadMissing("owner");
+        }
+
+        return $this;
+    }
+
+    public static function loadWithOwnerRelations($query = null): Collection
+    {
+        $query ??= static::query();
+
+        $events = $query->with("owner")->get();
+        $events->loadMorph("owner", [
+            Organization::class => ["owner"],
+        ]);
+
+        return $events;
     }
 }

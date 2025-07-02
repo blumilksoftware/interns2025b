@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Notification;
+use Interns2025b\Enums\EventStatus;
 use Interns2025b\Models\Event;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
@@ -18,7 +19,7 @@ class NotifyFollowersCommandTest extends TestCase
     {
         $user = User::factory()->create();
         $event = Event::factory()->create([
-            "status" => "published",
+            "status" => EventStatus::Published,
             "start" => now()->addHours(3),
         ]);
 
@@ -36,7 +37,7 @@ class NotifyFollowersCommandTest extends TestCase
         $organization->followers()->attach($user);
 
         $event = Event::factory()->create([
-            "status" => "published",
+            "status" => EventStatus::Published,
             "created_at" => now(),
             "owner_type" => Organization::class,
             "owner_id" => $organization->id,
@@ -54,7 +55,7 @@ class NotifyFollowersCommandTest extends TestCase
         $owner->followers()->attach($follower);
 
         $event = Event::factory()->create([
-            "status" => "published",
+            "status" => EventStatus::Published,
             "created_at" => now(),
             "owner_type" => User::class,
             "owner_id" => $owner->id,

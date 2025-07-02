@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Notification;
+use Interns2025b\Enums\EventStatus;
 use Interns2025b\Models\Event;
 use Interns2025b\Models\User;
 use Interns2025b\Notifications\EventCanceledNotification;
@@ -16,7 +17,7 @@ class NotifyCanceledEventsCommandTest extends TestCase
     {
         $user = User::factory()->create();
         $event = Event::factory()->create([
-            "status" => "canceled",
+            "status" => EventStatus::Canceled,
             "updated_at" => now(),
         ]);
 

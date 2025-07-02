@@ -6,6 +6,7 @@ namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Interns2025b\Enums\EventStatus;
 use Interns2025b\Models\Event;
 use Symfony\Component\HttpFoundation\Response as Status;
 
@@ -15,7 +16,7 @@ class EventParticipationController
     {
         $user = $request->user();
 
-        if (in_array($event->status, ["ended", "canceled"], true)) {
+        if (in_array($event->status, [EventStatus::Ended, EventStatus::Canceled], true)) {
             return response()->json([
                 "message" => __("events.cannot_join"),
             ], Status::HTTP_FORBIDDEN);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Interns2025b\Enums\EventStatus;
 use Interns2025b\Models\Event;
 use Interns2025b\Models\User;
 use Symfony\Component\HttpFoundation\Response as Status;
@@ -14,7 +15,7 @@ class EventParticipationTest extends TestCase
     public function testJoinAndLeaveEventViaApi(): void
     {
         $user = User::factory()->create();
-        $event = Event::factory()->create(["status" => "published"]);
+        $event = Event::factory()->create(["status" => EventStatus::Published]);
 
         $this->actingAs($user, "sanctum");
 
@@ -40,8 +41,8 @@ class EventParticipationTest extends TestCase
     public function testCannotJoinEndedOrCanceledEvent(): void
     {
         $user = User::factory()->create();
-        $endedEvent = Event::factory()->create(["status" => "ended"]);
-        $canceledEvent = Event::factory()->create(["status" => "canceled"]);
+        $endedEvent = Event::factory()->create(["status" => EventStatus::Ended]);
+        $canceledEvent = Event::factory()->create(["status" => EventStatus::Canceled]);
 
         $this->actingAs($user, "sanctum");
 

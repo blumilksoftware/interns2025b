@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Interns2025b\Http\Controllers\EmailVerificationController;
 use Interns2025b\Http\Controllers\EventController;
 use Interns2025b\Http\Controllers\EventParticipationController;
+use Interns2025b\Http\Controllers\FacebookController;
 use Interns2025b\Http\Controllers\FollowController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
@@ -15,30 +17,38 @@ use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 
 Route::middleware("auth:sanctum")->group(function (): void {
-    Route::post("/auth/logout", LogoutController::class);
+    Route::get("/user", fn(Request $request): JsonResponse => $request->user())->name("user.profile");
+    Route::post("/auth/logout", LogoutController::class)->name("logout");
+    Route::get("/link/facebook/callback", [FacebookController::class, "linkCallback"]);
     Route::post("/events/{event}/participate", EventParticipationController::class)->name("participate");
     Route::post("/follow/{type}/{id}", FollowController::class)->name("follow");
     Route::get("/followings", [FollowController::class, "followings"])->name("followings");
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
 });
 
-Route::get("/auth/verify-email/{id}/", [EmailVerificationController::class, "verify"])
-    ->middleware("signed")
-    ->name("verification.verify");
+Route::prefix("auth")->group(function (): void {
+    Route::post("/login", [LoginController::class, "login"])->name("login");
+    Route::post("/register", [RegisterController::class, "register"])->name("register");
 
-Route::post("/auth/login", [LoginController::class, "login"])->name("login");
-Route::post("/auth/register", [RegisterController::class, "register"]);
+    Route::get("/facebook/redirect", [FacebookController::class, "redirect"]);
+    Route::get("/facebook/callback", [FacebookController::class, "loginCallback"]);
 
-Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
+    Route::post("/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"])->name("forgot.password");
+    Route::post("/reset-password", [ResetPasswordController::class, "resetPassword"]);
+
+    Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])->middleware("signed")->name("verification.verify");
+});
+
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
-
 Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([
     "message" => "Temporary password reset.",
     "token" => $token,
 ]))->name("password.reset");
 
-Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
-    Route::get("/events", [EventController::class, "index"]);
-    Route::get("/organizations", [OrganizationController::class, "index"]);
-    Route::get("/organizations/{id}", [OrganizationController::class, "show"]);
-});
+Route::resource("events", EventController::class)->only(["index", "show"]);
+
+Route::prefix("admin")
+    ->middleware(["auth:sanctum", "role:administrator|superAdministrator"])
+    ->group(function (): void {
+        Route::resource("organizations", OrganizationController::class)->only(["index", "show"]);
+    });
