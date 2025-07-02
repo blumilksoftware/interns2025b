@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Interns2025b\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -12,7 +13,7 @@ use Interns2025b\Models\User;
 
 class UserDeletionController extends Controller
 {
-    public function requestDelete(Request $request)
+    public function requestDelete(Request $request): JsonResponse
     {
         $user = $request->user();
 
@@ -27,7 +28,7 @@ class UserDeletionController extends Controller
         return response()->json(["message" => __("profile.email_sent")], 200);
     }
 
-    public function confirmDelete(Request $request, $user)
+    public function confirmDelete(Request $request, $user): JsonResponse
     {
         $user = User::findOrFail($user);
 
