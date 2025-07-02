@@ -36,12 +36,22 @@ class UserManagementControllerTest extends TestCase
         $response->assertJson(
             fn(AssertableJson $json) => $json->has(1)
                 ->first(
-                    fn($json) => $json->where("id", $userWithRole->id)
+                    fn(AssertableJson $json) => $json
+                        ->where("id", $userWithRole->id)
                         ->where("first_name", "user")
                         ->where("last_name", $userWithRole->last_name)
                         ->where("email", $userWithRole->email)
                         ->where("facebook_linked", false)
-                        ->has("organizations", 1),
+                        ->has("organizations", 1)
+                        ->whereType("created_at", "string")
+                        ->whereType("updated_at", "string")
+                        ->where("organizations.0", $organization->id)
+                        ->when(
+                            $json->has("email_verified_at"),
+                            fn($json) => $json->whereType("email_verified_at", "string"),
+                            fn($json) => $json->where("email_verified_at", null),
+                        )
+                        ->etc(),
                 ),
         );
     }
