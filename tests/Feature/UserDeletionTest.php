@@ -21,7 +21,7 @@ class UserDeletionTest extends TestCase
             ->assertStatus(200)
             ->assertJson(["message" => "Confirmation e-mail sent."]);
 
-        Mail::assertSent(DeleteAccountLinkMail::class, fn($mail) => $mail->user->id === $user->id);
+        Mail::assertSent(DeleteAccountLinkMail::class, fn($mail): bool => $mail->user->id === $user->id);
     }
 
     public function testDeletionFailsWithInvalidSignature(): void
