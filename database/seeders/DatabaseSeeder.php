@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             AdminSeeder::class,
             OrganizationUserSeeder::class,
+            EventSeeder::class,
         ]);
     }
 }
