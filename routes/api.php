@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Interns2025b\Http\Controllers\EmailVerificationController;
+use Interns2025b\Http\Controllers\EventController;
 use Interns2025b\Http\Controllers\FacebookController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
@@ -48,6 +49,8 @@ Route::get("/reset-password/{token}", fn(string $token): JsonResponse => respons
     "message" => "Temporary password reset.",
     "token" => $token,
 ]))->name("password.reset");
+
+Route::resource("events", EventController::class)->only(["index", "show"]);
 
 Route::prefix("admin")
     ->middleware(["auth:sanctum", "role:administrator|superAdministrator"])
