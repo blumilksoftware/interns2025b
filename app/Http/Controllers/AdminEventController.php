@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Interns2025b\Http\Requests\StoreEventRequest;
-use Interns2025b\Http\Requests\UpdateEventRequest;
+use Illuminate\Http\Request;
 use Interns2025b\Http\Resources\EventResource;
 use Interns2025b\Models\Event;
 use Symfony\Component\HttpFoundation\Response as Status;
 
-class EventController extends Controller
+class AdminEventController extends Controller
 {
     public function index(): JsonResponse
     {
@@ -31,13 +30,16 @@ class EventController extends Controller
         ]);
     }
 
-    public function store(StoreEventRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        $data = $request->validated();
-        $data["owner_type"] = get_class($user);
-        $data["owner_id"] = $user->id;
+        $data = $request->validate([
+            "title" => "required|string|max:255",
+            "description" => "nullable|string",
+            "start" => "required|date",
+            "end" => "required|date|after_or_equal:start",
+            "owner_type" => "required|string",
+            "owner_id" => "required|integer",
+        ]);
 
         $event = Event::create($data);
 
@@ -46,11 +48,14 @@ class EventController extends Controller
         ], Status::HTTP_CREATED);
     }
 
-    public function update(UpdateEventRequest $request, Event $event): JsonResponse
+    public function update(Request $request, Event $event): JsonResponse
     {
-        $this->authorize("update", $event);
-
-        $data = $request->validated();
+        $data = $request->validate([
+            "title" => "required|string|max:255",
+            "description" => "nullable|string",
+            "start" => "required|date",
+            "end" => "required|date|after_or_equal:start",
+        ]);
 
         $event->update($data);
         $event->loadOwnerRelations();
@@ -62,12 +67,10 @@ class EventController extends Controller
 
     public function destroy(Event $event): JsonResponse
     {
-        $this->authorize("delete", $event);
-
         $event->delete();
 
         return response()->json([
-            "message" => "Event deleted successfully.",
+            "message" => "Event deleted by admin.",
         ]);
     }
 }

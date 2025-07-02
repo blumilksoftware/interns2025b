@@ -24,8 +24,6 @@ class StoreEventRequest extends FormRequest
             "status" => ["required", "in:draft,published,ongoing,ended,canceled"],
             "image_url" => ["nullable", "string"],
             "age_category" => ["nullable", "string"],
-            "owner_type" => ["required", "string"],
-            "owner_id" => ["required", "integer"],
         ];
     }
 }

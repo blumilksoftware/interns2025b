@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Interns2025b\Http\Controllers\AdminEventController;
 use Interns2025b\Http\Controllers\AdminManagementController;
 use Interns2025b\Http\Controllers\EmailVerificationController;
 use Interns2025b\Http\Controllers\EventController;
@@ -12,6 +13,7 @@ use Interns2025b\Http\Controllers\FacebookController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
+use Interns2025b\Http\Controllers\OrganizationEventController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 use Interns2025b\Http\Controllers\UpdatePasswordController;
@@ -43,15 +45,24 @@ Route::prefix("auth")->group(function (): void {
 
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
 
+Route::get("events", [EventController::class, "index"]);
+Route::get("events/{event}", [EventController::class, "show"]);
 Route::middleware("auth:sanctum")->group(function (): void {
     Route::post("events", [EventController::class, "store"]);
     Route::put("events/{event}", [EventController::class, "update"]);
-    Route::patch("events/{event}", [EventController::class, "update"]);
     Route::delete("events/{event}", [EventController::class, "destroy"]);
 });
 
-Route::get("events", [EventController::class, "index"]);
-Route::get("events/{event}", [EventController::class, "show"]);
+Route::middleware(["auth:sanctum", "role:Administrator|SuperAdministrator"])->prefix("admin")->group(function (): void {
+    Route::apiResource("events", AdminEventController::class);
+});
+
+Route::middleware(["auth:sanctum"])->group(function (): void {
+    Route::get("organizations/{organization}/events", [OrganizationEventController::class, "index"]);
+    Route::post("organizations/{organization}/events", [OrganizationEventController::class, "store"]);
+    Route::put("organizations/{organization}/events/{event}", [OrganizationEventController::class, "update"]);
+    Route::delete("organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
+});
 
 Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
     Route::get("/events", [EventController::class, "index"]);
