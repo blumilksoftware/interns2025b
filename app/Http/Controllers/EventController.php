@@ -60,7 +60,7 @@ class EventController extends Controller
 
         return response()->json([
             "data" => new EventResource($event),
-        ], Status::HTTP_OK);
+        ]);
     }
 
     public function destroy(Event $event): JsonResponse
