@@ -65,3 +65,4 @@ class Event extends Model
         return $this->morphTo();
     }
 }
+        

@@ -43,6 +43,16 @@ Route::prefix("auth")->group(function (): void {
 
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
 
+Route::middleware("auth:sanctum")->group(function (): void {
+    Route::post("events", [EventController::class, "store"]);
+    Route::put("events/{event}", [EventController::class, "update"]);
+    Route::patch("events/{event}", [EventController::class, "update"]);
+    Route::delete("events/{event}", [EventController::class, "destroy"]);
+});
+
+Route::get("events", [EventController::class, "index"]);
+Route::get("events/{event}", [EventController::class, "show"]);
+
 Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
     Route::get("/events", [EventController::class, "index"]);
     Route::get("/organizations", [OrganizationController::class, "index"]);
