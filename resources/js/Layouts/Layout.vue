@@ -2,7 +2,7 @@
 
 <template>
   <div
-    class="font-medium bg-gray-50 min-h-screen flex items-center justify-center"
+    class="font-medium bg-gray-50 min-h-screen sm:flex sm:items-center sm:justify-center"
   >
     <slot />
   </div>

@@ -7,8 +7,8 @@ defineSlots<{
 </script>
 
 <template>
-  <div class="place-items-center flex justify-center px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full bg-white pb-8 rounded-lg shadow-lg">
+  <div class="place-items-center flex justify-center">
+    <div class=" w-full bg-white pb-8 rounded-lg shadow-lg">
       <div
         class="px-9 py-20 bg-gradient-to-tr from-[#025F60] to-[#093637] rounded-lg text-white [&>*]:mb-4"
       >
