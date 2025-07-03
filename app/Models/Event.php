@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Interns2025b\Enums\EventStatus;
+use Interns2025b\Observers\EventObserver;
 
 /**
  * @property int $id
@@ -101,5 +102,10 @@ class Event extends Model
         ]);
 
         return $events;
+    }
+
+    protected static function booted(): void
+    {
+        static::observe(EventObserver::class);
     }
 }

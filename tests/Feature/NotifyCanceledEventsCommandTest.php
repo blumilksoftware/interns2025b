@@ -28,7 +28,7 @@ class NotifyCanceledEventsCommandTest extends TestCase
         Notification::assertSentTo(
             $user,
             EventCanceledNotification::class,
-            fn($notification) => $notification->getEvent()->id === $event->id,
+            fn($notification): bool => $notification->getEvent()->id === $event->id,
         );
     }
 }

@@ -25,9 +25,11 @@ class EventStartingSoonNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage())
-            ->subject("Event '{$this->event->title}' już niedługo!")
-            ->line("Event zaczyna się: {$this->event->start->toDayDateTimeString()}")
-            ->action("Zobacz event", url("/events/{$this->event->id}"));
+            ->subject(__("events.event_starting_soon_subject", ["title" => $this->event->title]))
+            ->line(__("events.event_starting_soon_line", [
+                "start" => $this->event->start->toDayDateTimeString(),
+            ]))
+            ->action(__("events.see_event"), url("/events/{$this->event->id}"));
     }
 
     public function getEvent(): Event

@@ -45,7 +45,7 @@ class NotifyFollowersCommandTest extends TestCase
 
         $this->artisan("followers:notify")->assertSuccessful();
 
-        Notification::assertSentTo($user, NewEventPublishedNotification::class, fn($notification) => $notification->getEvent()->id === $event->id);
+        Notification::assertSentTo($user, NewEventPublishedNotification::class, fn($notification): bool => $notification->getEvent()->id === $event->id);
     }
 
     public function testSendsNewEventPublishedNotificationToFollowersOfUser(): void
@@ -63,6 +63,6 @@ class NotifyFollowersCommandTest extends TestCase
 
         $this->artisan("followers:notify")->assertSuccessful();
 
-        Notification::assertSentTo($follower, NewEventPublishedNotification::class, fn($notification) => $notification->getEvent()->id === $event->id);
+        Notification::assertSentTo($follower, NewEventPublishedNotification::class, fn($notification): bool => $notification->getEvent()->id === $event->id);
     }
 }

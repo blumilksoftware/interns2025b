@@ -25,9 +25,9 @@ class EventCanceledNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage())
-            ->subject("Event anulowany: {$this->event->title}")
-            ->line("Z przykrością informujemy, że event '{$this->event->title}' został anulowany.")
-            ->action("Zobacz inne wydarzenia", url("/events"));
+            ->subject(__("events.event_canceled_subject", ["title" => $this->event->title]))
+            ->line(__("events.event_canceled_line", ["title" => $this->event->title]))
+            ->action(__("events.see_other_events"), url("/events"));
     }
 
     public function getEvent(): Event

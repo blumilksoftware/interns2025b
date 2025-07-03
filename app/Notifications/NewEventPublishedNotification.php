@@ -25,9 +25,9 @@ class NewEventPublishedNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage())
-            ->subject("Nowy event: {$this->event->title}")
-            ->line("Organizacja/Użytkownik, którego obserwujesz, opublikował nowy event.")
-            ->action("Zobacz event", url("/events/{$this->event->id}"));
+            ->subject(__("events.new_event_subject", ["title" => $this->event->title]))
+            ->line(__("events.new_event_line"))
+            ->action(__("events.see_event"), url("/events/{$this->event->id}"));
     }
 
     public function getEvent(): Event

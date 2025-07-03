@@ -7,6 +7,7 @@ namespace Interns2025b\Models;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -105,5 +106,12 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
             "email_verified_at" => "datetime",
             "password" => "hashed",
         ];
+    }
+
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn(): string => trim("{$this->first_name} {$this->last_name}"),
+        );
     }
 }
