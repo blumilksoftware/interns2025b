@@ -22,8 +22,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $id
  * @property string $first_name
  * @property ?string $last_name
- * @property string $full_name
  * @property string $email
+ * @property ?string $full_name
  * @property ?string $password
  * @property ?string $facebook_id
  * @property ?Carbon $email_verified_at
@@ -109,10 +109,10 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         ];
     }
 
-    protected function full_name(): Attribute
+    protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn(): string => trim("{$this->first_name} {$this->last_name}"),
+            get: fn(): string => trim("$this->first_name $this->last_name"),
         );
     }
 }
