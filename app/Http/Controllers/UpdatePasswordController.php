@@ -15,15 +15,15 @@ class UpdatePasswordController extends Controller
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
         $user = Auth::user();
-        $validated = $request->validated();
+        $newPassword = $request->getNewPassword();
 
-        if (Hash::check($validated["new_password"], $user->password)) {
+        if (Hash::check($newPassword, $user->password)) {
             return response()->json([
                 "message" => __("passwords.same_as_current"),
             ], Status::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $user->password = Hash::make($validated["new_password"]);
+        $user->password = Hash::make($newPassword);
         $user->save();
 
         activity()
