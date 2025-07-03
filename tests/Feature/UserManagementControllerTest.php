@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
@@ -240,5 +242,172 @@ class UserManagementControllerTest extends TestCase
         $response = $this->deleteJson("/api/admin/users/{$this->anotherAdmin->id}");
 
         $response->assertForbidden();
+    }
+
+    public function testIndexReturnsEmptyArrayWhenNoUsersExist(): void
+    {
+        User::role("user")->delete();
+
+        $this->actingAs($this->admin);
+
+        $response = $this->getJson("/api/admin/users");
+
+        $response->assertOk();
+        $response->assertExactJson([]);
+    }
+
+    public function testStoreRejectsIfPasswordTooShort(): void
+    {
+        $this->actingAs($this->admin);
+
+        $payload = [
+            "first_name" => "user",
+            "last_name" => "test",
+            "email" => "shortpass@example.com",
+            "password" => "123",
+            "password_confirmation" => "123",
+        ];
+
+        $response = $this->postJson("/api/admin/users", $payload);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(["password"]);
+    }
+
+    public function testStoreRejectsIfPasswordConfirmationMissing(): void
+    {
+        $this->actingAs($this->admin);
+
+        $payload = [
+            "first_name" => "user",
+            "last_name" => "test",
+            "email" => "nopassconf@example.com",
+            "password" => "password123",
+        ];
+
+        $response = $this->postJson("/api/admin/users", $payload);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(["password"]);
+    }
+
+    public function testUpdateRejectsIfPasswordConfirmationMismatch(): void
+    {
+        $this->actingAs($this->admin);
+
+        $response = $this->putJson("/api/admin/users/{$this->userWithRole->id}", [
+            "password" => "newpassword123",
+            "password_confirmation" => "differentpassword",
+        ]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(["password"]);
+    }
+
+    public function testShowReturnsForbiddenForUserWithoutUserRole(): void
+    {
+        $this->actingAs($this->admin);
+
+        $this->anotherAdmin->assignRole("administrator");
+
+        $response = $this->getJson("/api/admin/users/{$this->anotherAdmin->id}");
+
+        $response->assertForbidden();
+    }
+
+    public function testDestroyPreventsSelfDeletion(): void
+    {
+        $this->actingAs($this->userWithRole);
+
+        $response = $this->deleteJson("/api/admin/users/{$this->userWithRole->id}");
+
+        $response->assertForbidden();
+    }
+
+    public function testDestroyPreventsAdminSelfDeletion(): void
+    {
+        $this->actingAs($this->admin);
+
+        $response = $this->deleteJson("/api/admin/users/{$this->admin->id}");
+
+        $response->assertForbidden();
+    }
+
+    public function testStoreAssignsDefaultUserRole(): void
+    {
+        $this->actingAs($this->admin);
+
+        $payload = [
+            "first_name" => "defaultrole",
+            "last_name" => "test",
+            "email" => "defaultrole@example.com",
+            "password" => "password123",
+            "password_confirmation" => "password123",
+        ];
+
+        $response = $this->postJson("/api/admin/users", $payload);
+
+        $response->assertCreated();
+        $this->assertTrue(User::where("email", "defaultrole@example.com")->first()->hasRole("user"));
+    }
+
+    public function testUpdateWithoutChangingEmailKeepsEmailVerifiedAt(): void
+    {
+        $verifiedAt = now();
+        $this->userWithRole->email_verified_at = $verifiedAt;
+        $this->userWithRole->save();
+
+        $this->actingAs($this->admin);
+
+        $response = $this->putJson("/api/admin/users/{$this->userWithRole->id}", [
+            "first_name" => "newname",
+        ]);
+
+        $response->assertOk();
+
+        $this->userWithRole->refresh();
+
+        $this->assertEquals($verifiedAt->toDateTimeString(), $this->userWithRole->email_verified_at->toDateTimeString());
+    }
+
+    public function testUpdateWithNewEmailResetsEmailVerifiedAt(): void
+    {
+        $this->userWithRole->email_verified_at = now();
+        $this->userWithRole->save();
+
+        $this->actingAs($this->admin);
+
+        $response = $this->putJson("/api/admin/users/{$this->userWithRole->id}", [
+            "email" => "newemail@example.com",
+        ]);
+
+        $response->assertOk();
+
+        $this->userWithRole->refresh();
+
+        $this->assertNull($this->userWithRole->email_verified_at);
+    }
+
+    public function testStoreSendsVerificationEmail(): void
+    {
+        Notification::fake();
+
+        $this->actingAs($this->admin);
+
+        $payload = [
+            "first_name" => "notifytest",
+            "last_name" => "test",
+            "email" => "notify@example.com",
+            "password" => "password123",
+            "password_confirmation" => "password123",
+        ];
+
+        $response = $this->postJson("/api/admin/users", $payload);
+
+        $response->assertCreated();
+
+        $user = User::where("email", "notify@example.com")->first();
+
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
 }

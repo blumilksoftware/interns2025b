@@ -16,7 +16,8 @@ class AdminManagementController extends Controller
 {
     public function index(): JsonResponse
     {
-        $admins = User::role(["administrator"])
+        $admins = User::query()
+            ->role(["administrator"])
             ->orderBy("id")
             ->get();
 
