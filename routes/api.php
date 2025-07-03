@@ -13,12 +13,23 @@ use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
+use Interns2025b\Http\Controllers\UpdatePasswordController;
+use Interns2025b\Http\Controllers\UserDeletionController;
+use Interns2025b\Http\Controllers\UserProfileController;
 
 Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/user", fn(Request $request): JsonResponse => $request->user())->name("user.profile");
     Route::post("/auth/logout", LogoutController::class)->name("logout");
     Route::get("/link/facebook/callback", [FacebookController::class, "linkCallback"]);
+    Route::get("/profile", [UserProfileController::class, "show"]);
+    Route::put("/profile", [UserProfileController::class, "update"]);
+    Route::put("/auth/change-password", [UpdatePasswordController::class, "updatePassword"]);
+    Route::post("/profile/delete-request", [UserDeletionController::class, "requestDelete"]);
 });
+
+Route::get("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
+    ->middleware("signed")
+    ->name("api.confirmDelete");
 
 Route::prefix("auth")->group(function (): void {
     Route::post("/login", [LoginController::class, "login"])->name("login");
