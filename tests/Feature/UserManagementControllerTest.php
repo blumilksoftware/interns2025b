@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
@@ -12,8 +11,6 @@ use Tests\TestCase;
 
 class UserManagementControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testIndexReturnsOnlyUsersWithUserRoleAndOrganizations(): void
     {
         $userWithRole = User::factory()->create([
@@ -41,6 +38,9 @@ class UserManagementControllerTest extends TestCase
                         ->where("last_name", $userWithRole->last_name)
                         ->where("email", $userWithRole->email)
                         ->where("facebook_linked", false)
+                        ->where("email_verified_at", $userWithRole->email_verified_at ? $userWithRole->email_verified_at->toJSON() : null)
+                        ->where("created_at", $userWithRole->created_at->toJSON())
+                        ->where("updated_at", $userWithRole->updated_at->toJSON())
                         ->has("organizations", 1),
                 ),
         );

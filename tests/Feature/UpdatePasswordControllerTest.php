@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Interns2025b\Models\User;
 use Tests\TestCase;
 
 class UpdatePasswordControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testPasswordCanBeUpdated(): void
     {
         $user = $this->authenticatedUser();

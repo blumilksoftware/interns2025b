@@ -21,9 +21,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $first_name
  * @property string $last_name
  * @property string $email
- * @property string $password
- * @property string|null $facebook_id
- * @property Carbon $email_verified_at
+ * @property ?string $password
+ * @property ?string $facebook_id
+ * @property ?Carbon $email_verified_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
