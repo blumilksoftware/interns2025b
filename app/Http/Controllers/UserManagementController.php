@@ -27,7 +27,7 @@ class UserManagementController extends Controller
     public function show(User $user): JsonResponse
     {
         if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, 'Only users with the "user" role can be managed here.');
+            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
         }
 
         $user->load("organizations");
@@ -43,7 +43,7 @@ class UserManagementController extends Controller
 
         if ($userExists) {
             return response()->json([
-                "message" => "User with this email already exists.",
+                "message" => __("users.email_exists"),
             ], Status::HTTP_CONFLICT);
         }
 
@@ -67,7 +67,7 @@ class UserManagementController extends Controller
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
         if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, 'Only users with the "user" role can be managed here.');
+            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
         }
 
         $data = $request->validated();
@@ -96,11 +96,11 @@ class UserManagementController extends Controller
     public function destroy(User $user): JsonResponse
     {
         if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, 'Only users with the "user" role can be managed here.');
+            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
         }
 
         $user->delete();
 
-        return response()->json(["message" => "User deleted successfully."], Status::HTTP_OK);
+        return response()->json(["message" => __("users.deleted_successfully")], Status::HTTP_OK);
     }
 }
