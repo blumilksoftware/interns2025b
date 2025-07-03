@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Interns2025b\Http\Controllers\AdminEventController;
 use Interns2025b\Http\Controllers\AdminManagementController;
 use Interns2025b\Http\Controllers\EmailVerificationController;
 use Interns2025b\Http\Controllers\EventController;
@@ -51,10 +50,6 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::post("events", [EventController::class, "store"]);
     Route::put("events/{event}", [EventController::class, "update"]);
     Route::delete("events/{event}", [EventController::class, "destroy"]);
-});
-
-Route::middleware(["auth:sanctum", "role:Administrator|SuperAdministrator"])->prefix("admin")->group(function (): void {
-    Route::apiResource("events", AdminEventController::class);
 });
 
 Route::middleware(["auth:sanctum"])->group(function (): void {
