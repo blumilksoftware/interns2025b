@@ -16,7 +16,8 @@ class UserManagementController extends Controller
 {
     public function index(User $user): JsonResponse
     {
-        $users = User::with("organizations")
+        $users = User::query()
+            ->with("organizations")
             ->role("user")
             ->orderBy("id")
             ->get();
