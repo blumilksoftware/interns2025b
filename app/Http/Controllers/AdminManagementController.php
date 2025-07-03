@@ -26,7 +26,7 @@ class AdminManagementController extends Controller
     public function show(User $admin): JsonResponse
     {
         if (!$admin->hasAnyRole(["administrator"])) {
-            abort(Status::HTTP_FORBIDDEN);
+            abort(Status::HTTP_FORBIDDEN, __("users.forbidden_role"));
         }
 
         return response()->json(new AdminResource($admin), Status::HTTP_OK);
@@ -52,7 +52,7 @@ class AdminManagementController extends Controller
     public function update(UpdateAdminRequest $request, User $admin): JsonResponse
     {
         if (!$admin->hasRole("administrator")) {
-            abort(Status::HTTP_FORBIDDEN, 'Only users with the "administrator" role can be managed here.');
+            abort(Status::HTTP_FORBIDDEN, __("users.forbidden_role"));
         }
 
         $data = $request->validated();
@@ -77,11 +77,11 @@ class AdminManagementController extends Controller
     public function destroy(User $admin): JsonResponse
     {
         if (!$admin->hasAnyRole(["administrator"])) {
-            abort(Status::HTTP_FORBIDDEN);
+            abort(Status::HTTP_FORBIDDEN, __("users.forbidden_role"));
         }
 
         $admin->delete();
 
-        return response()->json(["message" => "Admin deleted successfully."], Status::HTTP_OK);
+        return response()->json(["message" => __("users.admin_deleted")], Status::HTTP_OK);
     }
 }

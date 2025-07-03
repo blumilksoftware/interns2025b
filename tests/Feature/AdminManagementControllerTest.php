@@ -11,12 +11,22 @@ use Tests\TestCase;
 
 class AdminManagementControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected User $admin;
+    protected User $superAdmin;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->admin = User::factory()->admin()->create();
+        $this->superAdmin = User::factory()->superAdmin()->create();
+    }
+
     public function testIndexReturnsOnlyAdmins(): void
     {
-        $admin = User::factory()->admin()->create();
-        $superAdmin = User::factory()->superAdmin()->create();
-
-        $this->actingAs($superAdmin);
+        $this->actingAs($this->superAdmin);
 
         $response = $this->getJson("/api/superadmin/admins");
 
@@ -24,8 +34,8 @@ class AdminManagementControllerTest extends TestCase
         $response->assertJson(
             fn(AssertableJson $json) => $json->has(1)
                 ->first(
-                    fn(AssertableJson $json) => $json->where("id", $admin->id)
-                        ->where("email", $admin->email)
+                    fn(AssertableJson $json) => $json->where("id", $this->admin->id)
+                        ->where("email", $this->admin->email)
                         ->where("facebook_linked", false)
                         ->hasAll(["first_name", "last_name"]),
                 ),
@@ -34,8 +44,7 @@ class AdminManagementControllerTest extends TestCase
 
     public function testIndexForbiddenForNonSuperAdmin(): void
     {
-        $admin = User::factory()->admin()->create();
-        $this->actingAs($admin);
+        $this->actingAs($this->admin);
 
         $response = $this->getJson("/api/superadmin/admins");
 
@@ -44,23 +53,19 @@ class AdminManagementControllerTest extends TestCase
 
     public function testShowReturnsAdmin(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
-        $admin = User::factory()->admin()->create();
+        $this->actingAs($this->superAdmin);
 
-        $this->actingAs($superAdmin);
-
-        $response = $this->getJson("/api/superadmin/admins/{$admin->id}");
+        $response = $this->getJson("/api/superadmin/admins/{$this->admin->id}");
 
         $response->assertOk();
-        $response->assertJsonPath("id", $admin->id);
+        $response->assertJsonPath("id", $this->admin->id);
     }
 
     public function testShowRejectsNonAdminUser(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
         $user = User::factory()->create();
 
-        $this->actingAs($superAdmin);
+        $this->actingAs($this->superAdmin);
 
         $response = $this->getJson("/api/superadmin/admins/{$user->id}");
 
@@ -69,9 +74,7 @@ class AdminManagementControllerTest extends TestCase
 
     public function testStoreCreatesAdminSuccessfully(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
-
-        $this->actingAs($superAdmin);
+        $this->actingAs($this->superAdmin);
 
         $payload = [
             "first_name" => "admin",
@@ -90,10 +93,9 @@ class AdminManagementControllerTest extends TestCase
 
     public function testStoreRejectsDuplicateEmail(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
         User::factory()->create(["email" => "duplicate@example.com"]);
 
-        $this->actingAs($superAdmin);
+        $this->actingAs($this->superAdmin);
 
         $response = $this->postJson("/api/superadmin/admins", [
             "first_name" => "admin",
@@ -109,32 +111,28 @@ class AdminManagementControllerTest extends TestCase
 
     public function testUpdateModifiesAdminDetails(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
-        $admin = User::factory()->admin()->create(["email" => "admin@example.com"]);
+        $this->actingAs($this->superAdmin);
 
-        $this->actingAs($superAdmin);
-
-        $response = $this->putJson("/api/superadmin/admins/{$admin->id}", [
+        $response = $this->putJson("/api/superadmin/admins/{$this->admin->id}", [
             "first_name" => "Updated",
             "email" => "updated@example.com",
         ]);
 
         $response->assertOk();
 
-        $admin->refresh();
-        $this->assertEquals("Updated", $admin->first_name);
-        $this->assertEquals("updated@example.com", $admin->email);
+        $this->admin->refresh();
+        $this->assertEquals("Updated", $this->admin->first_name);
+        $this->assertEquals("updated@example.com", $this->admin->email);
     }
 
     public function testEmailChangeResetsEmailVerifiedAt(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
         $admin = User::factory()->admin()->create([
             "email" => "old@example.com",
             "email_verified_at" => now(),
         ]);
 
-        $this->actingAs($superAdmin);
+        $this->actingAs($this->superAdmin);
 
         $response = $this->putJson("/api/superadmin/admins/{$admin->id}", [
             "email" => "new@example.com",
@@ -149,14 +147,13 @@ class AdminManagementControllerTest extends TestCase
 
     public function testEmailUnchangedKeepsEmailVerifiedAt(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
         $verifiedAt = now();
         $admin = User::factory()->admin()->create([
             "email" => "same@example.com",
             "email_verified_at" => $verifiedAt,
         ]);
 
-        $this->actingAs($superAdmin);
+        $this->actingAs($this->superAdmin);
 
         $response = $this->putJson("/api/superadmin/admins/{$admin->id}", [
             "first_name" => "Updated",
@@ -171,10 +168,9 @@ class AdminManagementControllerTest extends TestCase
 
     public function testUpdateRejectsIfNotAdmin(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
         $user = User::factory()->create();
 
-        $this->actingAs($superAdmin);
+        $this->actingAs($this->superAdmin);
 
         $response = $this->putJson("/api/superadmin/admins/{$user->id}", [
             "first_name" => "shouldfail",
@@ -185,24 +181,20 @@ class AdminManagementControllerTest extends TestCase
 
     public function testDestroyDeletesAdmin(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
-        $admin = User::factory()->admin()->create();
+        $this->actingAs($this->superAdmin);
 
-        $this->actingAs($superAdmin);
-
-        $response = $this->deleteJson("/api/superadmin/admins/{$admin->id}");
+        $response = $this->deleteJson("/api/superadmin/admins/{$this->admin->id}");
 
         $response->assertOk();
         $response->assertJson(["message" => "Admin deleted successfully."]);
-        $this->assertDatabaseMissing("users", ["id" => $admin->id]);
+        $this->assertDatabaseMissing("users", ["id" => $this->admin->id]);
     }
 
     public function testDestroyRejectsIfNotAdmin(): void
     {
-        $superAdmin = User::factory()->superAdmin()->create();
         $user = User::factory()->create();
 
-        $this->actingAs($superAdmin);
+        $this->actingAs($this->superAdmin);
 
         $response = $this->deleteJson("/api/superadmin/admins/{$user->id}");
 
@@ -211,10 +203,9 @@ class AdminManagementControllerTest extends TestCase
 
     public function testOnlySuperAdminCanManageAdmins(): void
     {
-        $admin = User::factory()->admin()->create();
         $target = User::factory()->admin()->create();
 
-        $this->actingAs($admin);
+        $this->actingAs($this->admin);
 
         $response = $this->deleteJson("/api/superadmin/admins/{$target->id}");
 
