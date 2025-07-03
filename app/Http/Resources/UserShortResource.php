@@ -13,7 +13,7 @@ class UserShortResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "name" => $this->fullName,
+            "name" => $this->full_name,
         ];
     }
 }
