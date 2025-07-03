@@ -140,4 +140,50 @@ class EventControllerTest extends TestCase
         $this->actingAs($this->superadmin)->deleteJson("/api/events/{$event->id}")->assertOk();
         $this->assertDatabaseMissing("events", ["id" => $event->id]);
     }
+
+    public function testGuestCannotCreateEvent(): void
+    {
+        $payload = [
+            "title" => "Unauthorized Event",
+            "description" => "Guest try",
+            "location" => "Somewhere",
+            "start_time" => now()->addDay()->toISOString(),
+            "end_time" => now()->addDays(2)->toISOString(),
+            "is_paid" => true,
+            "status" => "published",
+        ];
+
+        $this->postJson("/api/events", $payload)->assertUnauthorized();
+    }
+
+    public function testInvalidPayloadFailsValidation(): void
+    {
+        $payload = [
+            "title" => "",
+            "description" => "Missing other fields",
+        ];
+
+        $response = $this->actingAs($this->user)->postJson("/api/events", $payload);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(["title", "location", "start_time", "end_time", "is_paid", "status"]);
+    }
+
+    public function testStartTimeMustBeBeforeEndTime(): void
+    {
+        $payload = [
+            "title" => "Invalid Time",
+            "description" => "Invalid time order",
+            "location" => "Here",
+            "start_time" => now()->addDays(3)->toISOString(),
+            "end_time" => now()->addDay()->toISOString(),
+            "is_paid" => false,
+            "status" => "draft",
+        ];
+
+        $response = $this->actingAs($this->user)->postJson("/api/events", $payload);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(["start_time"]);
+    }
 }
