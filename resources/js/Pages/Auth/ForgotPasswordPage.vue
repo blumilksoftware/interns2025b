@@ -35,63 +35,65 @@ const {
       <h2 class="font-bold text-3xl">Przypomnij hasło</h2>
       <p class="font-medium">
         Pamiętasz hasło?
-        <InertiaLink href="/login" class="underline font-semibold">
+        <InertiaLink
+          href="/login"
+          class="underline font-semibold hover:text-gray-200"
+        >
           Zaloguj się
         </InertiaLink><br>
         Chcesz założyć konto?
-        <InertiaLink href="/register" class="underline font-semibold">
+        <InertiaLink
+          href="/register"
+          class="underline font-semibold hover:text-gray-200"
+        >
           Zarejestruj się
         </InertiaLink>
       </p>
     </template>
     <template #form>
-      <div
-        class="flex flex-col items-center justify-center mt-6 space-y-6 text-xl"
-      >
+      <div class="flex flex-col items-center justify-center mt-6 text-xl">
         <div
-          v-if="globalMessage"
-          class="mb-4 text-center max-w-md mx-auto"
-          :class="{
-            'text-red-600': globalMessage.includes('błąd'),
-            'text-green-600': globalMessage.includes('został wysłany'),
-          }"
+          class="flex w-5/6 flex-col justify-center max-w-md mx-auto space-y-6"
         >
-          {{ globalMessage }}
+          <h2 class="text-2xl font-bold">Reset hasła</h2>
+          <p class="text-gray-600">
+            Wprowadź swój adres e-mail, a wyślemy Ci link do zresetowania hasła.
+          </p>
+          <div
+            v-if="globalMessage"
+            class="text-center bg-green-100 rounded-md p-4 max-w-md mx-auto"
+            :class="{
+              'text-red-600': globalMessage.includes('błąd'),
+              'text-green-600': globalMessage.includes('został wysłany'),
+            }"
+          >
+            {{ globalMessage }}
+          </div>
+          <form @submit.prevent="submitForm">
+            <div class="w-full mb-6">
+              <BaseInput
+                id="forgot-password-email"
+                v-model="form.email"
+                name="email"
+                label="Email"
+                type="email"
+              />
+              <small v-if="errors.email" class="text-red-600">
+                {{ errors.email }}
+              </small>
+            </div>
+
+            <div class="w-full flex justify-center">
+              <BaseButton
+                type="submit"
+                class="w-full h-12 bg-black shadow-[#375DFB] text-white font-bold"
+                :disabled="isSubmitting"
+              >
+                Wyślij link
+              </BaseButton>
+            </div>
+          </form>
         </div>
-
-        <form
-          class="flex w-5/6 flex-col justify-center max-w-md mx-auto mt-6 space-y-6"
-          @submit.prevent="submitForm"
-        >
-          <div class="w-full ">
-            <h2 class="text-2xl font-bold mb-4">Reset hasła</h2>
-            <p class="text-gray-600 mb-4">
-              Wprowadź swój adres e-mail, a wyślemy Ci link do zresetowania
-              hasła.
-            </p>
-
-            <BaseInput
-              id="forgot-password-email"
-              v-model="form.email"
-              name="email"
-              label="Email"
-              type="email"
-            />
-            <small v-if="errors.email" class="text-red-600">
-              {{ errors.email }}
-            </small>
-          </div>
-
-          <div class="w-full flex justify-center">
-            <BaseButton
-              type="submit"
-              class="w-full h-12 bg-black shadow-[#375DFB] text-white font-bold"
-              :disabled="isSubmitting"
-            >
-              Wyślij link
-            </BaseButton>
-          </div>
-        </form>
       </div>
     </template>
   </auth-layout>
