@@ -124,4 +124,34 @@ class UserProfileTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(["first_name", "last_name"]);
     }
+
+    public function testAuthenticatedUserCanViewTheirOwnProfileViaMe(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->getJson("/api/profile/me")
+            ->assertOk()
+            ->assertJsonPath("data.id", $user->id);
+    }
+
+    public function testUserRedirectedToMeIfTheyAccessTheirOwnId(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get("/api/profile/{$user->id}")
+            ->assertRedirect("/api/profile/me");
+    }
+
+    public function testAuthenticatedUserCanViewOtherUsersProfile(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $this->actingAs($user)
+            ->getJson("/api/profile/{$otherUser->id}")
+            ->assertOk()
+            ->assertJsonPath("data.id", $otherUser->id);
+    }
 }

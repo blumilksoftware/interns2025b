@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Hash;
 use Interns2025b\Models\User;
+use Symfony\Component\HttpFoundation\Response as Status;
 use Tests\TestCase;
 
 class LoginUserTest extends TestCase
@@ -21,7 +22,7 @@ class LoginUserTest extends TestCase
 
         $response = $this->postJson("/api/auth/login", $this->validData());
 
-        $response->assertStatus(200)
+        $response->assertStatus(Status::HTTP_OK)
             ->assertJsonStructure([
                 "message",
                 "token",
@@ -49,7 +50,7 @@ class LoginUserTest extends TestCase
 
         $response = $this->postJson("/api/auth/login", $this->validData(["password" => "wrongPassword"]));
 
-        $response->assertStatus(403)
+        $response->assertStatus(Status::HTTP_FORBIDDEN)
             ->assertJson([
                 "message" => __("auth.failed"),
             ]);
@@ -62,7 +63,7 @@ class LoginUserTest extends TestCase
             "password" => "",
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(Status::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(["email", "password"]);
     }
 

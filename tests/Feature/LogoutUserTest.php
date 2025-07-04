@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use Interns2025b\Models\User;
 use Laravel\Sanctum\Sanctum;
+use Symfony\Component\HttpFoundation\Response as Status;
 use Tests\TestCase;
 
 class LogoutUserTest extends TestCase
@@ -17,7 +18,7 @@ class LogoutUserTest extends TestCase
 
         $response = $this->postJson("/api/auth/logout");
 
-        $response->assertStatus(200)
+        $response->assertStatus(Status::HTTP_OK)
             ->assertJson([
                 "message" => __("auth.logout"),
             ]);
@@ -26,6 +27,6 @@ class LogoutUserTest extends TestCase
     public function testGuestCannotLogout(): void
     {
         $response = $this->postJson("/api/auth/logout");
-        $response->assertStatus(401);
+        $response->assertStatus(Status::HTTP_UNAUTHORIZED);
     }
 }

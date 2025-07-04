@@ -8,8 +8,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Interns2025b\Enums\EventStatus;
+use Interns2025b\Observers\EventObserver;
 
 /**
  * @property int $id
@@ -68,6 +71,16 @@ class Event extends Model
         return $this->morphTo();
     }
 
+    public function participants(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, "event_user");
+    }
+
+    public function followers(): MorphToMany
+    {
+        return $this->morphToMany(User::class, "followable", "followables");
+    }
+
     public function loadOwnerRelations(): self
     {
         $this->loadMissing("owner");
@@ -89,5 +102,10 @@ class Event extends Model
         ]);
 
         return $events;
+    }
+
+    protected static function booted(): void
+    {
+        static::observe(EventObserver::class);
     }
 }

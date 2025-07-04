@@ -53,7 +53,7 @@
         ],
         "test": [
             "@putenv XDEBUG_MODE=off",
-            "@php artisan test"
+            "@php artisan test --env=testing"
         ],
         "analyse": "./vendor/bin/phpstan analyse",
         "cs": "./vendor/bin/php-cs-fixer fix --dry-run --diff --config codestyle.php",
