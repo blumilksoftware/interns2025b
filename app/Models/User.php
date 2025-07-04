@@ -21,7 +21,7 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * @property int $id
  * @property string $first_name
- * @property string $last_name
+ * @property ?string $last_name
  * @property string $email
  * @property ?string $full_name
  * @property ?string $password
