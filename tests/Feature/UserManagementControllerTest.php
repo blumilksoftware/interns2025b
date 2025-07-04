@@ -22,19 +22,16 @@ class UserManagementControllerTest extends TestCase
     {
         parent::setUp();
 
-        // Create a common admin user
         $this->admin = User::factory()->admin()->create([
             "first_name" => "admin",
         ]);
 
-        // Create a regular user with an organization
         $this->userWithRole = User::factory()->create([
             "first_name" => "user",
         ]);
         $this->organization = Organization::factory()->create();
         $this->userWithRole->organizations()->attach($this->organization);
 
-        // Create another admin user for tests needing multiple admins
         $this->anotherAdmin = User::factory()->admin()->create();
     }
 
@@ -409,5 +406,44 @@ class UserManagementControllerTest extends TestCase
         $user = User::where("email", "notify@example.com")->first();
 
         Notification::assertSentTo($user, VerifyEmail::class);
+    }
+
+    public function testStoreAssignsMultipleOrganizations(): void
+    {
+        $org2 = Organization::factory()->create();
+        $org3 = Organization::factory()->create();
+
+        $this->actingAs($this->admin);
+
+        $payload = [
+            "first_name" => "multi",
+            "last_name" => "orgs",
+            "email" => "multi@example.com",
+            "password" => "password123",
+            "password_confirmation" => "password123",
+            "organization_ids" => [$this->organization->id, $org2->id, $org3->id],
+        ];
+
+        $response = $this->postJson("/api/admin/users", $payload);
+
+        $response->assertCreated();
+
+        $user = User::where("email", "multi@example.com")->first();
+
+        $this->assertEqualsCanonicalizing(
+            [$this->organization->id, $org2->id, $org3->id],
+            $user->organizations->pluck("id")->toArray(),
+        );
+    }
+
+    public function testUpdateNonExistentUserReturnsNotFound(): void
+    {
+        $this->actingAs($this->admin);
+
+        $response = $this->putJson("/api/admin/users/999999", [
+            "first_name" => "ghost",
+        ]);
+
+        $response->assertNotFound();
     }
 }
