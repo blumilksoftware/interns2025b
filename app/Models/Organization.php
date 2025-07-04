@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * @property int $id
@@ -52,5 +53,10 @@ class Organization extends Model
     public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, "event_organization");
+    }
+
+    public function followers(): MorphToMany
+    {
+        return $this->morphToMany(User::class, "followable", "followables");
     }
 }

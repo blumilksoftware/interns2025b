@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Interns2025b\Http\Controllers\EmailVerificationController;
 use Interns2025b\Http\Controllers\EventController;
+use Interns2025b\Http\Controllers\EventParticipationController;
 use Interns2025b\Http\Controllers\FacebookController;
+use Interns2025b\Http\Controllers\FollowController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
@@ -25,6 +27,10 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::put("/profile", [UserProfileController::class, "update"]);
     Route::put("/auth/change-password", [UpdatePasswordController::class, "updatePassword"]);
     Route::post("/profile/delete-request", [UserDeletionController::class, "requestDelete"]);
+    Route::post("/events/{event}/participate", EventParticipationController::class)->name("participate");
+    Route::post("/follow/{type}/{id}", FollowController::class)->name("follow");
+    Route::get("/followings", [FollowController::class, "followings"])->name("followings");
+    Route::get("/followers", [FollowController::class, "followers"])->name("followers");
 });
 
 Route::get("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
