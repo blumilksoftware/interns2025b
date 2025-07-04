@@ -211,4 +211,52 @@ class AdminManagementControllerTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function testGuestCannotAccessAdminRoutes(): void
+    {
+        $endpoints = [
+            "get" => "/api/superadmin/admins",
+            "post" => "/api/superadmin/admins",
+            "get_show" => "/api/superadmin/admins/{$this->admin->id}",
+            "put" => "/api/superadmin/admins/{$this->admin->id}",
+            "delete" => "/api/superadmin/admins/{$this->admin->id}",
+        ];
+
+        foreach ($endpoints as $method => $uri) {
+            $response = match ($method) {
+                "get", "get_show" => $this->getJson($uri),
+                "post" => $this->postJson($uri, []),
+                "put" => $this->putJson($uri, []),
+                "delete" => $this->deleteJson($uri),
+            };
+
+            $response->assertUnauthorized();
+        }
+    }
+
+    public function testUpdateWithSameEmailKeepsVerification(): void
+    {
+        $verifiedAt = now();
+        $this->admin->update(["email_verified_at" => $verifiedAt]);
+
+        $this->actingAs($this->superAdmin);
+
+        $response = $this->putJson("/api/superadmin/admins/{$this->admin->id}", [
+            "email" => $this->admin->email,
+        ]);
+
+        $response->assertOk();
+        $this->assertEquals($verifiedAt->toDateTimeString(), $this->admin->fresh()->email_verified_at->toDateTimeString());
+    }
+
+    public function testSuperAdminCannotBeDemotedToAdmin(): void
+    {
+        $this->actingAs($this->superAdmin);
+
+        $response = $this->putJson("/api/superadmin/admins/{$this->superAdmin->id}", [
+            "first_name" => "Attempted Demotion",
+        ]);
+
+        $response->assertForbidden();
+    }
 }
