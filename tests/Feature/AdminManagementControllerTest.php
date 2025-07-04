@@ -11,8 +11,6 @@ use Tests\TestCase;
 
 class AdminManagementControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testIndexReturnsOnlyAdmins(): void
     {
         $admin = User::factory()->admin()->create();

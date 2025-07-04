@@ -70,7 +70,7 @@ Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:admin
     Route::delete("/users/{user}", [UserManagementController::class, "destroy"])->name("users.destroy");
 });
 
-Route::group(["prefix" => "superadmin", "middleware" => ["auth:sanctum", "role:superAdministrator"]], function (): void {
+Route::group(["middleware" => ["auth:sanctum", "role:superAdministrator"]], function (): void {
     Route::get("/admins", [AdminManagementController::class, "index"])->name("admins.index");
     Route::get("/admins/{admin}", [AdminManagementController::class, "show"])->name("admins.show");
     Route::post("/admins", [AdminManagementController::class, "store"])->name("admins.store");
