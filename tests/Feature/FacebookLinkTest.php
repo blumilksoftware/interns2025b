@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -12,7 +11,6 @@ use Tests\Traits\MocksFacebookUser;
 
 class FacebookLinkTest extends TestCase
 {
-    use RefreshDatabase;
     use MocksFacebookUser;
 
     protected User $user;

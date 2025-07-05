@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Interns2025b\Mail\DeleteAccountLinkMail;
 use Interns2025b\Models\User;
@@ -12,8 +11,6 @@ use Tests\TestCase;
 
 class UserDeletionTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testUserCanRequestDeletionEmail(): void
     {
         Mail::fake();
@@ -22,9 +19,9 @@ class UserDeletionTest extends TestCase
         $this->actingAs($user, "sanctum")
             ->postJson("/api/profile/delete-request")
             ->assertStatus(200)
-            ->assertJson(["message" => "Confirmation email sent."]);
+            ->assertJson(["message" => "Confirmation e-mail sent."]);
 
-        Mail::assertSent(DeleteAccountLinkMail::class, fn($mail) => $mail->user->id === $user->id);
+        Mail::assertSent(DeleteAccountLinkMail::class, fn($mail): bool => $mail->user->id === $user->id);
     }
 
     public function testDeletionFailsWithInvalidSignature(): void

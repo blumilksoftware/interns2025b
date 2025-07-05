@@ -7,6 +7,7 @@ namespace Interns2025b\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Interns2025b\Http\Requests\UpdateUserRequest;
+use Interns2025b\Http\Resources\UserResource;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 class UserProfileController extends Controller
@@ -17,12 +18,7 @@ class UserProfileController extends Controller
 
         return response()->json([
             "message" => __("profile.retrieved"),
-            "data" => [
-                "first_name" => $user->first_name,
-                "last_name" => $user->last_name,
-                "email" => $user->email,
-                "facebook_linked" => $user->facebook_id !== null,
-            ],
+            "data" => new UserResource($user),
         ])->setStatusCode(Status::HTTP_OK);
     }
 
@@ -33,11 +29,7 @@ class UserProfileController extends Controller
 
         return response()->json([
             "message" => __("profile.updated"),
-            "data" => [
-                "first_name" => $user->first_name,
-                "last_name" => $user->last_name,
-                "email" => $user->email,
-            ],
+            "data" => new UserResource($user),
         ])->setStatusCode(Status::HTTP_OK);
     }
 }
