@@ -24,10 +24,10 @@ const {
     remember: false,
   },
   {
-    endpoint: '/api/auth/login',
+    endpoint: 'api/auth/login',
     onSuccess: (response) => {
-      localStorage.setItem('token', response.data.token)
-      router.visit('/', {
+      sessionStorage.setItem('token', response.data.token)
+      router.visit('/profile', {
         method: 'get',
         preserveState: false,
         preserveScroll: false,
