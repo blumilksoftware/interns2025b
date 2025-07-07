@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
 
 type InputType = 'text' | 'email' | 'password' | 'number' | 'search';
 
@@ -10,6 +9,7 @@ defineProps<{
   name: string
   id: string
   placeholder?: string
+  error?: string | null
 }>()
 
 defineEmits<{
@@ -28,11 +28,17 @@ defineEmits<{
       :type="type"
       :placeholder="placeholder"
       :value="modelValue"
-      class="w-full h-12 px-4 pr-10 font-medium text-[#025F60] border-2 rounded-lg focus:outline-none"
+      :class="[
+        'w-full h-12 px-4 pr-10 font-medium rounded-lg focus:outline-none text-Brand hover:bg-gray-100 focus:bg-gray-100 transition duration-100 ease-in-out',
+        error ? 'border border-red-500' : 'border border-Brand',
+      ]"
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)
       "
     >
     <slot name="append" />
   </div>
+  <small v-if="error" class="text-red-600 text-sm">
+    {{ error }}
+  </small>
 </template>
