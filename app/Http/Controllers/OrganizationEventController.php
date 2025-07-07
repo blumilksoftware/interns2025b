@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Interns2025b\Http\Requests\StoreEventRequest;
+use Interns2025b\Http\Requests\UpdateEventRequest;
 use Interns2025b\Http\Resources\EventResource;
 use Interns2025b\Models\Event;
 use Interns2025b\Models\Organization;
@@ -15,42 +16,79 @@ class OrganizationEventController extends Controller
 {
     public function index(Organization $organization): JsonResponse
     {
-        $events = $organization->events()->with("owner")->get();
+        $events = $organization->ownedEvents()->with("owner")->get();
 
         return response()->json([
             "data" => EventResource::collection($events),
         ]);
     }
 
-    public function store(Request $request, Organization $organization): JsonResponse
+    public function store(StoreEventRequest $request, Organization $organization): JsonResponse
     {
-        $data = $request->validate([
-            "title" => "required|string|max:255",
-            "description" => "nullable|string",
-            "start" => "required|date",
-            "end" => "required|date|after_or_equal:start",
-        ]);
+        $user = $request->user();
 
-        $event = $organization->events()->create(array_merge($data, [
-            "owner_type" => get_class($organization),
+        $belongsToOrganization = $user->organizations()
+            ->where("organizations.id", $organization->id)
+            ->exists();
+
+        if (!$belongsToOrganization) {
+            return response()->json([
+                "message" => "You are not a member of this organization.",
+            ], Status::HTTP_FORBIDDEN);
+        }
+
+        $data = $request->validated();
+
+        $event = $organization->ownedEvents()->create([
+            "title" => $data["title"],
+            "description" => $data["description"] ?? null,
+            "start" => $data["start_time"],
+            "end" => $data["end_time"],
+            "location" => $data["location"] ?? null,
+            "address" => $data["address"] ?? null,
+            "latitude" => $data["latitude"] ?? null,
+            "longitude" => $data["longitude"] ?? null,
+            "is_paid" => $data["is_paid"],
+            "price" => $data["price"] ?? null,
+            "status" => $data["status"],
+            "image_url" => $data["image_url"] ?? null,
+            "age_category" => $data["age_category"] ?? null,
+            "owner_type" => Organization::class,
             "owner_id" => $organization->id,
-        ]));
+        ]);
 
         return response()->json([
             "data" => new EventResource($event),
         ], Status::HTTP_CREATED);
     }
 
-    public function update(Request $request, Organization $organization, Event $event): JsonResponse
+    public function update(UpdateEventRequest $request, Organization $organization, Event $event): JsonResponse
     {
-        $data = $request->validate([
-            "title" => "required|string|max:255",
-            "description" => "nullable|string",
-            "start" => "required|date",
-            "end" => "required|date|after_or_equal:start",
+        if (
+            $event->owner_type !== Organization::class ||
+            $event->owner_id !== $organization->id
+        ) {
+            abort(Status::HTTP_NOT_FOUND);
+        }
+
+        $data = $request->validated();
+
+        $event->update([
+            "title" => $data["title"] ?? $event->title,
+            "description" => $data["description"] ?? $event->description,
+            "start" => $data["start_time"] ?? $event->start,
+            "end" => $data["end_time"] ?? $event->end,
+            "location" => $data["location"] ?? $event->location,
+            "address" => $data["address"] ?? $event->address,
+            "latitude" => $data["latitude"] ?? $event->latitude,
+            "longitude" => $data["longitude"] ?? $event->longitude,
+            "is_paid" => $data["is_paid"] ?? $event->is_paid,
+            "price" => $data["price"] ?? $event->price,
+            "status" => $data["status"] ?? $event->status,
+            "image_url" => $data["image_url"] ?? $event->image_url,
+            "age_category" => $data["age_category"] ?? $event->age_category,
         ]);
 
-        $event->update($data);
         $event->loadOwnerRelations();
 
         return response()->json([
@@ -60,6 +98,13 @@ class OrganizationEventController extends Controller
 
     public function destroy(Organization $organization, Event $event): JsonResponse
     {
+        if (
+            $event->owner_type !== Organization::class ||
+            $event->owner_id !== $organization->id
+        ) {
+            abort(Status::HTTP_NOT_FOUND);
+        }
+
         $event->delete();
 
         return response()->json([
