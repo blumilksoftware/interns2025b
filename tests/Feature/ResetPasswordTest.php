@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Interns2025b\Models\User;
+use Symfony\Component\HttpFoundation\Response as Status;
 use Tests\TestCase;
 
 class ResetPasswordTest extends TestCase
@@ -53,7 +54,7 @@ class ResetPasswordTest extends TestCase
             "password_confirmation" => "something-new",
         ]);
 
-        $response->assertStatus(400)
+        $response->assertStatus(Status::HTTP_BAD_REQUEST)
             ->assertJson(["message" => trans(Password::INVALID_TOKEN)]);
     }
 }

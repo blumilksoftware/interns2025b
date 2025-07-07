@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\User;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class UserProfileTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function user_can_view_their_profile(): void
     {
         $user = User::factory()->create([
@@ -88,6 +85,20 @@ class UserProfileTest extends TestCase
             "first_name" => "UpdatedName",
             "last_name" => "UpdatedSurname",
         ]);
+    }
+
+    public function testUpdateProfileRequiresFirstName(): void
+    {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $response = $this->putJson("/api/profile", [
+            "last_name" => "OnlyLastName",
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(["first_name"]);
     }
 
     public function testGuestCannotUpdateProfile(): void

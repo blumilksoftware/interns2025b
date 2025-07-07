@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Interns2025b\Models\User;
 use Tests\TestCase;
@@ -49,7 +48,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($superAdmin);
 
-        $response = $this->getJson("/api/superadmin/admins/{$admin->id}");
+        $response = $this->getJson("/api/admins/{$admin->id}");
 
         $response->assertOk();
         $response->assertJsonPath("id", $admin->id);
@@ -62,7 +61,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($superAdmin);
 
-        $response = $this->getJson("/api/superadmin/admins/{$user->id}");
+        $response = $this->getJson("/api/admins/{$user->id}");
 
         $response->assertForbidden();
     }
@@ -81,7 +80,7 @@ class AdminManagementControllerTest extends TestCase
             "password_confirmation" => "password123",
         ];
 
-        $response = $this->postJson("/api/superadmin/admins", $payload);
+        $response = $this->postJson("/api/admins", $payload);
 
         $response->assertCreated();
         $this->assertDatabaseHas("users", ["email" => "newadmin@example.com"]);
@@ -95,7 +94,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($superAdmin);
 
-        $response = $this->postJson("/api/superadmin/admins", [
+        $response = $this->postJson("/api/admins", [
             "first_name" => "admin",
             "last_name" => "dup",
             "email" => "duplicate@example.com",
@@ -114,7 +113,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($superAdmin);
 
-        $response = $this->putJson("/api/superadmin/admins/{$admin->id}", [
+        $response = $this->putJson("/api/admins/{$admin->id}", [
             "first_name" => "Updated",
             "email" => "updated@example.com",
         ]);
@@ -136,7 +135,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($superAdmin);
 
-        $response = $this->putJson("/api/superadmin/admins/{$admin->id}", [
+        $response = $this->putJson("/api/admins/{$admin->id}", [
             "email" => "new@example.com",
         ]);
 
@@ -158,7 +157,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($superAdmin);
 
-        $response = $this->putJson("/api/superadmin/admins/{$admin->id}", [
+        $response = $this->putJson("/api/admins/{$admin->id}", [
             "first_name" => "Updated",
         ]);
 
@@ -176,7 +175,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($superAdmin);
 
-        $response = $this->putJson("/api/superadmin/admins/{$user->id}", [
+        $response = $this->putJson("/api/admins/{$user->id}", [
             "first_name" => "shouldfail",
         ]);
 
@@ -190,7 +189,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($superAdmin);
 
-        $response = $this->deleteJson("/api/superadmin/admins/{$admin->id}");
+        $response = $this->deleteJson("/api/admins/{$admin->id}");
 
         $response->assertOk();
         $response->assertJson(["message" => "Admin deleted successfully."]);
@@ -204,7 +203,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($superAdmin);
 
-        $response = $this->deleteJson("/api/superadmin/admins/{$user->id}");
+        $response = $this->deleteJson("/api/admins/{$user->id}");
 
         $response->assertForbidden();
     }
@@ -216,7 +215,7 @@ class AdminManagementControllerTest extends TestCase
 
         $this->actingAs($admin);
 
-        $response = $this->deleteJson("/api/superadmin/admins/{$target->id}");
+        $response = $this->deleteJson("/api/admins/{$target->id}");
 
         $response->assertForbidden();
     }
