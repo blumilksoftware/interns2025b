@@ -6,6 +6,7 @@ namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
+use Interns2025b\Actions\RegisterUserAction;
 use Interns2025b\Http\Requests\StoreUserRequest;
 use Interns2025b\Http\Requests\UpdateUserRequest;
 use Interns2025b\Http\Resources\UserResource;
@@ -16,7 +17,8 @@ class UserManagementController extends Controller
 {
     public function index(User $user): JsonResponse
     {
-        $users = User::with("organizations")
+        $users = User::query()
+            ->with("organizations")
             ->role("user")
             ->orderBy("id")
             ->get();
@@ -27,7 +29,7 @@ class UserManagementController extends Controller
     public function show(User $user): JsonResponse
     {
         if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, 'Only users with the "user" role can be managed here.');
+            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
         }
 
         $user->load("organizations");
@@ -35,30 +37,20 @@ class UserManagementController extends Controller
         return response()->json(new UserResource($user), Status::HTTP_OK);
     }
 
-    public function store(StoreUserRequest $request): JsonResponse
+    public function store(StoreUserRequest $request, RegisterUserAction $registerUser): JsonResponse
     {
         $data = $request->validated();
 
-        $userExists = User::query()->where("email", $data["email"])->exists();
+        $user = $registerUser->execute($data);
 
-        if ($userExists) {
+        if (!$user) {
             return response()->json([
-                "message" => "User with this email already exists.",
+                "message" => __("users.email_exists"),
             ], Status::HTTP_CONFLICT);
         }
 
-        $user = new User($data);
-        $user->password = Hash::make($data["password"]);
-        $user->save();
-
-        $user->assignRole("user");
-
         if (isset($data["organization_ids"])) {
             $user->organizations()->sync($data["organization_ids"]);
-        }
-
-        if (method_exists($user, "sendEmailVerificationNotification")) {
-            $user->sendEmailVerificationNotification();
         }
 
         return response()->json(new UserResource($user), Status::HTTP_CREATED);
@@ -67,7 +59,7 @@ class UserManagementController extends Controller
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
         if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, 'Only users with the "user" role can be managed here.');
+            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
         }
 
         $data = $request->validated();
@@ -96,11 +88,11 @@ class UserManagementController extends Controller
     public function destroy(User $user): JsonResponse
     {
         if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, 'Only users with the "user" role can be managed here.');
+            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
         }
 
         $user->delete();
 
-        return response()->json(["message" => "User deleted successfully."], Status::HTTP_OK);
+        return response()->json(["message" => __("users.deleted_successfully")], Status::HTTP_OK);
     }
 }

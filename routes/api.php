@@ -90,7 +90,28 @@ Route::group(["middleware" => ["auth:sanctum", "role:superAdministrator"]], func
     Route::delete("/admins/{admin}", [AdminManagementController::class, "destroy"])->name("admins.destroy");
 });
 
+Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
+
+Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
+    Route::get("/events", [EventController::class, "index"]);
+    Route::get("/organizations", [OrganizationController::class, "index"]);
+    Route::get("/organizations/{id}", [OrganizationController::class, "show"]);
+    Route::get("/users", [UserManagementController::class, "index"])->name("users.index");
+    Route::get("/users/{user}", [UserManagementController::class, "show"])->name("users.show");
+    Route::post("/users", [UserManagementController::class, "store"])->name("users.store");
+    Route::put("/users/{user}", [UserManagementController::class, "update"])->name("users.update");
+    Route::delete("/users/{user}", [UserManagementController::class, "destroy"])->name("users.destroy");
+});
+
+Route::group(["middleware" => ["auth:sanctum", "role:superAdministrator"]], function (): void {
+    Route::get("/admins", [AdminManagementController::class, "index"])->name("admins.index");
+    Route::get("/admins/{admin}", [AdminManagementController::class, "show"])->name("admins.show");
+    Route::post("/admins", [AdminManagementController::class, "store"])->name("admins.store");
+    Route::put("/admins/{admin}", [AdminManagementController::class, "update"])->name("admins.update");
+    Route::delete("/admins/{admin}", [AdminManagementController::class, "destroy"])->name("admins.destroy");
+});
+
 Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([
     "message" => "Temporary password reset.",
     "token" => $token,
