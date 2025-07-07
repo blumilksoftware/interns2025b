@@ -6,6 +6,7 @@ namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
+use Interns2025b\Actions\RegisterUserAction;
 use Interns2025b\Http\Requests\StoreAdminRequest;
 use Interns2025b\Http\Requests\UpdateAdminRequest;
 use Interns2025b\Http\Resources\AdminResource;
@@ -33,19 +34,17 @@ class AdminManagementController extends Controller
         return response()->json(new AdminResource($admin), Status::HTTP_OK);
     }
 
-    public function store(StoreAdminRequest $request): JsonResponse
+    public function store(StoreAdminRequest $request, RegisterUserAction $registerUser): JsonResponse
     {
         $data = $request->validated();
 
-        $admin = new User($data);
-        $admin->password = Hash::make($data["password"]);
-        $admin->save();
+        $admin = $registerUser->execute($data);
 
-        $admin->assignRole("administrator");
-
-        if (method_exists($admin, "sendEmailVerificationNotification")) {
-            $admin->sendEmailVerificationNotification();
+        if (!$admin) {
+            abort(Status::HTTP_UNPROCESSABLE_ENTITY, __("users.duplicate_email"));
         }
+
+        $admin->syncRoles("administrator");
 
         return response()->json(new AdminResource($admin), Status::HTTP_CREATED);
     }
