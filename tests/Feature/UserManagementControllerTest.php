@@ -43,20 +43,17 @@ class UserManagementControllerTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertJson(
-            fn(AssertableJson $json) => $json->has(1)
-                ->first(
-                    fn($json) => $json->where("id", $this->userWithRole->id)
-                        ->where("first_name", "user")
-                        ->where("last_name", $this->userWithRole->last_name)
-                        ->where("email", $this->userWithRole->email)
-                        ->where("facebook_linked", false)
-                        ->where("email_verified_at", $this->userWithRole->email_verified_at ? $this->userWithRole->email_verified_at->toJSON() : null)
-                        ->where("created_at", $this->userWithRole->created_at->toJSON())
-                        ->where("updated_at", $this->userWithRole->updated_at->toJSON())
-                        ->has("organizations", 1),
-                ),
-        );
+        $response->assertJson(fn(AssertableJson $json): AssertableJson => $json->has(1)
+            ->first(fn(AssertableJson $json): AssertableJson => $json
+                ->where("id", $this->userWithRole->id)
+                ->where("first_name", "user")
+                ->where("last_name", $this->userWithRole->last_name)
+                ->where("email", $this->userWithRole->email)
+                ->where("facebook_linked", false)
+                ->where("email_verified_at", $this->userWithRole->email_verified_at ? $this->userWithRole->email_verified_at->toJSON() : null)
+                ->where("created_at", $this->userWithRole->created_at->toJSON())
+                ->where("updated_at", $this->userWithRole->updated_at->toJSON())
+                ->has("organizations", 1)));
     }
 
     public function testUsersIndexDoesNotIncludeAdmins(): void

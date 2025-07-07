@@ -28,15 +28,13 @@ class AdminManagementControllerTest extends TestCase
         $response = $this->getJson("/api/admins");
 
         $response->assertOk();
-        $response->assertJson(
-            fn(AssertableJson $json) => $json->has(1)
-                ->first(
-                    fn(AssertableJson $json) => $json->where("id", $this->admin->id)
-                        ->where("email", $this->admin->email)
-                        ->where("facebook_linked", false)
-                        ->hasAll(["first_name", "last_name"]),
-                ),
-        );
+
+        $response->assertJson(fn(AssertableJson $json): AssertableJson => $json->has(1)
+            ->first(fn(AssertableJson $json): AssertableJson => $json
+                ->where("id", $this->admin->id)
+                ->where("email", $this->admin->email)
+                ->where("facebook_linked", false)
+                ->hasAll(["first_name", "last_name"])));
     }
 
     public function testIndexForbiddenForNonSuperAdmin(): void
