@@ -19,6 +19,9 @@ class UserResource extends JsonResource
             "email_verified_at" => $this->email_verified_at,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
+            "events_count" => $this->ownedEvents()->count(),
+            "followers_count" => $this->followers()->count(),
+            "following_count" => $this->followingUsers()->count(),
         ];
     }
 }

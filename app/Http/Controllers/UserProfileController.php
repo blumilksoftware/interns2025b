@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Interns2025b\Http\Requests\UpdateUserRequest;
 use Interns2025b\Http\Resources\UserDetailResource;
 use Interns2025b\Http\Resources\UserResource;
+use Interns2025b\Models\User;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 class UserProfileController extends Controller
@@ -37,20 +38,12 @@ class UserProfileController extends Controller
     public function showDetail(User $user)
     {
         if (Auth::id() === $user->id) {
-            return redirect()->route("profile.me");
+            return redirect("/api/profile");
         }
 
         return response()->json([
             "message" => __("profile.retrieved"),
             "data" => new UserDetailResource($user),
-        ]);
-    }
-
-    public function me()
-    {
-        return response()->json([
-            "message" => __("profile.retrieved"),
-            "data" => new UserDetailResource(Auth::user()),
         ]);
     }
 }

@@ -57,7 +57,6 @@ Route::get("/reset-password/{token}", fn(string $token): JsonResponse => respons
 ]))->name("password.reset");
 
 Route::resource("events", EventController::class)->only(["index", "show"]);
-Route::get("/profile/me", [UserProfileController::class, "me"])->name("profile.me");
 Route::get("/profile/{user}", [UserProfileController::class, "showDetail"]);
 
 Route::prefix("admin")

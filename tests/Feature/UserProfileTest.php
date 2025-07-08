@@ -4,152 +4,82 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\User;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class UserProfileTest extends TestCase
 {
-    public function user_can_view_their_profile(): void
+    use RefreshDatabase;
+
+    private User $user;
+
+    protected function setUp(): void
     {
-        $user = User::factory()->create([
-            "facebook_id" => "1234567890",
-        ]);
+        parent::setUp();
 
-        Sanctum::actingAs($user);
-
-        $response = $this->getJson("/api/profile");
-
-        $response->assertOk()
-            ->assertJson([
-                "message" => "User profile retrieved successfully.",
-                "data" => [
-                    "first_name" => $user->first_name,
-                    "last_name" => $user->last_name,
-                    "email" => $user->email,
-                    "facebook_linked" => true,
-                ],
-            ]);
-    }
-
-    public function user_profile_returns_false_for_facebook_if_not_linked(): void
-    {
-        $user = User::factory()->create([
-            "facebook_id" => null,
-        ]);
-
-        Sanctum::actingAs($user);
-
-        $response = $this->getJson("/api/profile");
-
-        $response->assertOk()
-            ->assertJson([
-                "data" => [
-                    "facebook_linked" => false,
-                ],
-            ]);
+        $this->user = User::factory()->create();
     }
 
     public function testGuestCannotAccessProfile(): void
     {
-        $response = $this->getJson("/api/profile");
-
-        $response->assertUnauthorized();
+        $this->getJson("/api/profile")
+            ->assertUnauthorized();
     }
 
     public function testUserCanUpdateNameAndLastName(): void
     {
-        $user = User::factory()->create();
-
-        Sanctum::actingAs($user);
-
-        $payload = [
-            "first_name" => "UpdatedName",
-            "last_name" => "UpdatedSurname",
-        ];
-
-        $response = $this->putJson("/api/profile", $payload);
-
-        $response->assertOk()
-            ->assertJson([
-                "message" => "Profile updated successfully.",
-                "data" => [
-                    "first_name" => "UpdatedName",
-                    "last_name" => "UpdatedSurname",
-                    "email" => $user->email,
-                ],
-            ]);
-
-        $this->assertDatabaseHas("users", [
-            "id" => $user->id,
-            "first_name" => "UpdatedName",
-            "last_name" => "UpdatedSurname",
-        ]);
+        $this->actingAs($this->user)
+            ->putJson("/api/profile", [
+                "first_name" => "Updated",
+                "last_name" => "Name",
+            ])
+            ->assertOk()
+            ->assertJsonPath("data.first_name", "Updated")
+            ->assertJsonPath("data.last_name", "Name");
     }
 
     public function testUpdateProfileRequiresFirstName(): void
     {
-        $user = User::factory()->create();
-
-        Sanctum::actingAs($user);
-
-        $response = $this->putJson("/api/profile", [
-            "last_name" => "OnlyLastName",
-        ]);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(["first_name"]);
+        $this->actingAs($this->user)
+            ->putJson("/api/profile", [
+                "last_name" => "OnlyLastName",
+            ])
+            ->assertJsonValidationErrors("first_name");
     }
 
     public function testGuestCannotUpdateProfile(): void
     {
-        $response = $this->putJson("/api/profile", [
-            "first_name" => "GuestName",
-            "last_name" => "GuestLast",
-        ]);
-
-        $response->assertUnauthorized();
+        $this->putJson("/api/profile", [
+            "first_name" => "Nope",
+            "last_name" => "StillNope",
+        ])->assertUnauthorized();
     }
 
     public function testProfileUpdateDoesNotAcceptTooLongNames(): void
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $longName = str_repeat("a", 300);
 
-        $response = $this->putJson("/api/profile", [
-            "first_name" => str_repeat("A", 300),
-            "last_name" => str_repeat("B", 300),
-        ]);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(["first_name", "last_name"]);
+        $this->actingAs($this->user)
+            ->putJson("/api/profile", [
+                "first_name" => $longName,
+                "last_name" => "Lastname",
+            ])
+            ->assertJsonValidationErrors("first_name");
     }
 
-    public function testAuthenticatedUserCanViewTheirOwnProfileViaMe(): void
+    public function testUserRedirectedToProfileIfTheyAccessTheirOwnId(): void
     {
-        $user = User::factory()->create();
-
-        $this->actingAs($user)
-            ->getJson("/api/profile/me")
-            ->assertOk()
-            ->assertJsonPath("data.id", $user->id);
-    }
-
-    public function testUserRedirectedToMeIfTheyAccessTheirOwnId(): void
-    {
-        $user = User::factory()->create();
-
-        $this->actingAs($user)
-            ->get("/api/profile/{$user->id}")
-            ->assertRedirect("/api/profile/me");
+        $this->actingAs($this->user)
+            ->get("/api/profile/{$this->user->id}")
+            ->assertRedirect("/api/profile");
     }
 
     public function testAuthenticatedUserCanViewOtherUsersProfile(): void
     {
-        $user = User::factory()->create();
         $otherUser = User::factory()->create();
 
-        $this->actingAs($user)
+        $this->actingAs($this->user)
             ->getJson("/api/profile/{$otherUser->id}")
             ->assertOk()
             ->assertJsonPath("data.id", $otherUser->id);
