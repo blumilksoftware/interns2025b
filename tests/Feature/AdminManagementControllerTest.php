@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Illuminate\Testing\Fluent\AssertableJson;
+use Interns2025b\Enums\Role;
 use Interns2025b\Models\User;
 use Tests\TestCase;
 
@@ -17,8 +18,11 @@ class AdminManagementControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->admin = User::factory()->admin()->create();
-        $this->superAdmin = User::factory()->superAdmin()->create();
+        $this->admin = User::factory()->create();
+        $this->admin->assignRole(Role::Administrator->value);
+
+        $this->superAdmin = User::factory()->create();
+        $this->superAdmin->assignRole(Role::SuperAdministrator->value);
     }
 
     public function testIndexReturnsOnlyAdmins(): void
@@ -83,7 +87,10 @@ class AdminManagementControllerTest extends TestCase
 
         $response->assertCreated();
         $this->assertDatabaseHas("users", ["email" => "newadmin@example.com"]);
-        $this->assertEquals(["administrator"], User::where("email", "newadmin@example.com")->first()->getRoleNames()->toArray());
+        $this->assertEquals(
+            [Role::Administrator->value],
+            User::where("email", "newadmin@example.com")->first()->getRoleNames()->toArray(),
+        );
     }
 
     public function testStoreRejectsDuplicateEmail(): void
@@ -122,10 +129,11 @@ class AdminManagementControllerTest extends TestCase
 
     public function testEmailChangeResetsEmailVerifiedAt(): void
     {
-        $admin = User::factory()->admin()->create([
+        $admin = User::factory()->create([
             "email" => "old@example.com",
             "email_verified_at" => now(),
         ]);
+        $admin->assignRole(Role::Administrator->value);
 
         $this->actingAs($this->superAdmin);
 
@@ -143,10 +151,11 @@ class AdminManagementControllerTest extends TestCase
     public function testEmailUnchangedKeepsEmailVerifiedAt(): void
     {
         $verifiedAt = now();
-        $admin = User::factory()->admin()->create([
+        $admin = User::factory()->create([
             "email" => "same@example.com",
             "email_verified_at" => $verifiedAt,
         ]);
+        $admin->assignRole(Role::Administrator->value);
 
         $this->actingAs($this->superAdmin);
 
@@ -198,7 +207,8 @@ class AdminManagementControllerTest extends TestCase
 
     public function testOnlySuperAdminCanManageAdmins(): void
     {
-        $target = User::factory()->admin()->create();
+        $target = User::factory()->create();
+        $target->assignRole(Role::Administrator->value);
 
         $this->actingAs($this->admin);
 
@@ -253,5 +263,16 @@ class AdminManagementControllerTest extends TestCase
         ]);
 
         $response->assertForbidden();
+    }
+
+    public function testAdminCannotDeleteSelf(): void
+    {
+        $this->actingAs($this->admin);
+
+        $response = $this->deleteJson("/api/admins/{$this->admin->id}");
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas("users", ["id" => $this->admin->id]);
     }
 }

@@ -7,6 +7,8 @@ namespace Interns2025b\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Interns2025b\Actions\RegisterUserAction;
+use Interns2025b\Enums\Role;
+use Interns2025b\Policies\AdminPolicy;
 use Interns2025b\Http\Requests\StoreAdminRequest;
 use Interns2025b\Http\Requests\UpdateAdminRequest;
 use Interns2025b\Http\Resources\AdminResource;
@@ -18,7 +20,7 @@ class AdminManagementController extends Controller
     public function index(): JsonResponse
     {
         $admins = User::query()
-            ->role(["administrator"])
+            ->role([Role::Administrator->value])
             ->orderBy("id")
             ->get();
 
@@ -27,15 +29,15 @@ class AdminManagementController extends Controller
 
     public function show(User $admin): JsonResponse
     {
-        if (!$admin->hasAnyRole(["administrator"])) {
-            abort(Status::HTTP_FORBIDDEN, __("users.forbidden_role"));
-        }
+        $this->authorize("view", $admin);
 
         return response()->json(new AdminResource($admin), Status::HTTP_OK);
     }
 
     public function store(StoreAdminRequest $request, RegisterUserAction $registerUser): JsonResponse
     {
+        $this->authorize("create", User::class);
+
         $data = $request->validated();
 
         $admin = $registerUser->execute($data);
@@ -44,16 +46,14 @@ class AdminManagementController extends Controller
             abort(Status::HTTP_UNPROCESSABLE_ENTITY, __("users.duplicate_email"));
         }
 
-        $admin->syncRoles("administrator");
+        $admin->syncRoles(Role::Administrator->value);
 
         return response()->json(new AdminResource($admin), Status::HTTP_CREATED);
     }
 
     public function update(UpdateAdminRequest $request, User $admin): JsonResponse
     {
-        if (!$admin->hasRole("administrator")) {
-            abort(Status::HTTP_FORBIDDEN, __("users.forbidden_role"));
-        }
+        $this->authorize("update", $admin);
 
         $data = $request->validated();
 
@@ -76,9 +76,7 @@ class AdminManagementController extends Controller
 
     public function destroy(User $admin): JsonResponse
     {
-        if (!$admin->hasAnyRole(["administrator"])) {
-            abort(Status::HTTP_FORBIDDEN, __("users.forbidden_role"));
-        }
+        $this->authorize("delete", $admin);
 
         $admin->delete();
 
