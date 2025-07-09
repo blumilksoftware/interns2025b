@@ -87,11 +87,23 @@ class UserProfileTest extends TestCase
             ->assertJsonValidationErrors("first_name");
     }
 
-    public function testUserRedirectedToProfileIfTheyAccessTheirOwnId(): void
+    public function testUserGetsSameResponseWhenAccessingOwnProfileById(): void
     {
-        $this->actingAs($this->user)
-            ->get("/api/profile/{$this->user->id}")
-            ->assertRedirect("/api/profile");
+        $this->actingAs($this->user);
+
+        $response = $this->getJson("/api/profile/{$this->user->id}");
+
+        $response->assertOk()
+            ->assertJson([
+                "message" => "User profile retrieved successfully.",
+                "data" => [
+                    "id" => $this->user->id,
+                    "first_name" => $this->user->first_name,
+                    "last_name" => $this->user->last_name,
+                    "email" => $this->user->email,
+                    "facebook_linked" => $this->user->facebook_id !== null,
+                ],
+            ]);
     }
 
     public function testAuthenticatedUserCanViewOtherUsersProfile(): void

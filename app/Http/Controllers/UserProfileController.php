@@ -35,15 +35,18 @@ class UserProfileController extends Controller
         ])->setStatusCode(Status::HTTP_OK);
     }
 
-    public function showDetail(User $user)
+    public function showDetail(User $user): JsonResponse
     {
         if (Auth::id() === $user->id) {
-            return redirect("/api/profile");
+            return response()->json([
+                "message" => __("profile.retrieved"),
+                "data" => new UserResource($user),
+            ])->setStatusCode(Status::HTTP_OK);
         }
 
         return response()->json([
             "message" => __("profile.retrieved"),
             "data" => new UserDetailResource($user),
-        ]);
+        ])->setStatusCode(Status::HTTP_OK);
     }
 }
