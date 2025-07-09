@@ -39,9 +39,9 @@ class AdminManagementController extends Controller
     {
         $this->authorize("create", User::class);
 
-        $data = $request->validated();
+        $dto = $request->toDto();
 
-        $admin = $registerUser->execute($data);
+        $admin = $registerUser->execute($dto);
 
         if (!$admin) {
             abort(Status::HTTP_UNPROCESSABLE_ENTITY, __("users.duplicate_email"));

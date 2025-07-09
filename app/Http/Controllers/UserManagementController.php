@@ -39,9 +39,7 @@ class UserManagementController extends Controller
 
     public function store(StoreUserRequest $request, RegisterUserAction $registerUser): JsonResponse
     {
-        $data = $request->validated();
-
-        $user = $registerUser->execute($data);
+        $user = $registerUser->execute($request->toDto());
 
         if (!$user) {
             return response()->json([
@@ -49,8 +47,8 @@ class UserManagementController extends Controller
             ], Status::HTTP_CONFLICT);
         }
 
-        if (isset($data["organization_ids"])) {
-            $user->organizations()->sync($data["organization_ids"]);
+        if ($request->filled("organization_ids")) {
+            $user->organizations()->sync($request->input("organization_ids"));
         }
 
         return response()->json(new UserResource($user), Status::HTTP_CREATED);
