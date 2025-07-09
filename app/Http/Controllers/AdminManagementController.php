@@ -8,7 +8,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Interns2025b\Actions\RegisterUserAction;
 use Interns2025b\Enums\Role;
-use Interns2025b\Policies\AdminPolicy;
 use Interns2025b\Http\Requests\StoreAdminRequest;
 use Interns2025b\Http\Requests\UpdateAdminRequest;
 use Interns2025b\Http\Resources\AdminResource;

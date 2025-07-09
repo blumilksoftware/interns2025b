@@ -18,11 +18,8 @@ class AdminManagementControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->admin = User::factory()->create();
-        $this->admin->assignRole(Role::Administrator->value);
-
-        $this->superAdmin = User::factory()->create();
-        $this->superAdmin->assignRole(Role::SuperAdministrator->value);
+        $this->admin = User::factory()->admin()->create();
+        $this->superAdmin = User::factory()->superAdmin()->create();
     }
 
     public function testIndexReturnsOnlyAdmins(): void
@@ -129,11 +126,10 @@ class AdminManagementControllerTest extends TestCase
 
     public function testEmailChangeResetsEmailVerifiedAt(): void
     {
-        $admin = User::factory()->create([
+        $admin = User::factory()->admin()->create([
             "email" => "old@example.com",
             "email_verified_at" => now(),
         ]);
-        $admin->assignRole(Role::Administrator->value);
 
         $this->actingAs($this->superAdmin);
 
@@ -151,11 +147,10 @@ class AdminManagementControllerTest extends TestCase
     public function testEmailUnchangedKeepsEmailVerifiedAt(): void
     {
         $verifiedAt = now();
-        $admin = User::factory()->create([
+        $admin = User::factory()->admin()->create([
             "email" => "same@example.com",
             "email_verified_at" => $verifiedAt,
         ]);
-        $admin->assignRole(Role::Administrator->value);
 
         $this->actingAs($this->superAdmin);
 
@@ -207,8 +202,7 @@ class AdminManagementControllerTest extends TestCase
 
     public function testOnlySuperAdminCanManageAdmins(): void
     {
-        $target = User::factory()->create();
-        $target->assignRole(Role::Administrator->value);
+        $target = User::factory()->admin()->create();
 
         $this->actingAs($this->admin);
 
