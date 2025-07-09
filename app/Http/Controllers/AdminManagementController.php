@@ -18,6 +18,8 @@ class AdminManagementController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize("viewAny", User::class);
+
         $admins = User::query()
             ->role([Role::Administrator->value])
             ->orderBy("id")
