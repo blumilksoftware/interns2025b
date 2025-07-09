@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\User;
 use Tests\TestCase;
 
 class UserProfileTest extends TestCase
 {
-    use RefreshDatabase;
-
     private User $user;
 
     protected function setUp(): void
@@ -19,6 +16,28 @@ class UserProfileTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
+    }
+
+    public function user_can_view_their_profile(): void
+    {
+        $user = User::factory()->create([
+            "facebook_id" => "1234567890",
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->getJson("/api/profile");
+
+        $response->assertOk()
+            ->assertJson([
+                "message" => "User profile retrieved successfully.",
+                "data" => [
+                    "first_name" => $user->first_name,
+                    "last_name" => $user->last_name,
+                    "email" => $user->email,
+                    "facebook_linked" => true,
+                ],
+            ]);
     }
 
     public function testGuestCannotAccessProfile(): void
