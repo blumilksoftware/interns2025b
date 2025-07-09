@@ -35,7 +35,7 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
 });
 
-Route::get("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
+Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
     ->middleware("signed")
     ->name("api.confirmDelete");
 
