@@ -16,14 +16,13 @@ class RegisterUserAction
             return null;
         }
 
-        $user = new User([
+        $user = User::create([
             "first_name" => $dto->firstName,
             "last_name" => $dto->lastName,
             "email" => $dto->email,
+            "password" => Hash::make($dto->password),
         ]);
-
-        $user->password = Hash::make($dto->password);
-        $user->save();
+        
         $user->assignRole("user");
         $user->sendEmailVerificationNotification();
 
