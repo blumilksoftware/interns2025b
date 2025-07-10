@@ -33,6 +33,7 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::post("/follow/{type}/{id}", FollowController::class)->name("follow");
     Route::get("/followings", [FollowController::class, "followings"])->name("followings");
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
+    Route::get("/profile/{user}", [UserProfileController::class, "showDetail"]);
 });
 
 Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])

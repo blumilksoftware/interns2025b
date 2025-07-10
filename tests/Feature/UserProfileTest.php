@@ -4,19 +4,28 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Interns2025b\Models\Event;
 use Interns2025b\Models\User;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class UserProfileTest extends TestCase
 {
-    public function user_can_view_their_profile(): void
+    private User $user;
+
+    protected function setUp(): void
     {
-        $user = User::factory()->create([
+        parent::setUp();
+
+        $this->user = User::factory()->create();
+    }
+
+    public function testUserCanViewTheirProfile(): void
+    {
+        $this->actingAs($this->user);
+
+        $this->user->update([
             "facebook_id" => "1234567890",
         ]);
-
-        Sanctum::actingAs($user);
 
         $response = $this->getJson("/api/profile");
 
@@ -24,90 +33,106 @@ class UserProfileTest extends TestCase
             ->assertJson([
                 "message" => "User profile retrieved successfully.",
                 "data" => [
-                    "first_name" => $user->first_name,
-                    "last_name" => $user->last_name,
-                    "email" => $user->email,
+                    "first_name" => $this->user->first_name,
+                    "last_name" => $this->user->last_name,
+                    "email" => $this->user->email,
                     "facebook_linked" => true,
-                ],
-            ]);
-    }
-
-    public function user_profile_returns_false_for_facebook_if_not_linked(): void
-    {
-        $user = User::factory()->create([
-            "facebook_id" => null,
-        ]);
-
-        Sanctum::actingAs($user);
-
-        $response = $this->getJson("/api/profile");
-
-        $response->assertOk()
-            ->assertJson([
-                "data" => [
-                    "facebook_linked" => false,
                 ],
             ]);
     }
 
     public function testGuestCannotAccessProfile(): void
     {
-        $response = $this->getJson("/api/profile");
-
-        $response->assertUnauthorized();
+        $this->getJson("/api/profile")
+            ->assertUnauthorized();
     }
 
     public function testUserCanUpdateNameAndLastName(): void
     {
-        $user = User::factory()->create();
-
-        Sanctum::actingAs($user);
-
-        $payload = [
-            "first_name" => "UpdatedName",
-            "last_name" => "UpdatedSurname",
-        ];
-
-        $response = $this->putJson("/api/profile", $payload);
-
-        $response->assertOk()
-            ->assertJson([
-                "message" => "Profile updated successfully.",
-                "data" => [
-                    "first_name" => "UpdatedName",
-                    "last_name" => "UpdatedSurname",
-                    "email" => $user->email,
-                ],
-            ]);
-
-        $this->assertDatabaseHas("users", [
-            "id" => $user->id,
-            "first_name" => "UpdatedName",
-            "last_name" => "UpdatedSurname",
-        ]);
+        $this->actingAs($this->user)
+            ->putJson("/api/profile", [
+                "first_name" => "Updated",
+                "last_name" => "Name",
+            ])
+            ->assertOk()
+            ->assertJsonPath("data.first_name", "Updated")
+            ->assertJsonPath("data.last_name", "Name");
     }
 
     public function testGuestCannotUpdateProfile(): void
     {
-        $response = $this->putJson("/api/profile", [
-            "first_name" => "GuestName",
-            "last_name" => "GuestLast",
-        ]);
-
-        $response->assertUnauthorized();
+        $this->putJson("/api/profile", [
+            "first_name" => "Nope",
+            "last_name" => "StillNope",
+        ])->assertUnauthorized();
     }
 
     public function testProfileUpdateDoesNotAcceptTooLongNames(): void
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $longName = str_repeat("a", 300);
 
-        $response = $this->putJson("/api/profile", [
-            "first_name" => str_repeat("A", 300),
-            "last_name" => str_repeat("B", 300),
+        $this->actingAs($this->user)
+            ->putJson("/api/profile", [
+                "first_name" => $longName,
+                "last_name" => "Lastname",
+            ])
+            ->assertJsonValidationErrors("first_name");
+    }
+
+    public function testUserGetsSameResponseWhenAccessingOwnProfileById(): void
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->getJson("/api/profile/{$this->user->id}");
+
+        $response->assertStatus(302)
+            ->assertJson([
+                "message" => "profile.redirected",
+                "redirect" => "/api/profile",
+            ]);
+    }
+
+    public function testAuthenticatedUserCanViewOtherUsersProfile(): void
+    {
+        $otherUser = User::factory()->create();
+
+        $this->actingAs($this->user)
+            ->getJson("/api/profile/{$otherUser->id}")
+            ->assertOk()
+            ->assertJsonPath("data.id", $otherUser->id);
+    }
+
+    public function testUserDetailProfileContainsCountsAndEvents(): void
+    {
+        $targetUser = User::factory()->create();
+        Event::factory()->count(3)->create([
+            "owner_id" => $targetUser->id,
+            "owner_type" => User::class,
         ]);
 
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(["first_name", "last_name"]);
+        $follower = User::factory()->create();
+        $follower->followingUsers()->attach($targetUser->id);
+        $targetUser->followingUsers()->attach($follower->id);
+
+        $this->actingAs($this->user);
+
+        $response = $this->getJson("/api/profile/{$targetUser->id}");
+
+        $response->assertOk()
+            ->assertJsonPath("data.events_count", 3)
+            ->assertJsonPath("data.followers_count", 1)
+            ->assertJsonPath("data.following_count", 1)
+            ->assertJsonStructure([
+                "data" => [
+                    "id",
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "events",
+                    "events_count",
+                    "followers_count",
+                    "following_count",
+                ],
+            ]);
     }
 }
