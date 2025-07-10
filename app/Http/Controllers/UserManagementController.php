@@ -7,6 +7,7 @@ namespace Interns2025b\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Interns2025b\Actions\RegisterUserAction;
+use Interns2025b\Enums\Role;
 use Interns2025b\Http\Requests\StoreUserRequest;
 use Interns2025b\Http\Requests\UpdateUserRequest;
 use Interns2025b\Http\Resources\UserResource;
@@ -15,13 +16,13 @@ use Symfony\Component\HttpFoundation\Response as Status;
 
 class UserManagementController extends Controller
 {
-    public function index(User $user): JsonResponse
+    public function index(): JsonResponse
     {
         $this->authorize("viewAny", User::class);
 
         $users = User::query()
             ->with("organizations")
-            ->role("user")
+            ->role(Role::User->value)
             ->orderBy("id")
             ->get();
 
@@ -41,13 +42,17 @@ class UserManagementController extends Controller
     {
         $this->authorize("create", User::class);
 
-        $user = $registerUser->execute($request->toDto());
+        $dto = $request->toDto();
+
+        $user = $registerUser->execute($dto);
 
         if (!$user) {
             return response()->json([
                 "message" => __("users.email_exists"),
             ], Status::HTTP_CONFLICT);
         }
+
+        $user->syncRoles(Role::User->value);
 
         if ($request->filled("organization_ids")) {
             $user->organizations()->sync($request->input("organization_ids"));
@@ -60,18 +65,21 @@ class UserManagementController extends Controller
     {
         $this->authorize("update", $user);
 
-        $data = $request->validated();
+        $dto = $request->toDto();
 
-        $emailChanged = isset($data["email"]) && $data["email"] !== $user->email;
+        $emailChanged = $dto->email !== null && $dto->email !== $user->email;
 
-        if (isset($data["password"])) {
-            $data["password"] = Hash::make($data["password"]);
-        }
+        $updateData = array_filter([
+            "first_name" => $dto->firstName,
+            "last_name" => $dto->lastName,
+            "email" => $dto->email,
+            "password" => $dto->password ? Hash::make($dto->password) : null,
+        ], fn($value) => $value !== null);
 
-        $user->update($data);
+        $user->update($updateData);
 
-        if (isset($data["organization_ids"])) {
-            $user->organizations()->sync($data["organization_ids"]);
+        if ($dto->organizationIds !== null) {
+            $user->organizations()->sync($dto->organizationIds);
         }
 
         if ($emailChanged) {

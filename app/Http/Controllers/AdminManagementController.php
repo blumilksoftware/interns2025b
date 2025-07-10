@@ -56,15 +56,18 @@ class AdminManagementController extends Controller
     {
         $this->authorize("updateAdmin", $admin);
 
-        $data = $request->validated();
+        $dto = $request->toDto();
 
-        $emailChanged = isset($data["email"]) && $data["email"] !== $admin->email;
+        $emailChanged = $dto->email !== null && $dto->email !== $admin->email;
 
-        if (isset($data["password"])) {
-            $data["password"] = Hash::make($data["password"]);
-        }
+        $updateData = array_filter([
+            "first_name" => $dto->firstName,
+            "last_name" => $dto->lastName,
+            "email" => $dto->email,
+            "password" => $dto->password ? Hash::make($dto->password) : null,
+        ], fn($value) => $value !== null);
 
-        $admin->update($data);
+        $admin->update($updateData);
 
         if ($emailChanged) {
             $admin->email_verified_at = null;

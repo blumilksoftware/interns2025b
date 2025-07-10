@@ -7,6 +7,7 @@ namespace Interns2025b\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Interns2025b\DTO\UpdateUserDto;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -25,5 +26,16 @@ class UpdateUserRequest extends FormRequest
             "organization_ids" => ["nullable", "array"],
             "organization_ids.*" => ["exists:organizations,id"],
         ];
+    }
+
+    public function toDto(): UpdateUserDto
+    {
+        return new UpdateUserDto(
+            $this->input("first_name"),
+            $this->input("last_name"),
+            $this->input("email"),
+            $this->input("password"),
+            $this->input("organization_ids"),
+        );
     }
 }
