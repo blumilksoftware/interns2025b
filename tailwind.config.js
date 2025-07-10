@@ -5,7 +5,13 @@ module.exports = {
         "./resources/**/*.vue",
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                Brand: "#025F60",
+                DarkBrand: "#024c4d",
+                BtnShadowBlue: "#375DFB",
+            },
+        },
     },
     plugins: [],
 }
