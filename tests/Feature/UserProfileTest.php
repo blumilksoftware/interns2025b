@@ -12,14 +12,12 @@ use Tests\TestCase;
 class UserProfileTest extends TestCase
 {
     private User $user;
-    private User $otherUser;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->otherUser = User::factory()->create();
     }
 
     public function testUserCanViewTheirProfile(): void
@@ -106,10 +104,12 @@ class UserProfileTest extends TestCase
 
     public function testAuthenticatedUserCanViewOtherUsersProfile(): void
     {
+        $otherUser = User::factory()->create();
+
         $this->actingAs($this->user)
-            ->getJson("/api/profile/{$this->otherUser->id}")
+            ->getJson("/api/profile/{$otherUser->id}")
             ->assertOk()
-            ->assertJsonPath("data.id", $this->otherUser->id);
+            ->assertJsonPath("data.id", $otherUser->id);
     }
 
     public function testUserDetailProfileContainsCountsAndEvents(): void
