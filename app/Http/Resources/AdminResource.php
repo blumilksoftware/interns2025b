@@ -6,7 +6,7 @@ namespace Interns2025b\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class AdminResource extends JsonResource
 {
     public function toArray($request): array
     {
@@ -16,10 +16,6 @@ class UserResource extends JsonResource
             "last_name" => $this->last_name,
             "email" => $this->email,
             "facebook_linked" => $this->facebook_id !== null,
-            "email_verified_at" => $this->email_verified_at,
-            "created_at" => $this->created_at,
-            "updated_at" => $this->updated_at,
-            "organizations" => $this->whenLoaded("organizations", fn(): array => $this->organizations->pluck("id")->all()),
         ];
     }
 }
