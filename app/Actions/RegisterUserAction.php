@@ -6,6 +6,7 @@ namespace Interns2025b\Actions;
 
 use Illuminate\Support\Facades\Hash;
 use Interns2025b\DTO\RegisterUserDto;
+use Interns2025b\Enums\Role;
 use Interns2025b\Models\User;
 
 class RegisterUserAction
@@ -22,8 +23,8 @@ class RegisterUserAction
             "email" => $dto->email,
             "password" => Hash::make($dto->password),
         ]);
-        
-        $user->assignRole("user");
+
+        $user->assignRole(Role::User->value);
         $user->sendEmailVerificationNotification();
 
         return $user;
