@@ -31,6 +31,7 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::post("/follow/{type}/{id}", FollowController::class)->name("follow");
     Route::get("/followings", [FollowController::class, "followings"])->name("followings");
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
+    Route::get("/profile/{user}", [UserProfileController::class, "showDetail"]);
 });
 
 Route::get("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
@@ -57,7 +58,6 @@ Route::get("/reset-password/{token}", fn(string $token): JsonResponse => respons
 ]))->name("password.reset");
 
 Route::resource("events", EventController::class)->only(["index", "show"]);
-Route::get("/profile/{user}", [UserProfileController::class, "showDetail"]);
 
 Route::prefix("admin")
     ->middleware(["auth:sanctum", "role:administrator|superAdministrator"])

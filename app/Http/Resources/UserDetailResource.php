@@ -6,22 +6,20 @@ namespace Interns2025b\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 
 class UserDetailResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $isSelf = Auth::check() && Auth::id() === $this->id;
-
         return [
             "id" => $this->id,
-            "full_name" => $this->full_name,
+            "first_name" => $this->first_name,
+            "last_name" => $this->last_name,
             "email" => $this->email,
-            "events" => EventResource::collection($this->events),
-            "events_count" => $this->ownedEvents()->count(),
-            "followers_count" => $this->followers()->count(),
-            "following_count" => $this->followingUsers()->count(),
+            "events" => EventResource::collection($this->whenLoaded("ownedEvents")),
+            "events_count" => $this->owned_events_count,
+            "followers_count" => $this->followers_count,
+            "following_count" => $this->following_users_count,
         ];
     }
 }

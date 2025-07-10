@@ -39,10 +39,12 @@ class UserProfileController extends Controller
     {
         if (Auth::id() === $user->id) {
             return response()->json([
-                "message" => __("profile.retrieved"),
-                "data" => new UserResource($user),
-            ])->setStatusCode(Status::HTTP_OK);
+                "message" => __("profile.redirected"),
+                "redirect" => "/api/profile",
+            ], 302);
         }
+
+        $user->load(["ownedEvents"])->loadCount(["ownedEvents", "followers", "followingUsers"]);
 
         return response()->json([
             "message" => __("profile.retrieved"),

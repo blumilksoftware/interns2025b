@@ -4,27 +4,31 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Interns2025b\Models\Event;
 use Interns2025b\Models\User;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class UserProfileTest extends TestCase
 {
     private User $user;
+    private User $otherUser;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->user = User::factory()->create();
+        $this->otherUser = User::factory()->create();
     }
 
-    public function user_can_view_their_profile(): void
+    public function testUserCanViewTheirProfile(): void
     {
-        $user = User::factory()->create([
+        Sanctum::actingAs($this->user);
+
+        $this->user->update([
             "facebook_id" => "1234567890",
         ]);
-
-        Sanctum::actingAs($user);
 
         $response = $this->getJson("/api/profile");
 
@@ -32,9 +36,9 @@ class UserProfileTest extends TestCase
             ->assertJson([
                 "message" => "User profile retrieved successfully.",
                 "data" => [
-                    "first_name" => $user->first_name,
-                    "last_name" => $user->last_name,
-                    "email" => $user->email,
+                    "first_name" => $this->user->first_name,
+                    "last_name" => $this->user->last_name,
+                    "email" => $this->user->email,
                     "facebook_linked" => true,
                 ],
             ]);
@@ -93,26 +97,52 @@ class UserProfileTest extends TestCase
 
         $response = $this->getJson("/api/profile/{$this->user->id}");
 
-        $response->assertOk()
+        $response->assertStatus(302)
             ->assertJson([
-                "message" => "User profile retrieved successfully.",
-                "data" => [
-                    "id" => $this->user->id,
-                    "first_name" => $this->user->first_name,
-                    "last_name" => $this->user->last_name,
-                    "email" => $this->user->email,
-                    "facebook_linked" => $this->user->facebook_id !== null,
-                ],
+                "message" => "profile.redirected",
+                "redirect" => "/api/profile",
             ]);
     }
 
     public function testAuthenticatedUserCanViewOtherUsersProfile(): void
     {
-        $otherUser = User::factory()->create();
-
         $this->actingAs($this->user)
-            ->getJson("/api/profile/{$otherUser->id}")
+            ->getJson("/api/profile/{$this->otherUser->id}")
             ->assertOk()
-            ->assertJsonPath("data.id", $otherUser->id);
+            ->assertJsonPath("data.id", $this->otherUser->id);
+    }
+
+    public function testUserDetailProfileContainsCountsAndEvents(): void
+    {
+        $targetUser = User::factory()->create();
+        Event::factory()->count(3)->create([
+            "owner_id" => $targetUser->id,
+            "owner_type" => User::class,
+        ]);
+
+        $follower = User::factory()->create();
+        $follower->followingUsers()->attach($targetUser->id);
+        $targetUser->followingUsers()->attach($follower->id);
+
+        $this->actingAs($this->user);
+
+        $response = $this->getJson("/api/profile/{$targetUser->id}");
+
+        $response->assertOk()
+            ->assertJsonPath("data.events_count", 3)
+            ->assertJsonPath("data.followers_count", 1)
+            ->assertJsonPath("data.following_count", 1)
+            ->assertJsonStructure([
+                "data" => [
+                    "id",
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "events",
+                    "events_count",
+                    "followers_count",
+                    "following_count",
+                ],
+            ]);
     }
 }
