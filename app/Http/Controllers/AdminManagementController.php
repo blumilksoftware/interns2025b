@@ -18,7 +18,7 @@ class AdminManagementController extends Controller
 {
     public function index(): JsonResponse
     {
-        $this->authorize("viewAny", User::class);
+        $this->authorize("viewAnyAdmin", User::class);
 
         $admins = User::query()
             ->role([Role::Administrator->value])
@@ -30,14 +30,14 @@ class AdminManagementController extends Controller
 
     public function show(User $admin): JsonResponse
     {
-        $this->authorize("view", $admin);
+        $this->authorize("viewAdmin", $admin);
 
         return response()->json(new AdminResource($admin), Status::HTTP_OK);
     }
 
     public function store(StoreAdminRequest $request, RegisterUserAction $registerUser): JsonResponse
     {
-        $this->authorize("create", User::class);
+        $this->authorize("createAdmin", User::class);
 
         $dto = $request->toDto();
 
@@ -54,7 +54,7 @@ class AdminManagementController extends Controller
 
     public function update(UpdateAdminRequest $request, User $admin): JsonResponse
     {
-        $this->authorize("update", $admin);
+        $this->authorize("updateAdmin", $admin);
 
         $data = $request->validated();
 
@@ -77,7 +77,7 @@ class AdminManagementController extends Controller
 
     public function destroy(User $admin): JsonResponse
     {
-        $this->authorize("delete", $admin);
+        $this->authorize("deleteAdmin", $admin);
 
         $admin->delete();
 

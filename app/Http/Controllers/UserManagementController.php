@@ -17,6 +17,8 @@ class UserManagementController extends Controller
 {
     public function index(User $user): JsonResponse
     {
+        $this->authorize("viewAny", User::class);
+
         $users = User::query()
             ->with("organizations")
             ->role("user")
@@ -28,9 +30,7 @@ class UserManagementController extends Controller
 
     public function show(User $user): JsonResponse
     {
-        if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
-        }
+        $this->authorize("view", $user);
 
         $user->load("organizations");
 
@@ -39,6 +39,8 @@ class UserManagementController extends Controller
 
     public function store(StoreUserRequest $request, RegisterUserAction $registerUser): JsonResponse
     {
+        $this->authorize("create", User::class);
+
         $user = $registerUser->execute($request->toDto());
 
         if (!$user) {
@@ -56,9 +58,7 @@ class UserManagementController extends Controller
 
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
-        }
+        $this->authorize("update", $user);
 
         $data = $request->validated();
 
@@ -85,9 +85,7 @@ class UserManagementController extends Controller
 
     public function destroy(User $user): JsonResponse
     {
-        if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
-        }
+        $this->authorize("delete", $user);
 
         $user->delete();
 

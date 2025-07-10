@@ -11,20 +11,45 @@ class UserPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(Role::SuperAdministrator->value);
+        return $user->hasRole(Role::Administrator->value);
     }
 
     public function view(User $user, User $targetUser): bool
     {
-        return $user->hasRole(Role::SuperAdministrator->value) && $targetUser->hasRole(Role::Administrator->value);
+        return $user->hasRole(Role::Administrator->value) && $targetUser->hasRole(Role::User->value);
     }
 
     public function create(User $user): bool
     {
-        return $user->hasRole(Role::SuperAdministrator->value);
+        return $user->hasRole(Role::Administrator->value);
     }
 
     public function update(User $user, User $targetUser): bool
+    {
+        return $user->hasRole(Role::Administrator->value) && $targetUser->hasRole(Role::User->value);
+    }
+
+    public function delete(User $user, User $targetUser): bool
+    {
+        return $user->hasRole(Role::Administrator->value) && $targetUser->hasRole(Role::User->value);
+    }
+
+    public function viewAnyAdmin(User $user): bool
+    {
+        return $user->hasRole(Role::SuperAdministrator->value);
+    }
+
+    public function viewAdmin(User $user, User $targetUser): bool
+    {
+        return $user->hasRole(Role::SuperAdministrator->value) && $targetUser->hasRole(Role::Administrator->value);
+    }
+
+    public function createAdmin(User $user): bool
+    {
+        return $user->hasRole(Role::SuperAdministrator->value);
+    }
+
+    public function updateAdmin(User $user, User $targetUser): bool
     {
         if ($user->id === $targetUser->id && $user->hasRole(Role::SuperAdministrator->value)) {
             return false;
@@ -33,7 +58,7 @@ class UserPolicy
         return $user->hasRole(Role::SuperAdministrator->value) && $targetUser->hasRole(Role::Administrator->value);
     }
 
-    public function delete(User $user, User $targetUser): bool
+    public function deleteAdmin(User $user, User $targetUser): bool
     {
         if ($user->id === $targetUser->id) {
             return false;
