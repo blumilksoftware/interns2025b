@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             "events_count" => $this->owned_events_count,
             "followers_count" => $this->followers_count,
             "following_count" => $this->following_users_count,
+            "organizations" => $this->whenLoaded("organizations", fn(): array => $this->organizations->pluck("id")->all()),
         ];
     }
 }

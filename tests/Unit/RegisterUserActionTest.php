@@ -6,6 +6,7 @@ namespace Tests\Unit;
 
 use Illuminate\Support\Facades\Hash;
 use Interns2025b\Actions\RegisterUserAction;
+use Interns2025b\DTO\RegisterUserDto;
 use Interns2025b\Models\User;
 use Tests\TestCase;
 
@@ -13,15 +14,15 @@ class RegisterUserActionTest extends TestCase
 {
     public function testRegistersNewUserAndAssignsRoleAndSendsVerification(): void
     {
-        $data = [
-            "first_name" => "testName",
-            "last_name" => "testLastName",
-            "email" => "test@example.com",
-            "password" => "password123",
-        ];
+        $dto = new RegisterUserDto(
+            firstName: "testName",
+            lastName: "testLastName",
+            email: "test@example.com",
+            password: "password123",
+        );
 
         $action = new RegisterUserAction();
-        $user = $action->execute($data);
+        $user = $action->execute($dto);
 
         $this->assertInstanceOf(User::class, $user);
         $this->assertDatabaseHas("users", [
@@ -39,15 +40,15 @@ class RegisterUserActionTest extends TestCase
             "email" => "existing@example.com",
         ]);
 
-        $data = [
-            "first_name" => "testName1",
-            "last_name" => "lastname",
-            "email" => "existing@example.com",
-            "password" => "password123",
-        ];
+        $dto = new RegisterUserDto(
+            firstName: "testName1",
+            lastName: "lastname",
+            email: "existing@example.com",
+            password: "password123",
+        );
 
         $action = new RegisterUserAction();
-        $result = $action->execute($data);
+        $result = $action->execute($dto);
 
         $this->assertNull($result);
         $this->assertDatabaseMissing("users", [
