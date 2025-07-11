@@ -21,7 +21,7 @@ class AdminManagementController extends Controller
         $this->authorize("viewAnyAdmin", User::class);
 
         $admins = User::query()
-            ->role([Role::Administrator->value])
+            ->role(Role::Administrator->value)
             ->orderBy("id")
             ->get();
 
