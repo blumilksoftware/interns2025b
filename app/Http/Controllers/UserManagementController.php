@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
 use Interns2025b\Actions\RegisterUserAction;
 use Interns2025b\Enums\Role;
 use Interns2025b\Http\Requests\StoreUserRequest;
@@ -69,12 +68,11 @@ class UserManagementController extends Controller
 
         $emailChanged = $dto->email !== null && $dto->email !== $user->email;
 
-        $updateData = array_filter([
-            "first_name" => $dto->firstName,
+        $updateData = [
+            "first_name" => $dto->firstName ?? $user->first_name,
             "last_name" => $dto->lastName,
-            "email" => $dto->email,
-            "password" => $dto->password ? Hash::make($dto->password) : null,
-        ], fn($value) => $value !== null);
+            "email" => $dto->email ?? $user->email,
+        ];
 
         $user->update($updateData);
 

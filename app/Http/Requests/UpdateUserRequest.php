@@ -6,7 +6,6 @@ namespace Interns2025b\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Interns2025b\DTO\UpdateUserDto;
 
 class UpdateUserRequest extends FormRequest
@@ -22,7 +21,6 @@ class UpdateUserRequest extends FormRequest
                 "max:225",
                 Rule::unique("users", "email")->ignore($this->route("user")?->id),
             ],
-            "password" => ["nullable", "confirmed", Password::min(8)],
             "organization_ids" => ["nullable", "array"],
             "organization_ids.*" => ["exists:organizations,id"],
         ];
@@ -34,7 +32,6 @@ class UpdateUserRequest extends FormRequest
             $this->input("first_name"),
             $this->input("last_name"),
             $this->input("email"),
-            $this->input("password"),
             $this->input("organization_ids"),
         );
     }

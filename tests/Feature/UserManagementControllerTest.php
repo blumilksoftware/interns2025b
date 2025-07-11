@@ -292,19 +292,6 @@ class UserManagementControllerTest extends TestCase
         $response->assertJsonValidationErrors(["password"]);
     }
 
-    public function testUpdateRejectsIfPasswordConfirmationMismatch(): void
-    {
-        $this->actingAs($this->admin);
-
-        $response = $this->putJson("/api/admin/users/{$this->userWithRole->id}", [
-            "password" => "newpassword123",
-            "password_confirmation" => "differentpassword",
-        ]);
-
-        $response->assertUnprocessable();
-        $response->assertJsonValidationErrors(["password"]);
-    }
-
     public function testShowReturnsForbiddenForUserWithoutUserRole(): void
     {
         $this->actingAs($this->admin);
