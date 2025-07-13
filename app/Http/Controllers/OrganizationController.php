@@ -15,17 +15,17 @@ class OrganizationController extends Controller
 {
     public function index(): JsonResponse
     {
-        $organizations = Organization::orderBy("id")->get();
-
-        return response()->json(OrganizationResource::collection($organizations), Status::HTTP_OK);
-    }
-
-    public function show(int $id): JsonResponse
-    {
-        $organization = Organization::with(["owner", "users"])->findOrFail($id);
+        $organizations = Organization::query()->with(["owner", "users"])->get();
 
         return response()->json([
-            "data" => $organization,
+            "data" => OrganizationResource::collection($organizations),
+        ]);
+    }
+
+    public function show(Organization $organization): JsonResponse
+    {
+        return response()->json([
+            "data" => new OrganizationResource($organization),
         ]);
     }
 

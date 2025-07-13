@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\User;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -13,7 +12,6 @@ use Tests\Traits\MocksFacebookUser;
 
 class FacebookLoginTest extends TestCase
 {
-    use RefreshDatabase;
     use MocksFacebookUser;
 
     public function testRedirectReturnsFacebookUrl(): void

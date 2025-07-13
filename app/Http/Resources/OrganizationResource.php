@@ -4,20 +4,28 @@ declare(strict_types=1);
 
 namespace Interns2025b\Http\Resources;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrganizationResource extends JsonResource
 {
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         return [
             "id" => $this->id,
             "name" => $this->name,
-            "owner_id" => $this->owner_id,
             "group_url" => $this->group_url,
             "avatar_url" => $this->avatar_url,
-            "created_at" => $this->created_at,
-            "updated_at" => $this->updated_at,
+            "owner" => [
+                "id" => $this->owner?->id,
+                "first_name" => $this->owner?->first_name,
+                "last_name" => $this->owner?->last_name,
+            ],
+            "users" => $this->users->map(fn($user): array => [
+                "id" => $user->id,
+                "first_name" => $user->first_name,
+                "last_name" => $user->last_name,
+            ]),
         ];
     }
 }

@@ -10,13 +10,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * @property int $id
  * @property string $name
- * @property string|null $group_url
- * @property string|null $avatar_url
- * @property int|null $owner_id
+ * @property ?string $group_url
+ * @property ?string $avatar_url
+ * @property ?int $owner_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -52,5 +53,10 @@ class Organization extends Model
     public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, "event_organization");
+    }
+
+    public function followers(): MorphToMany
+    {
+        return $this->morphToMany(User::class, "followable", "followables");
     }
 }

@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
 use Tests\TestCase;
 
 class OrganizationControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     private User $admin;
     private User $user;
 
@@ -33,7 +30,7 @@ class OrganizationControllerTest extends TestCase
         $response = $this->getJson("/api/admin/organizations");
 
         $response->assertOk()
-            ->assertJsonCount(2);
+            ->assertJsonCount(2, "data");
     }
 
     public function testNonAdminCannotListOrganizations(): void

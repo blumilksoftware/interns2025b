@@ -6,6 +6,7 @@ namespace Interns2025b\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
+use Interns2025b\DTO\RegisterUserDto;
 
 class StoreUserRequest extends FormRequest
 {
@@ -19,5 +20,15 @@ class StoreUserRequest extends FormRequest
             "organization_ids" => ["array", "nullable"],
             "organization_ids.*" => ["exists:organizations,id"],
         ];
+    }
+
+    public function toDto(): RegisterUserDto
+    {
+        return new RegisterUserDto(
+            firstName: $this->input("first_name"),
+            lastName: $this->input("last_name"),
+            email: $this->input("email"),
+            password: $this->input("password"),
+        );
     }
 }
