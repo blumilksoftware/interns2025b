@@ -54,7 +54,7 @@ const {
     </template>
 
     <template #form>
-      <div class="space-y-6">
+      <div class="space-y-6 mb-6">
         <form
           class="flex flex-col items-center justify-center w-full space-y-4 text-xl"
           @submit.prevent="submitForm"
@@ -97,7 +97,6 @@ const {
           </BaseButton>
         </form>
       </div>
-      <div class=" mb-6" />
     </template>
   </auth-layout>
 </template>

@@ -1,10 +1,3 @@
-<script setup lang="ts">
-defineSlots<{
-  header: () => any
-  form: () => any
-  footer: () => any
-}>()
-</script>
 
 <template>
   <div>
