@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
 
-withDefault(defineProps<{
+withDefaults(defineProps<{
   title: string
   description?: string
 }>(), { description: 'Default description'  })

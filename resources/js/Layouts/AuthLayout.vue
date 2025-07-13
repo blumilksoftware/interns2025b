@@ -3,7 +3,7 @@
   <div>
     <div class="w-full bg-white rounded-lg shadow-lg sm:max-h-screen pb-5">
       <div
-        class="w-full place-items-center flex justify-center py-12 bg-gradient-to-tr from-Brand to-DarkBrand rounded-lg text-white"
+        class="w-full place-items-center flex justify-center py-12 bg-gradient-to-tr from-lightBrand to-darkBrand rounded-lg text-white"
       >
         <div class="w-5/6">
           <img class="mb-10" src="/images/LogoWhite2.png" alt="LetsEvent">

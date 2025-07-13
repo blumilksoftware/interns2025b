@@ -1,37 +1,26 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import { EyeIcon as EyeIconOutline } from '@heroicons/vue/24/outline'
 import { EyeIcon as EyeIconSolid } from '@heroicons/vue/24/solid'
 
-import {
-  showPasswords,
-  togglePasswords,
-} from '@/composables/usePasswordVisibility'
+import { useTogglePassword } from '@/composables/useTogglePassword'
+const { showPasswords, togglePasswords } = useTogglePassword()
 
-type InputType = 'password';
+const model = defineModel<string>()
 
-const props = defineProps<{
-  modelValue: string
+defineProps<{
   label?: string
   name: string
   id: string
   placeholder?: string
-  type?: InputType
+  type?: 'password'
 }>()
-
-const emit = defineEmits<(e: 'update:modelValue', v: string) => void>()
-
-const modelValue = computed({
-  get: () => props.modelValue,
-  set: (v) => emit('update:modelValue', v),
-})
 </script>
 
 <template>
   <BaseInput
     :id="id"
-    v-model="modelValue"
+    v-model="model"
     :name="name"
     :label="label"
     :placeholder="placeholder"

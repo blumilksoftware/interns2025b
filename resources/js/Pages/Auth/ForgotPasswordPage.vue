@@ -89,7 +89,7 @@ const {
 
 
           <BaseButton
-            class="w-5/6 h-12 bg-black shadow-BtnShadowBlue text-white font-bold"
+            class="w-5/6 h-12 bg-black shadow-shadowBlue text-white font-bold"
             :disabled="isSubmitting"
             type="submit"
           >

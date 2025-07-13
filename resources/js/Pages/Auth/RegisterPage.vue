@@ -139,14 +139,14 @@ const {
             Rejestrując się wyrażasz zgodę na
             <InertiaLink
               href="#"
-              class="text-Brand hover:text-DarkBrand font-semibold"
+              class="text-lightBrand hover:text-darkBrand font-semibold"
             >
               Warunki świadczenia usług
             </InertiaLink>
             oraz
             <InertiaLink
               href="#"
-              class="text-Brand hover:text-DarkBrand font-semibold"
+              class="text-lightBrand hover:text-darkBrand font-semibold"
             >
               Umowę o przetwarzaniu danych
             </InertiaLink>
