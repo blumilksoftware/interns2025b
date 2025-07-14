@@ -80,14 +80,18 @@ const {
               name="email"
               label="E-mail"
               type="email"
+              placeholder="Wpisz swój adres E‑mail"
               :error="errors.email"
+              focus-placeholder="example@example.com"
             />
             <PasswordInput
               id="password"
               v-model="form.password"
               name="password"
               label="Hasło"
+              placeholder="Podaj hasło"
               :error="errors.password"
+              focus-placeholder="Hasło min 8 znaków"
             />
           </div>
 
@@ -98,20 +102,21 @@ const {
                 v-model="form.remember"
                 name="remember_password"
                 type="checkbox"
-                class="mr-2 size-4 accent-lightBrand bg-gray-100 rounded-sm border-gray-300"
+                placeholder="Wpisz swój E‑mail"
+                class="mr-2 size-4 accent-brand-light bg-gray-100 rounded-sm border-gray-300"
               >
               <span class="text-base text-gray-700">Zapamiętaj mnie</span>
             </label>
             <inertia-link
               href="/forgot-password"
-              class="font-bold text-base text-lightBrand hover:text-darkBrand"
+              class="font-bold text-base text-brand-light hover:text-brand-dark"
             >
               Nie pamiętasz hasła?
             </inertia-link>
           </div>
 
           <BaseButton
-            class="w-5/6 h-12 bg-black shadow-BtnShadowBlue text-white font-bold"
+            class="w-5/6 h-12 bg-black shadow-shadow-blue text-white font-bold"
             :disabled="isSubmitting"
             type="submit"
           >
@@ -133,14 +138,14 @@ const {
             Rejestrując się wyrażasz zgodę na
             <InertiaLink
               href="#"
-              class="text-lightBrand hover:text-darkBrand font-semibold"
+              class="text-brand-light hover:text-brand-dark font-semibold"
             >
               Warunki świadczenia usług
             </InertiaLink>
             oraz
             <InertiaLink
               href="#"
-              class="text-lightBrand hover:text-darkBrand font-semibold"
+              class="text-brand-light hover:text-brand-dark font-semibold"
             >
               Umowę o przetwarzaniu danych
             </InertiaLink>

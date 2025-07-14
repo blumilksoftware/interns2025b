@@ -69,6 +69,8 @@ const {
             name="email"
             label="E-mail"
             type="email"
+            placeholder="Wpisz swój adres E‑mail"
+            focus-placeholder="example@example.com"
             :error="errors.email"
           />
           <div class="flex flex-col sm:grid sm:grid-cols-2 sm:gap-5">
@@ -79,6 +81,7 @@ const {
                 name="first_name"
                 label="Imię"
                 type="text"
+                placeholder="Jan"
                 :error="errors.first_name"
               />
             </div>
@@ -90,6 +93,7 @@ const {
                 name="last_name"
                 label="Nazwisko (opcjonalnie)"
                 type="text"
+                placeholder="Kowalski"
                 :error="errors.last_name"
               />
             </div>
@@ -100,6 +104,8 @@ const {
                 v-model="form.password"
                 name="password"
                 label="Hasło"
+                placeholder="Podaj hasło"
+                focus-placeholder="Hasło min 8 znaków"
                 :error="errors.password"
               />
             </div>
@@ -110,6 +116,7 @@ const {
                 v-model="form.password_confirmation"
                 name="password_confirmation"
                 label="Powtórz hasło"
+                placeholder="Powtórz hasło"
                 :error="errors.password_confirmation"
               />
             </div>
@@ -117,7 +124,7 @@ const {
         </div>
 
         <BaseButton
-          class="w-5/6 h-12 bg-black shadow-BtnShadowBlue text-white font-bold"
+          class="w-5/6 h-12 bg-black shadow-shadow-blue text-white font-bold"
           :disabled="isSubmitting"
           type="submit"
         >
@@ -139,14 +146,14 @@ const {
             Rejestrując się wyrażasz zgodę na
             <InertiaLink
               href="#"
-              class="text-lightBrand hover:text-darkBrand font-semibold"
+              class="text-brand-light hover:text-brand-dark font-semibold"
             >
               Warunki świadczenia usług
             </InertiaLink>
             oraz
             <InertiaLink
               href="#"
-              class="text-lightBrand hover:text-darkBrand font-semibold"
+              class="text-brand-light hover:text-brand-dark font-semibold"
             >
               Umowę o przetwarzaniu danych
             </InertiaLink>

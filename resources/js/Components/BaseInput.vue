@@ -1,35 +1,49 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 
-type InputType = 'text' | 'email' | 'password' | 'number' | 'search';
+type InputType = 'text' | 'email' | 'password' | 'number' | 'search'
 
 const model = defineModel<string>()
 
-defineProps<{
+const props = defineProps<{
+  id: string
+  name: string
   label?: string
   type?: InputType
-  name: string
-  id: string
   placeholder?: string
+  focusPlaceholder?: string
   error?: string | null
 }>()
+
+const isFocused = ref(false)
+
+const currentPlaceholder = computed(() => {
+  if (isFocused.value && props.focusPlaceholder) {
+    return props.focusPlaceholder
+  }
+  return props.placeholder
+})
 </script>
 
 <template>
-  <label class="block text-base text-gray-500 mb-1" :for="id">
+  <label :for="id" class="block text-base text-gray-500 mb-1">
     {{ label }}
   </label>
+
   <div class="relative">
     <input
       :id="id"
       v-model="model"
       :name="name"
       :type="type"
-      :placeholder="placeholder"
-      :value="modelValue"
+      :placeholder="currentPlaceholder"
       :class="[
-        'w-full h-12 px-4 pr-10 font-medium rounded-lg focus:outline-none text-lightBrand hover:bg-gray-100 focus:bg-gray-100 transition duration-100 ease-in-out',
-        error ? 'border border-red-500' : 'border border-lightBrand',
+        'w-full h-12 px-4 pr-10 font-medium rounded-lg transition duration-100 ease-in-out',
+        'text-brand-light hover:bg-gray-100 focus:bg-gray-100 focus:outline-none',
+        error ? 'border border-red-500' : 'border border-brand'
       ]"
+      @focus="isFocused = true"
+      @blur="isFocused = false"
     >
     <slot name="append" />
   </div>

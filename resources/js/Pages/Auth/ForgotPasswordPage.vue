@@ -63,7 +63,8 @@ const {
             <div class="flex-col items-center space-y-4 text-xl">
               <h2 class="text-2xl text-gray-800 font-bold">Reset hasła</h2>
               <p class="text-gray-600">
-                Wprowadź swój adres e-mail, a wyślemy Ci link do zresetowania hasła.
+                Wprowadź swój adres e-mail, a wyślemy Ci link do zresetowania
+                hasła.
               </p>
               <div
                 v-if="globalMessage"
@@ -78,18 +79,19 @@ const {
               </div>
             </div>
             <BaseInput
-              id="forgot-password-email"
+              id="email"
               v-model="form.email"
               name="email"
               label="E-mail"
               type="email"
+              placeholder="Wpisz swój adres E‑mail"
+              focus-placeholder="example@example.com"
               :error="errors.email"
             />
           </div>
 
-
           <BaseButton
-            class="w-5/6 h-12 bg-black shadow-shadowBlue text-white font-bold"
+            class="w-5/6 h-12 bg-black shadow-shadow-blue text-white font-bold"
             :disabled="isSubmitting"
             type="submit"
           >

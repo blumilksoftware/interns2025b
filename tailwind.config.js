@@ -7,9 +7,16 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                lightBrand: "#025F60",
-                darkBrand: "#024C4D",
-                shadowBlue: "#375DFB",
+                brand: {
+                  light: '#025F60',
+                  DEFAULT: '#024C4D',
+                  dark: '#024445',
+                },
+                shadow:
+                {
+                  DEFAULT: '#000000',
+                  blue: '#375DFB',
+                },
             },
         },
     },
