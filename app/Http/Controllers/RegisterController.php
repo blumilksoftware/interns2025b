@@ -13,7 +13,7 @@ class RegisterController extends Controller
 {
     public function register(RegisterRequest $registerRequest, RegisterUserAction $action): JsonResponse
     {
-        $action->execute($registerRequest->validated());
+        $action->execute($registerRequest->toDto());
 
         return response()->json([
             "message" => "success",
