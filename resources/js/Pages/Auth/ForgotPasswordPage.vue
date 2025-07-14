@@ -84,8 +84,6 @@ const {
               name="email"
               label="E-mail"
               type="email"
-              placeholder="Wpisz swój adres E‑mail"
-              focus-placeholder="example@example.com"
               :error="errors.email"
             />
           </div>

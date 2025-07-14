@@ -80,18 +80,14 @@ const {
               name="email"
               label="E-mail"
               type="email"
-              placeholder="Wpisz swój adres E‑mail"
               :error="errors.email"
-              focus-placeholder="example@example.com"
             />
             <PasswordInput
               id="password"
               v-model="form.password"
               name="password"
               label="Hasło"
-              placeholder="Podaj hasło"
               :error="errors.password"
-              focus-placeholder="Hasło min 8 znaków"
             />
           </div>
 
@@ -102,7 +98,6 @@ const {
                 v-model="form.remember"
                 name="remember_password"
                 type="checkbox"
-                placeholder="Wpisz swój E‑mail"
                 class="mr-2 size-4 accent-brand-light bg-gray-100 rounded-sm border-gray-300"
               >
               <span class="text-base text-gray-700">Zapamiętaj mnie</span>

@@ -69,7 +69,6 @@ const {
             name="email"
             label="E-mail"
             type="email"
-            placeholder="Wpisz swój adres E‑mail"
             focus-placeholder="example@example.com"
             :error="errors.email"
           />
@@ -81,7 +80,6 @@ const {
                 name="first_name"
                 label="Imię"
                 type="text"
-                placeholder="Jan"
                 :error="errors.first_name"
               />
             </div>
@@ -93,7 +91,6 @@ const {
                 name="last_name"
                 label="Nazwisko (opcjonalnie)"
                 type="text"
-                placeholder="Kowalski"
                 :error="errors.last_name"
               />
             </div>
@@ -104,8 +101,6 @@ const {
                 v-model="form.password"
                 name="password"
                 label="Hasło"
-                placeholder="Podaj hasło"
-                focus-placeholder="Hasło min 8 znaków"
                 :error="errors.password"
               />
             </div>
@@ -116,7 +111,6 @@ const {
                 v-model="form.password_confirmation"
                 name="password_confirmation"
                 label="Powtórz hasło"
-                placeholder="Powtórz hasło"
                 :error="errors.password_confirmation"
               />
             </div>
