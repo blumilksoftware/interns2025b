@@ -13,7 +13,6 @@ async function handleFacebookLogin() {
     const errorMessage =
       error.response?.data?.message ||
       'An error occurred during Facebook login'
-    console.error('Facebook login error:', error.response?.data || error)
     alert(errorMessage)
   }
 }

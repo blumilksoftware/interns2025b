@@ -7,6 +7,7 @@ import type { RegisterForm } from '@/types/types'
 import { Link as InertiaLink, router } from '@inertiajs/vue3'
 import LoginFacebook from '@/Components/LoginFacebook.vue'
 import PasswordInput from '@/Components/PasswordInput.vue'
+import AppHead from '@/Components/AppHead.vue'
 
 const {
   formData: form,
@@ -41,10 +42,11 @@ const {
 </script>
 
 <template>
+  <app-head title="Rejestracja" />
   <AuthLayout>
     <template #header>
       <h2 class="font-bold text-3xl">Zarejestruj się</h2>
-      <p class="font-medium">
+      <p class="font-medium mt-3">
         Posiadasz konto?
         <InertiaLink
           href="/login"
@@ -67,10 +69,10 @@ const {
             name="email"
             label="E-mail"
             type="email"
+            placeholder="Wpisz swój adres E‑mail"
+            focus-placeholder="example@example.com"
+            :error="errors.email"
           />
-          <small v-if="errors.email" class="text-red-600">
-            {{ errors.email }}
-          </small>
           <div class="flex flex-col sm:grid sm:grid-cols-2 sm:gap-5">
             <div>
               <BaseInput
@@ -79,10 +81,9 @@ const {
                 name="first_name"
                 label="Imię"
                 type="text"
+                placeholder="Jan"
+                :error="errors.first_name"
               />
-              <small v-if="errors.first_name" class="text-red-600">
-                {{ errors.first_name }}
-              </small>
             </div>
 
             <div>
@@ -92,10 +93,9 @@ const {
                 name="last_name"
                 label="Nazwisko (opcjonalnie)"
                 type="text"
+                placeholder="Kowalski"
+                :error="errors.last_name"
               />
-              <small v-if="errors.last_name" class="text-red-600">
-                {{ errors.last_name }}
-              </small>
             </div>
 
             <div>
@@ -104,10 +104,10 @@ const {
                 v-model="form.password"
                 name="password"
                 label="Hasło"
+                placeholder="Podaj hasło"
+                focus-placeholder="Hasło min 8 znaków"
+                :error="errors.password"
               />
-              <small v-if="errors.password" class="text-red-600">
-                {{ errors.password }}
-              </small>
             </div>
 
             <div>
@@ -115,17 +115,16 @@ const {
                 id="password_confirmation"
                 v-model="form.password_confirmation"
                 name="password_confirmation"
-                label="Powtórz Hasło"
+                label="Powtórz hasło"
+                placeholder="Powtórz hasło"
+                :error="errors.password_confirmation"
               />
-              <small v-if="errors.password_confirmation" class="text-red-600">
-                {{ errors.password_confirmation }}
-              </small>
             </div>
           </div>
         </div>
 
         <BaseButton
-          class="w-5/6 h-12 bg-black shadow-[#375DFB] text-white font-bold"
+          class="w-5/6 h-12 bg-black shadow-shadow-blue text-white font-bold"
           :disabled="isSubmitting"
           type="submit"
         >
@@ -147,14 +146,14 @@ const {
             Rejestrując się wyrażasz zgodę na
             <InertiaLink
               href="#"
-              class="text-[#025F60] hover:text-[#024c4d] font-semibold"
+              class="text-brand-light hover:text-brand-dark font-semibold"
             >
               Warunki świadczenia usług
             </InertiaLink>
             oraz
             <InertiaLink
               href="#"
-              class="text-[#025F60] hover:text-[#024c4d] font-semibold"
+              class="text-brand-light hover:text-brand-dark font-semibold"
             >
               Umowę o przetwarzaniu danych
             </InertiaLink>
