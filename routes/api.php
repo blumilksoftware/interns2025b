@@ -14,6 +14,7 @@ use Interns2025b\Http\Controllers\FollowController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
+use Interns2025b\Http\Controllers\OrganizationInvitationController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 use Interns2025b\Http\Controllers\UpdatePasswordController;
@@ -34,6 +35,7 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/followings", [FollowController::class, "followings"])->name("followings");
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
     Route::get("/profile/{user}", [UserProfileController::class, "showDetail"]);
+    Route::post("/organizations/{organization}/invite", [OrganizationInvitationController::class, "send"]);
 });
 
 Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
@@ -43,15 +45,16 @@ Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirm
 Route::prefix("auth")->group(function (): void {
     Route::post("/login", [LoginController::class, "login"])->name("login");
     Route::post("/register", [RegisterController::class, "register"])->name("register");
-
     Route::get("/facebook/redirect", [FacebookController::class, "redirect"]);
     Route::get("/facebook/callback", [FacebookController::class, "loginCallback"]);
-
     Route::post("/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"])->name("forgot.password");
     Route::post("/reset-password", [ResetPasswordController::class, "resetPassword"]);
-
     Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])->middleware("signed")->name("verification.verify");
 });
+
+Route::get("/organizations/accept-invite", [OrganizationInvitationController::class, "accept"])
+    ->name("organizations.accept-invite")
+    ->middleware("signed");
 
 Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);

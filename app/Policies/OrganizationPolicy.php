@@ -1,0 +1,46 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Interns2025b\Policies;
+
+use Interns2025b\Models\Organization;
+use Interns2025b\Models\User;
+
+class OrganizationPolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return false;
+    }
+
+    public function view(User $user, Organization $organization): bool
+    {
+        return false;
+    }
+
+    public function create(User $user): bool
+    {
+        return false;
+    }
+
+    public function update(User $user, Organization $organization): bool
+    {
+        return $organization->owner_id === $user->id;
+    }
+
+    public function delete(User $user, Organization $organization): bool
+    {
+        return false;
+    }
+
+    public function restore(User $user, Organization $organization): bool
+    {
+        return false;
+    }
+
+    public function forceDelete(User $user, Organization $organization): bool
+    {
+        return false;
+    }
+}
