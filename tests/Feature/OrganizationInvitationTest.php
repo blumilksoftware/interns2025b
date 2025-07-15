@@ -15,6 +15,10 @@ class OrganizationInvitationTest extends TestCase
 {
     protected User $owner;
     protected User $superAdmin;
+    protected User $admin;
+    protected User $member;
+    protected User $nonMember;
+    protected User $invitee;
     protected Organization $organization;
 
     protected function setUp(): void
@@ -25,32 +29,34 @@ class OrganizationInvitationTest extends TestCase
 
         $this->owner = User::factory()->create();
         $this->superAdmin = User::factory()->superAdmin()->create();
+        $this->admin = User::factory()->admin()->create();
+        $this->member = User::factory()->create();
+        $this->nonMember = User::factory()->create();
+        $this->invitee = User::factory()->create(["email" => "invitee@example.com"]);
+
         $this->organization = Organization::factory()->for($this->owner, "owner")->create();
+
+        $this->organization->users()->attach($this->member->id);
     }
 
     public function testOwnerCanInviteUserByEmail(): void
     {
-        $invitee = User::factory()->create(["email" => "invitee@example.com"]);
         $this->actingAs($this->owner);
 
         $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
-            "email" => $invitee->email,
+            "email" => $this->invitee->email,
         ]);
 
         $response->assertOk();
-        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($invitee->email));
+        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($this->invitee->email));
     }
 
     public function testOrganizationMemberCannotInviteUser(): void
     {
-        $member = User::factory()->create();
-        $invitee = User::factory()->create(["email" => "invitee@example.com"]);
-
-        $this->organization->users()->attach($member->id);
-        $this->actingAs($member);
+        $this->actingAs($this->member);
 
         $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
-            "email" => $invitee->email,
+            "email" => $this->invitee->email,
         ]);
 
         $response->assertForbidden();
@@ -58,42 +64,34 @@ class OrganizationInvitationTest extends TestCase
 
     public function testSuperAdminCanInviteUser(): void
     {
-        $invitee = User::factory()->create(["email" => "invitee@example.com"]);
-
         $this->actingAs($this->superAdmin);
 
         $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
-            "email" => $invitee->email,
+            "email" => $this->invitee->email,
         ]);
 
         $response->assertOk();
-        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($invitee->email));
+        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($this->invitee->email));
     }
 
     public function testAdminCanInviteUser(): void
     {
-        $admin = User::factory()->admin()->create();
-        $invitee = User::factory()->create(["email" => "invitee@example.com"]);
-
-        $this->actingAs($admin);
+        $this->actingAs($this->admin);
 
         $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
-            "email" => $invitee->email,
+            "email" => $this->invitee->email,
         ]);
 
         $response->assertOk();
-        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($invitee->email));
+        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($this->invitee->email));
     }
 
     public function testNonOwnerNonMemberNonSuperAdminCannotInvite(): void
     {
-        $nonOwner = User::factory()->create();
-        $invitee = User::factory()->create(["email" => "invitee@example.com"]);
-
-        $this->actingAs($nonOwner);
+        $this->actingAs($this->nonMember);
 
         $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
-            "email" => $invitee->email,
+            "email" => $this->invitee->email,
         ]);
 
         $response->assertForbidden();
@@ -101,10 +99,8 @@ class OrganizationInvitationTest extends TestCase
 
     public function testGuestCannotInvite(): void
     {
-        $invitee = User::factory()->create(["email" => "invitee@example.com"]);
-
         $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
-            "email" => $invitee->email,
+            "email" => $this->invitee->email,
         ]);
 
         $response->assertUnauthorized();
@@ -112,31 +108,27 @@ class OrganizationInvitationTest extends TestCase
 
     public function testUserCanAcceptInvitation(): void
     {
-        $invitee = User::factory()->create(["email" => "invitee@example.com"]);
-
         $url = URL::signedRoute("organizations.accept-invite", [
             "organization" => $this->organization->id,
-            "email" => $invitee->email,
+            "email" => $this->invitee->email,
         ]);
 
-        $this->actingAs($invitee);
+        $this->actingAs($this->invitee);
 
         $response = $this->getJson($url);
 
         $response->assertOk();
-        $this->assertTrue($this->organization->fresh()->users->contains($invitee));
+        $this->assertTrue($this->organization->fresh()->users->contains($this->invitee));
     }
 
     public function testInvalidSignatureIsRejected(): void
     {
-        $invitee = User::factory()->create(["email" => "invitee@example.com"]);
-
         $url = URL::temporarySignedRoute("organizations.accept-invite", now()->subMinutes(1), [
             "organization" => $this->organization->id,
-            "email" => $invitee->email,
+            "email" => $this->invitee->email,
         ]);
 
-        $this->actingAs($invitee);
+        $this->actingAs($this->invitee);
 
         $response = $this->getJson($url);
 
