@@ -1,32 +1,68 @@
+<script setup lang="ts">
+import { Link as InertiaLink } from '@inertiajs/vue3'
+</script>
+
 <template>
-  <div class="w-full bg-fuchsia-500 flex flex-col sm:items-center sm:justify-center">
-    <div class="flex w-full bg-blue-300 items-center">
-      <h1>navbar</h1>
+  <div class="w-full flex flex-col sm:items-center sm:justify-center">
+    <div class="flex w-full pb-32">
       <div class="">
-        <a href="/login">zaloguj się</a><br>
-        <a href="/register">zarejestruj się</a>
-        <img class="mb-10" src="/images/LogoWhite2.png" alt="LetsEvent">
+        <div class="w-screen flex font-medium justify-end gap-10 p-10">
+          <InertiaLink href="/login">zaloguj się</InertiaLink><br>
+          <InertiaLink href="/register">zarejestruj się</InertiaLink>
+        </div>
+        <div
+          class="flex flex-col items-center justify-center text-center space-y-16"
+        >
+          <img src="/images/LogoBrand.png" alt="LetsEvent" class="">
+          <h1 class="font-bold text-6xl">
+            Znajdź
+            <InertiaLink href="#" class="text-gradient-teal">
+              wydarzenie
+            </InertiaLink><br>
+            w Twojej okolicy
+          </h1>
+        </div>
       </div>
     </div>
-    <div class="sm:w-5/6 flex flex-col bg-gray-500">
-      <div class="border-gray-600 border-2 space-y-10">
-        <div class="w-full justify-center bg-green-500">
-          <h1 class="text-6xl">Znajdz Wydarzenie w twojej okolicy</h1>
-        </div>
-        <div class="w-full h-96 bg-red-500">
+    <div class="sm:w-5/6 flex flex-col">
+      <div class="mb-36">
+        <div class="w-full h-[777px] bg-[#E5E7EB] rounded-3xl">
           <h1>mapa</h1>
         </div>
       </div>
     </div>
-    <div class="w-full bg-gradient-to-tr from-brand to-brand-light ">
-      <h1>bądz na bieżąnco dołącz do LetsEvent</h1>
-      <p>Dodaj własne wydarzenie</p>
-      <p>Bierz udział w wydarzeniach</p>
-      <a href="/register">zarejestruj się</a>
-      Wszystkie prawa zastrzeżone © 2025 Interns2025b
+    <div
+      class="w-full bg-gradient-to-tr from-brand font-normal to-brand-light pb-8"
+    >
+      <div
+        class="flex flex-col items-center justify-center text-center text-white space-y-16"
+      >
+        <h1 class="text-6xl font-bold pt-6">
+          Bądz na bieżąnco<br>
+          <span class="text-gradient-teal-light">dołącz do LetsEvent</span>
+        </h1>
+        <div class="flex font-normal justify-center gap-8">
+          <p>Dodaj własne wydarzenie</p>
+          <p>Bierz udział w wydarzeniach</p>
+        </div>
+        <InertiaLink href="/register" class="text-black">
+          zarejestruj się
+        </InertiaLink>
+        <div class="w-4/6 flex justify-between text-gray-500">
+          <p>Wszystkie prawa zastrzeżone © 2025 Interns2025b</p>
+          <div>
+            <ul class="flex items-center gap-4">
+              <li>
+                <a href="/regulamin" class="hover:underline">Regulamin</a>
+              </li>
+              <li aria-hidden="true">•</li>
+              <li>
+                <a href="/polityka-prywatnosci" class="hover:underline">Polityka prywatności</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-</script>

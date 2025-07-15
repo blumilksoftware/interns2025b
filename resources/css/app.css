@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.text-gradient-teal {
+  @apply bg-[linear-gradient(90deg,#025F60_0%,#1AA8A9_33%,#1AA8A9_66%,#315757_100%)]
+  bg-clip-text text-transparent
+}
+.text-gradient-teal-light {
+  @apply bg-[linear-gradient(90deg,#FFFFFF_0%,#B0F8F9_33%,#A1FEFF_66%,#FFFFFF_100%)]
+  bg-clip-text text-transparent
+}
