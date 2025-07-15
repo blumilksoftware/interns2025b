@@ -41,7 +41,7 @@ class OrganizationInvitationController extends Controller
 
     public function accept(Request $request): JsonResponse
     {
-        $user = User::where("email", $request->query("email"))->first();
+        $user = User::query()->where("email", $request->query("email"))->first();
 
         if (!$user || $user->id !== auth()->id()) {
             return response()->json([
