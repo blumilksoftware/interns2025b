@@ -16,7 +16,9 @@ class UserProfileTest extends TestCase
     {
         parent::setUp();
 
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->create([
+            "avatar_url" => "https://example.com/original-avatar.jpg",
+        ]);
     }
 
     public function testUserCanViewTheirProfile(): void
@@ -30,15 +32,12 @@ class UserProfileTest extends TestCase
         $response = $this->getJson("/api/profile");
 
         $response->assertOk()
-            ->assertJson([
-                "message" => "User profile retrieved successfully.",
-                "data" => [
-                    "first_name" => $this->user->first_name,
-                    "last_name" => $this->user->last_name,
-                    "email" => $this->user->email,
-                    "facebook_linked" => true,
-                ],
-            ]);
+            ->assertJsonPath("message", "User profile retrieved successfully.")
+            ->assertJsonPath("data.first_name", $this->user->first_name)
+            ->assertJsonPath("data.last_name", $this->user->last_name)
+            ->assertJsonPath("data.email", $this->user->email)
+            ->assertJsonPath("data.facebook_linked", true)
+            ->assertJsonPath("data.avatar_url", $this->user->avatar_url);
     }
 
     public function testGuestCannotAccessProfile(): void
@@ -56,7 +55,8 @@ class UserProfileTest extends TestCase
             ])
             ->assertOk()
             ->assertJsonPath("data.first_name", "Updated")
-            ->assertJsonPath("data.last_name", "Name");
+            ->assertJsonPath("data.last_name", "Name")
+            ->assertJsonPath("data.avatar_url", $this->user->avatar_url);
     }
 
     public function testGuestCannotUpdateProfile(): void
@@ -86,25 +86,29 @@ class UserProfileTest extends TestCase
         $response = $this->getJson("/api/profile/{$this->user->id}");
 
         $response->assertStatus(302)
-            ->assertJson([
-                "message" => "profile.redirected",
-                "redirect" => "/api/profile",
-            ]);
+            ->assertJsonPath("message", "profile.redirected")
+            ->assertJsonPath("redirect", "/api/profile");
     }
 
     public function testAuthenticatedUserCanViewOtherUsersProfile(): void
     {
-        $otherUser = User::factory()->create();
+        $otherUser = User::factory()->create([
+            "avatar_url" => "https://example.com/other-avatar.jpg",
+        ]);
 
         $this->actingAs($this->user)
             ->getJson("/api/profile/{$otherUser->id}")
             ->assertOk()
-            ->assertJsonPath("data.id", $otherUser->id);
+            ->assertJsonPath("data.id", $otherUser->id)
+            ->assertJsonPath("data.avatar_url", $otherUser->avatar_url);
     }
 
     public function testUserDetailProfileContainsCountsAndEvents(): void
     {
-        $targetUser = User::factory()->create();
+        $targetUser = User::factory()->create([
+            "avatar_url" => "https://example.com/target-avatar.jpg",
+        ]);
+
         Event::factory()->count(3)->create([
             "owner_id" => $targetUser->id,
             "owner_type" => User::class,
@@ -128,11 +132,31 @@ class UserProfileTest extends TestCase
                     "first_name",
                     "last_name",
                     "email",
+                    "avatar_url",
                     "events",
                     "events_count",
                     "followers_count",
                     "following_count",
                 ],
             ]);
+    }
+
+    public function testUserCanUpdateAvatarUrl(): void
+    {
+        $this->actingAs($this->user);
+
+        $newAvatarUrl = "https://example.com/new-avatar.png";
+
+        $response = $this->putJson("/api/profile", [
+            "avatar_url" => $newAvatarUrl,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath("data.avatar_url", $newAvatarUrl);
+
+        $this->assertDatabaseHas("users", [
+            "id" => $this->user->id,
+            "avatar_url" => $newAvatarUrl,
+        ]);
     }
 }

@@ -71,6 +71,7 @@ class UserManagementController extends Controller
         $updateData = [
             "first_name" => $dto->firstName ?? $user->first_name,
             "last_name" => $dto->lastName,
+            "avatar_url" => $dto->avatar_url,
             "email" => $dto->email ?? $user->email,
         ];
 

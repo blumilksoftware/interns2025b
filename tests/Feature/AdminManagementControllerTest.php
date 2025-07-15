@@ -35,6 +35,7 @@ class AdminManagementControllerTest extends TestCase
                 ->where("id", $this->admin->id)
                 ->where("email", $this->admin->email)
                 ->where("facebook_linked", false)
+                ->where("avatar_url", $this->admin->avatar_url)
                 ->hasAll(["first_name", "last_name"])));
     }
 
@@ -55,6 +56,7 @@ class AdminManagementControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath("id", $this->admin->id);
+        $response->assertJsonPath("avatar_url", $this->admin->avatar_url);
     }
 
     public function testShowRejectsNonAdminUser(): void
@@ -83,7 +85,10 @@ class AdminManagementControllerTest extends TestCase
         $response = $this->postJson("/api/admins", $payload);
 
         $response->assertCreated();
-        $this->assertDatabaseHas("users", ["email" => "newadmin@example.com"]);
+        $this->assertDatabaseHas("users", [
+            "email" => "newadmin@example.com",
+        ]);
+
         $this->assertEquals(
             [Role::Administrator->value],
             User::where("email", "newadmin@example.com")->first()->getRoleNames()->toArray(),
@@ -110,18 +115,23 @@ class AdminManagementControllerTest extends TestCase
 
     public function testUpdateModifiesAdminDetails(): void
     {
-        $this->actingAs($this->superAdmin);
+        $this->actingAs($this->admin);
 
-        $response = $this->putJson("/api/admins/{$this->admin->id}", [
+        $payload = [
             "first_name" => "Updated",
             "email" => "updated@example.com",
-        ]);
+            "avatar_url" => "https://example.com/new-avatar.png",
+        ];
+
+        $response = $this->putJson("/api/admins/{$this->admin->id}", $payload);
 
         $response->assertOk();
 
         $this->admin->refresh();
+
         $this->assertEquals("Updated", $this->admin->first_name);
         $this->assertEquals("updated@example.com", $this->admin->email);
+        $this->assertEquals("https://example.com/new-avatar.png", $this->admin->avatar_url);
     }
 
     public function testEmailChangeResetsEmailVerifiedAt(): void

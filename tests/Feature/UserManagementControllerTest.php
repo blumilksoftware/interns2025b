@@ -51,6 +51,7 @@ class UserManagementControllerTest extends TestCase
                         ->where("first_name", "user")
                         ->where("last_name", $this->userWithRole->last_name)
                         ->where("email", $this->userWithRole->email)
+                        ->where("avatar", $this->userWithRole->avatar)
                         ->where("facebook_linked", $this->userWithRole->facebook_id !== null)
                         ->where("email_verified_at", $this->userWithRole->email_verified_at ? $this->userWithRole->email_verified_at->toJSON() : null)
                         ->where("created_at", $this->userWithRole->created_at->toJSON())
@@ -98,6 +99,7 @@ class UserManagementControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath("id", $this->userWithRole->id);
+        $response->assertJsonPath("avatar_url", $this->userWithRole->avatar);
         $response->assertJsonPath("organizations.0", $this->organization->id);
     }
 
@@ -154,18 +156,23 @@ class UserManagementControllerTest extends TestCase
 
         $this->actingAs($this->admin);
 
+        $avatarUrl = "https://via.placeholder.com/200x200.png/008844?text=business+corrupti";
+
         $response = $this->putJson("/api/admin/users/{$this->userWithRole->id}", [
             "first_name" => "updated",
             "email" => "updated@example.com",
             "organization_ids" => [$newOrg->id],
+            "avatar" => $avatarUrl,
         ]);
 
+        $response->dump();
         $response->assertOk();
 
         $this->userWithRole->refresh();
 
         $this->assertEquals("updated", $this->userWithRole->first_name);
         $this->assertEquals("updated@example.com", $this->userWithRole->email);
+        $this->assertEquals($avatarUrl, $this->userWithRole->avatar);
         $this->assertTrue($this->userWithRole->organizations->pluck("id")->contains($newOrg->id));
     }
 
