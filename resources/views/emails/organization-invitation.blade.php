@@ -1,4 +1,3 @@
-fdf
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +19,7 @@ fdf
                 </a>
             </p>
 
-            <   p>{{ __('organization.email_invitation_note') }}</p>
+            <p>{{ __('organization.email_invitation_note') }}</p>
 
             <p>{{ __('organization.email_signature') }},<br>{{ config('app.name') }}</p>
         </td>
