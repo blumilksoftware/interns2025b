@@ -12,6 +12,7 @@ class OrganizationControllerTest extends TestCase
 {
     private User $admin;
     private User $user;
+    private Organization $organization;
 
     protected function setUp(): void
     {
@@ -19,6 +20,7 @@ class OrganizationControllerTest extends TestCase
 
         $this->admin = User::factory()->admin()->create();
         $this->user = User::factory()->create();
+        $this->organization = Organization::factory()->create();
     }
 
     public function testAdminCanListOrganizations(): void
@@ -30,7 +32,7 @@ class OrganizationControllerTest extends TestCase
         $response = $this->getJson("/api/admin/organizations");
 
         $response->assertOk()
-            ->assertJsonCount(2, "data");
+            ->assertJsonCount(3, "data");
     }
 
     public function testNonAdminCannotListOrganizations(): void
@@ -44,21 +46,19 @@ class OrganizationControllerTest extends TestCase
 
     public function testAdminCanViewOrganizationDetails(): void
     {
-        $organization = Organization::factory()->create();
-
         $this->actingAs($this->admin);
 
-        $response = $this->getJson("/api/organizations/{$organization->id}");
+        $response = $this->getJson("/api/organizations/{$this->organization->id}");
 
         $response->assertOk()
-            ->assertJsonPath("data.id", $organization->id);
+            ->assertJsonPath("data.id", $this->organization->id);
     }
 
     public function testShowReturns404ForNonexistentOrganization(): void
     {
         $this->actingAs($this->admin);
 
-        $response = $this->getJson("/api/organizations/999");
+        $response = $this->getJson("/api/organizations/999999");
 
         $response->assertNotFound();
     }
@@ -98,25 +98,21 @@ class OrganizationControllerTest extends TestCase
 
     public function testAdminCanUpdateOrganization(): void
     {
-        $organization = Organization::factory()->create(["name" => "Old Name"]);
-
         $this->actingAs($this->admin);
 
-        $response = $this->putJson("/api/admin/organizations/{$organization->id}", ["name" => "Updated Name"]);
+        $response = $this->putJson("/api/admin/organizations/{$this->organization->id}", ["name" => "Updated Name"]);
 
         $response->assertOk()
             ->assertJsonPath("data.name", "Updated Name");
 
-        $this->assertDatabaseHas("organizations", ["id" => $organization->id, "name" => "Updated Name"]);
+        $this->assertDatabaseHas("organizations", ["id" => $this->organization->id, "name" => "Updated Name"]);
     }
 
     public function testUpdateFailsWithInvalidData(): void
     {
-        $organization = Organization::factory()->create();
-
         $this->actingAs($this->admin);
 
-        $response = $this->putJson("/api/admin/organizations/{$organization->id}", []);
+        $response = $this->putJson("/api/admin/organizations/{$this->organization->id}", []);
 
         $response->assertUnprocessable()
             ->assertJsonValidationErrors(["name"]);
@@ -126,41 +122,97 @@ class OrganizationControllerTest extends TestCase
     {
         $this->actingAs($this->admin);
 
-        $response = $this->putJson("/api/admin/organizations/999", ["name" => "Non-existent"]);
+        $response = $this->putJson("/api/admin/organizations/999999", ["name" => "Non-existent"]);
 
         $response->assertNotFound();
     }
 
     public function testAdminCanDeleteOrganization(): void
     {
-        $organization = Organization::factory()->create();
+        $org = Organization::factory()->create();
 
         $this->actingAs($this->admin);
 
-        $response = $this->deleteJson("/api/admin/organizations/{$organization->id}");
+        $response = $this->deleteJson("/api/admin/organizations/{$org->id}");
 
         $response->assertOk()
             ->assertJson(["message" => "Organization deleted successfully."]);
 
-        $this->assertDatabaseMissing("organizations", ["id" => $organization->id]);
+        $this->assertDatabaseMissing("organizations", ["id" => $org->id]);
     }
 
     public function testDeleteFailsForNonexistentOrganization(): void
     {
         $this->actingAs($this->admin);
 
-        $response = $this->deleteJson("/api/admin/organizations/999");
+        $response = $this->deleteJson("/api/admin/organizations/999999");
 
         $response->assertNotFound();
     }
 
     public function testNonAdminCannotUpdateOrDelete(): void
     {
-        $organization = Organization::factory()->create();
-
         $this->actingAs($this->user);
 
-        $this->putJson("/api/admin/organizations/{$organization->id}", ["name" => "Blocked"])
+        $this->putJson("/api/admin/organizations/{$this->organization->id}", ["name" => "Blocked"])
+            ->assertForbidden();
+
+        $this->deleteJson("/api/admin/organizations/{$this->organization->id}")
+            ->assertForbidden();
+    }
+
+    public function testOrganizationOwnerCannotCreateOrganization(): void
+    {
+        $owner = User::factory()->create();
+
+        $this->actingAs($owner);
+
+        $response = $this->postJson("/api/admin/organizations", ["name" => "Not Allowed"]);
+
+        $response->assertForbidden();
+    }
+
+    public function testOrganizationUpdateDoesNotChangeImmutableFields(): void
+    {
+        $this->actingAs($this->admin);
+
+        $payload = [
+            "name" => "New Name",
+            "id" => 999,
+            "owner_id" => User::factory()->create()->id,
+            "created_at" => now()->subYears(2)->toDateTimeString(),
+        ];
+
+        $this->putJson("/api/admin/organizations/{$this->organization->id}", $payload)
+            ->assertOk()
+            ->assertJsonPath("data.name", "New Name");
+
+        $this->assertDatabaseMissing("organizations", ["id" => 999]);
+        $this->assertDatabaseHas("organizations", ["id" => $this->organization->id, "name" => "New Name"]);
+    }
+
+    public function testDeletingOrganizationRemovesItFromIndex(): void
+    {
+        $org = Organization::factory()->create(["name" => "To Be Deleted"]);
+        $this->actingAs($this->admin);
+
+        $this->deleteJson("/api/admin/organizations/{$org->id}")
+            ->assertOk();
+
+        $this->getJson("/api/admin/organizations")
+            ->assertOk()
+            ->assertJsonMissing(["name" => "To Be Deleted"]);
+    }
+
+    public function testOwnerCannotChangeOtherOwnersOrganization(): void
+    {
+        $ownerA = User::factory()->create();
+        $ownerB = User::factory()->create();
+        $organization = Organization::factory()->for($ownerB, "owner")->create(["name" => "Owned By B"]);
+
+        $this->actingAs($ownerA);
+
+        $this->putJson("/api/admin/organizations/{$organization->id}", ["name" => "Should Fail"])
             ->assertForbidden();
 
         $this->deleteJson("/api/admin/organizations/{$organization->id}")

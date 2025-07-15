@@ -15,6 +15,8 @@ class OrganizationController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize("viewAny", Organization::class);
+
         $organizations = Organization::query()->with(["owner", "users"])->get();
 
         return response()->json([
@@ -24,6 +26,8 @@ class OrganizationController extends Controller
 
     public function show(Organization $organization): JsonResponse
     {
+        $this->authorize("view", $organization);
+
         return response()->json([
             "data" => new OrganizationResource($organization),
         ]);
@@ -31,6 +35,8 @@ class OrganizationController extends Controller
 
     public function store(StoreOrganizationRequest $request): JsonResponse
     {
+        $this->authorize("create", Organization::class);
+
         $organization = Organization::create($request->validated());
 
         return response()->json([
@@ -41,6 +47,8 @@ class OrganizationController extends Controller
 
     public function update(UpdateOrganizationRequest $request, Organization $organization): JsonResponse
     {
+        $this->authorize("update", $organization);
+
         $organization->update($request->validated());
 
         return response()->json([
@@ -51,6 +59,8 @@ class OrganizationController extends Controller
 
     public function destroy(Organization $organization): JsonResponse
     {
+        $this->authorize("delete", $organization);
+
         $organization->delete();
 
         return response()->json([
