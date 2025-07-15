@@ -15,7 +15,7 @@ class OrganizationInvitationMail extends Mailable
 
     public function __construct(
         public string $organizationName,
-        public string $url
+        public string $url,
     ) {}
 
     public function build()
