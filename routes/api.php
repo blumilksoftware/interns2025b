@@ -61,15 +61,12 @@ Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassw
 
 Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
     Route::get("/events", [EventController::class, "index"]);
-    Route::get("/organizations", [OrganizationController::class, "index"]);
     Route::get("/users", [UserManagementController::class, "index"])->name("users.index");
     Route::get("/users/{user}", [UserManagementController::class, "show"])->name("users.show");
     Route::post("/users", [UserManagementController::class, "store"])->name("users.store");
     Route::put("/users/{user}", [UserManagementController::class, "update"])->name("users.update");
     Route::delete("/users/{user}", [UserManagementController::class, "destroy"])->name("users.destroy");
-    Route::post("/organizations", [OrganizationController::class, "store"])->name("organizations.store");
-    Route::put("/organizations/{organization}", [OrganizationController::class, "update"])->name("organizations.update");
-    Route::delete("/organizations/{organization}", [OrganizationController::class, "destroy"])->name("organizations.destroy");
+    Route::resource("organizations", OrganizationController::class);
 });
 
 Route::group(["middleware" => ["auth:sanctum", "role:superAdministrator"]], function (): void {
@@ -92,5 +89,4 @@ Route::resource("events", EventController::class)->only(["index", "show"]);
 Route::prefix("admin")
     ->middleware(["auth:sanctum", "role:administrator|superAdministrator"])
     ->group(function (): void {
-        Route::resource("organizations", OrganizationController::class)->only(["index", "show"]);
     });

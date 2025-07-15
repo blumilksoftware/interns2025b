@@ -21,7 +21,7 @@ class OrganizationInvitationController extends Controller
             "email" => "required|email|exists:users,email",
         ]);
 
-        $this->authorize("update", $organization);
+        $this->authorize("invite", $organization);
 
         $url = URL::temporarySignedRoute(
             "organizations.accept-invite",

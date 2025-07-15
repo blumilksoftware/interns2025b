@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Interns2025b\Policies;
 
+use Interns2025b\Enums\Role;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
 
@@ -42,5 +43,15 @@ class OrganizationPolicy
     public function forceDelete(User $user, Organization $organization): bool
     {
         return false;
+    }
+
+    public function invite(User $user, Organization $organization): bool
+    {
+        if ($organization->owner_id === $user->id) {
+            return true;
+        }
+
+        return $user->hasRole(Role::Administrator->value)
+            || $user->hasRole(Role::SuperAdministrator->value);
     }
 }
