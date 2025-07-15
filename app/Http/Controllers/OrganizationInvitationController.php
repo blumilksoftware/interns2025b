@@ -24,7 +24,7 @@ class OrganizationInvitationController extends Controller
         $this->authorize("invite", $organization);
 
         $url = URL::temporarySignedRoute(
-            "organization.accept-invite",
+            "organizations.accept-invite",
             now()->addHours(48),
             [
                 "organization" => $organization->id,
