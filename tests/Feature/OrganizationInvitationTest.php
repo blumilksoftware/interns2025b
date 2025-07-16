@@ -146,14 +146,14 @@ class OrganizationInvitationTest extends TestCase
         $response = $this->getJson($url);
 
         $response->assertStatus(Response::HTTP_FORBIDDEN);
-        $response->assertJson(['message' => __('organization.invitation_unauthorized')]);
+        $response->assertJson(["message" => __("organization.invitation_unauthorized")]);
     }
 
     public function testAcceptInvitationUnauthorizedIfEmailMismatch(): void
     {
         $url = URL::signedRoute("organizations.accept-invite", [
             "organization" => $this->organization->id,
-            "email" => 'wrongemail@example.com',
+            "email" => "wrongemail@example.com",
         ]);
 
         $this->actingAs($this->invitee);
@@ -161,6 +161,6 @@ class OrganizationInvitationTest extends TestCase
         $response = $this->getJson($url);
 
         $response->assertStatus(Response::HTTP_FORBIDDEN);
-        $response->assertJson(['message' => __('organization.invitation_unauthorized')]);
+        $response->assertJson(["message" => __("organization.invitation_unauthorized")]);
     }
 }
