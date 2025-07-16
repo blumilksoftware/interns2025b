@@ -1,28 +1,21 @@
 <script setup lang="ts">
 import { Link as InertiaLink } from '@inertiajs/vue3'
+import navbar from '@/Components/navbar.vue'
 </script>
 
 <template>
+  <app-head title="Home Page" />
   <div class="w-full flex flex-col sm:items-center sm:justify-center">
-    <div class="flex w-full pb-32">
-      <div class="">
-        <div class="w-screen flex font-medium justify-end gap-10 p-10">
-          <InertiaLink href="/login">zaloguj się</InertiaLink><br>
-          <InertiaLink href="/register">zarejestruj się</InertiaLink>
-        </div>
-        <div
-          class="flex flex-col items-center justify-center text-center space-y-16"
-        >
-          <img src="/images/LogoBrand.png" alt="LetsEvent" class="">
-          <h1 class="font-bold text-6xl">
-            Znajdź
-            <InertiaLink href="#" class="text-gradient-teal">
-              wydarzenie
-            </InertiaLink><br>
-            w Twojej okolicy
-          </h1>
-        </div>
-      </div>
+    <div class="flex w-full">
+      <navbar>
+        <h1 class="font-bold text-6xl">
+          Znajdź
+          <InertiaLink href="#" class="text-gradient-teal">
+            wydarzenie
+          </InertiaLink><br>
+          w Twojej okolicy
+        </h1>
+      </navbar>
     </div>
     <div class="sm:w-5/6 flex flex-col">
       <div class="mb-36">
