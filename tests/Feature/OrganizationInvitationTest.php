@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\URL;
 use Interns2025b\Mail\OrganizationInvitationMail;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 class OrganizationInvitationTest extends TestCase
@@ -133,5 +134,33 @@ class OrganizationInvitationTest extends TestCase
         $response = $this->getJson($url);
 
         $response->assertStatus(403);
+    }
+
+    public function testAcceptInvitationUnauthorizedIfUserMissing(): void
+    {
+        $url = URL::signedRoute("organizations.accept-invite", [
+            "organization" => $this->organization->id,
+            "email" => $this->invitee->email,
+        ]);
+
+        $response = $this->getJson($url);
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $response->assertJson(['message' => __('organization.invitation_unauthorized')]);
+    }
+
+    public function testAcceptInvitationUnauthorizedIfEmailMismatch(): void
+    {
+        $url = URL::signedRoute("organizations.accept-invite", [
+            "organization" => $this->organization->id,
+            "email" => 'wrongemail@example.com',
+        ]);
+
+        $this->actingAs($this->invitee);
+
+        $response = $this->getJson($url);
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
+        $response->assertJson(['message' => __('organization.invitation_unauthorized')]);
     }
 }

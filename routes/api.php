@@ -85,8 +85,3 @@ Route::get("/reset-password/{token}", fn(string $token): JsonResponse => respons
 ]))->name("password.reset");
 
 Route::resource("events", EventController::class)->only(["index", "show"]);
-
-Route::prefix("admin")
-    ->middleware(["auth:sanctum", "role:administrator|superAdministrator"])
-    ->group(function (): void {
-    });
