@@ -43,17 +43,24 @@ class UserManagementControllerTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertJson(fn(AssertableJson $json): AssertableJson => $json->has(1)
-            ->first(fn(AssertableJson $json): AssertableJson => $json
-                ->where("id", $this->userWithRole->id)
-                ->where("first_name", "user")
-                ->where("last_name", $this->userWithRole->last_name)
-                ->where("email", $this->userWithRole->email)
-                ->where("facebook_linked", false)
-                ->where("email_verified_at", $this->userWithRole->email_verified_at ? $this->userWithRole->email_verified_at->toJSON() : null)
-                ->where("created_at", $this->userWithRole->created_at->toJSON())
-                ->where("updated_at", $this->userWithRole->updated_at->toJSON())
-                ->has("organizations", 1)));
+        $response->assertJson(
+            fn(AssertableJson $json): AssertableJson => $json->has(1)
+                ->first(
+                    fn(AssertableJson $json): AssertableJson => $json
+                        ->where("id", $this->userWithRole->id)
+                        ->where("first_name", "user")
+                        ->where("last_name", $this->userWithRole->last_name)
+                        ->where("email", $this->userWithRole->email)
+                        ->where("facebook_linked", $this->userWithRole->facebook_id !== null)
+                        ->where("email_verified_at", $this->userWithRole->email_verified_at ? $this->userWithRole->email_verified_at->toJSON() : null)
+                        ->where("created_at", $this->userWithRole->created_at->toJSON())
+                        ->where("updated_at", $this->userWithRole->updated_at->toJSON())
+                        ->where("events_count", $this->userWithRole->owned_events_count)
+                        ->where("followers_count", $this->userWithRole->followers_count)
+                        ->where("following_count", $this->userWithRole->following_users_count)
+                        ->has("organizations", 1),
+                ),
+        );
     }
 
     public function testUsersIndexDoesNotIncludeAdmins(): void
@@ -280,19 +287,6 @@ class UserManagementControllerTest extends TestCase
         ];
 
         $response = $this->postJson("/api/admin/users", $payload);
-
-        $response->assertUnprocessable();
-        $response->assertJsonValidationErrors(["password"]);
-    }
-
-    public function testUpdateRejectsIfPasswordConfirmationMismatch(): void
-    {
-        $this->actingAs($this->admin);
-
-        $response = $this->putJson("/api/admin/users/{$this->userWithRole->id}", [
-            "password" => "newpassword123",
-            "password_confirmation" => "differentpassword",
-        ]);
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors(["password"]);

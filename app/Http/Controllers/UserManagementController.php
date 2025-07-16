@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
 use Interns2025b\Actions\RegisterUserAction;
+use Interns2025b\Enums\Role;
 use Interns2025b\Http\Requests\StoreUserRequest;
 use Interns2025b\Http\Requests\UpdateUserRequest;
 use Interns2025b\Http\Resources\UserResource;
@@ -15,11 +15,13 @@ use Symfony\Component\HttpFoundation\Response as Status;
 
 class UserManagementController extends Controller
 {
-    public function index(User $user): JsonResponse
+    public function index(): JsonResponse
     {
+        $this->authorize("viewAny", User::class);
+
         $users = User::query()
             ->with("organizations")
-            ->role("user")
+            ->role(Role::User->value)
             ->orderBy("id")
             ->get();
 
@@ -28,9 +30,7 @@ class UserManagementController extends Controller
 
     public function show(User $user): JsonResponse
     {
-        if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
-        }
+        $this->authorize("view", $user);
 
         $user->load("organizations");
 
@@ -39,9 +39,11 @@ class UserManagementController extends Controller
 
     public function store(StoreUserRequest $request, RegisterUserAction $registerUser): JsonResponse
     {
-        $data = $request->validated();
+        $this->authorize("create", User::class);
 
-        $user = $registerUser->execute($data);
+        $dto = $request->toDto();
+
+        $user = $registerUser->execute($dto);
 
         if (!$user) {
             return response()->json([
@@ -49,8 +51,10 @@ class UserManagementController extends Controller
             ], Status::HTTP_CONFLICT);
         }
 
-        if (isset($data["organization_ids"])) {
-            $user->organizations()->sync($data["organization_ids"]);
+        $user->syncRoles(Role::User->value);
+
+        if ($request->filled("organization_ids")) {
+            $user->organizations()->sync($request->input("organization_ids"));
         }
 
         return response()->json(new UserResource($user), Status::HTTP_CREATED);
@@ -58,22 +62,22 @@ class UserManagementController extends Controller
 
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
-        }
+        $this->authorize("update", $user);
 
-        $data = $request->validated();
+        $dto = $request->toDto();
 
-        $emailChanged = isset($data["email"]) && $data["email"] !== $user->email;
+        $emailChanged = $dto->email !== null && $dto->email !== $user->email;
 
-        if (isset($data["password"])) {
-            $data["password"] = Hash::make($data["password"]);
-        }
+        $updateData = [
+            "first_name" => $dto->firstName ?? $user->first_name,
+            "last_name" => $dto->lastName,
+            "email" => $dto->email ?? $user->email,
+        ];
 
-        $user->update($data);
+        $user->update($updateData);
 
-        if (isset($data["organization_ids"])) {
-            $user->organizations()->sync($data["organization_ids"]);
+        if ($dto->organizationIds !== null) {
+            $user->organizations()->sync($dto->organizationIds);
         }
 
         if ($emailChanged) {
@@ -87,9 +91,7 @@ class UserManagementController extends Controller
 
     public function destroy(User $user): JsonResponse
     {
-        if (!$user->hasRole("user")) {
-            abort(Status::HTTP_FORBIDDEN, __("users.only_user_role_manage"));
-        }
+        $this->authorize("delete", $user);
 
         $user->delete();
 

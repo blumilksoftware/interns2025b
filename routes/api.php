@@ -35,9 +35,10 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::post("/follow/{type}/{id}", FollowController::class)->name("follow");
     Route::get("/followings", [FollowController::class, "followings"])->name("followings");
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
+    Route::get("/profile/{user}", [UserProfileController::class, "showDetail"]);
 });
 
-Route::get("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
+Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
     ->middleware("signed")
     ->name("api.confirmDelete");
 
@@ -54,6 +55,7 @@ Route::prefix("auth")->group(function (): void {
     Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])->middleware("signed")->name("verification.verify");
 });
 
+Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
 
 Route::get("events", [EventController::class, "index"]);

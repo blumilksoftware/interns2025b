@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Interns2025b\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
 use Interns2025b\Actions\RegisterUserAction;
+use Interns2025b\Enums\Role;
 use Interns2025b\Http\Requests\StoreAdminRequest;
 use Interns2025b\Http\Requests\UpdateAdminRequest;
 use Interns2025b\Http\Resources\AdminResource;
@@ -17,8 +17,10 @@ class AdminManagementController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize("viewAnyAdmin", User::class);
+
         $admins = User::query()
-            ->role(["administrator"])
+            ->role(Role::Administrator->value)
             ->orderBy("id")
             ->get();
 
@@ -27,43 +29,43 @@ class AdminManagementController extends Controller
 
     public function show(User $admin): JsonResponse
     {
-        if (!$admin->hasAnyRole(["administrator"])) {
-            abort(Status::HTTP_FORBIDDEN, __("users.forbidden_role"));
-        }
+        $this->authorize("viewAdmin", $admin);
 
         return response()->json(new AdminResource($admin), Status::HTTP_OK);
     }
 
     public function store(StoreAdminRequest $request, RegisterUserAction $registerUser): JsonResponse
     {
-        $data = $request->validated();
+        $this->authorize("createAdmin", User::class);
 
-        $admin = $registerUser->execute($data);
+        $dto = $request->toDto();
+
+        $admin = $registerUser->execute($dto);
 
         if (!$admin) {
             abort(Status::HTTP_UNPROCESSABLE_ENTITY, __("users.duplicate_email"));
         }
 
-        $admin->syncRoles("administrator");
+        $admin->syncRoles(Role::Administrator->value);
 
         return response()->json(new AdminResource($admin), Status::HTTP_CREATED);
     }
 
     public function update(UpdateAdminRequest $request, User $admin): JsonResponse
     {
-        if (!$admin->hasRole("administrator")) {
-            abort(Status::HTTP_FORBIDDEN, __("users.forbidden_role"));
-        }
+        $this->authorize("updateAdmin", $admin);
 
-        $data = $request->validated();
+        $dto = $request->toDto();
 
-        $emailChanged = isset($data["email"]) && $data["email"] !== $admin->email;
+        $emailChanged = $dto->email !== null && $dto->email !== $admin->email;
 
-        if (isset($data["password"])) {
-            $data["password"] = Hash::make($data["password"]);
-        }
+        $updateData = [
+            "first_name" => $dto->firstName ?? $admin->first_name,
+            "last_name" => $dto->lastName,
+            "email" => $dto->email ?? $admin->email,
+        ];
 
-        $admin->update($data);
+        $admin->update($updateData);
 
         if ($emailChanged) {
             $admin->email_verified_at = null;
@@ -76,9 +78,7 @@ class AdminManagementController extends Controller
 
     public function destroy(User $admin): JsonResponse
     {
-        if (!$admin->hasAnyRole(["administrator"])) {
-            abort(Status::HTTP_FORBIDDEN, __("users.forbidden_role"));
-        }
+        $this->authorize("deleteAdmin", $admin);
 
         $admin->delete();
 

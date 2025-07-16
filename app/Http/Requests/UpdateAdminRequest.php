@@ -6,7 +6,7 @@ namespace Interns2025b\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
+use Interns2025b\DTO\UpdateUserDto;
 
 class UpdateAdminRequest extends FormRequest
 {
@@ -18,7 +18,15 @@ class UpdateAdminRequest extends FormRequest
             "first_name" => ["sometimes", "string", "max:225"],
             "last_name" => ["nullable", "string", "max:225"],
             "email" => ["sometimes", "email", "max:225", Rule::unique("users", "email")->ignore($adminId)],
-            "password" => ["nullable", "confirmed", Password::min(8)],
         ];
+    }
+
+    public function toDto(): UpdateUserDto
+    {
+        return new UpdateUserDto(
+            $this->input("first_name"),
+            $this->input("last_name"),
+            $this->input("email"),
+        );
     }
 }

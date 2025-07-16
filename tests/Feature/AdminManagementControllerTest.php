@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Illuminate\Testing\Fluent\AssertableJson;
+use Interns2025b\Enums\Role;
 use Interns2025b\Models\User;
 use Tests\TestCase;
 
@@ -83,7 +84,10 @@ class AdminManagementControllerTest extends TestCase
 
         $response->assertCreated();
         $this->assertDatabaseHas("users", ["email" => "newadmin@example.com"]);
-        $this->assertEquals(["administrator"], User::where("email", "newadmin@example.com")->first()->getRoleNames()->toArray());
+        $this->assertEquals(
+            [Role::Administrator->value],
+            User::where("email", "newadmin@example.com")->first()->getRoleNames()->toArray(),
+        );
     }
 
     public function testStoreRejectsDuplicateEmail(): void
@@ -253,5 +257,16 @@ class AdminManagementControllerTest extends TestCase
         ]);
 
         $response->assertForbidden();
+    }
+
+    public function testAdminCannotDeleteSelf(): void
+    {
+        $this->actingAs($this->admin);
+
+        $response = $this->deleteJson("/api/admins/{$this->admin->id}");
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas("users", ["id" => $this->admin->id]);
     }
 }
