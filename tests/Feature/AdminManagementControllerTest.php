@@ -115,7 +115,7 @@ class AdminManagementControllerTest extends TestCase
 
     public function testUpdateModifiesAdminDetails(): void
     {
-        $this->actingAs($this->admin);
+        $this->actingAs($this->superAdmin);
 
         $payload = [
             "first_name" => "Updated",

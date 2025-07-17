@@ -32,7 +32,7 @@ class UpdateUserRequest extends FormRequest
         return new UpdateUserDto(
             $this->input("first_name"),
             $this->input("last_name"),
-            $this->input("avatar"),
+            $this->input("avatar_url"),
             $this->input("email"),
             $this->input("organization_ids"),
         );
