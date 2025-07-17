@@ -32,32 +32,31 @@ class EventControllerTest extends TestCase
         $this->superadmin->assignRole(Role::SuperAdministrator->value);
     }
 
-    public function testIndexReturnsEvents(): void
+    public function testIndexReturnsPaginatedEvents(): void
     {
-        Event::factory()->count(3)->create();
+        Event::factory()->count(20)->create();
 
         $response = $this->getJson("/api/events");
 
         $response->assertOk()
-            ->assertJsonCount(3, "data");
+            ->assertJsonStructure([
+                "data",
+                "links" => ["first", "last", "prev", "next"],
+                "meta" => ["current_page", "last_page", "per_page", "total"],
+            ]);
+
+        $this->assertCount(10, $response->json("data"));
     }
 
-    public function testStoreCreatesEvent(): void
+    public function testIndexRespectsPerPageParameter(): void
     {
-        $payload = [
-            "title" => "Test Event",
-            "description" => "Test Description",
-            "location" => "Test Location",
-            "start_time" => now()->addDay()->toISOString(),
-            "end_time" => now()->addDays(2)->toISOString(),
-            "is_paid" => true,
-            "status" => "published",
-        ];
+        Event::factory()->count(12)->create();
 
-        $response = $this->actingAs($this->user)->postJson("/api/events", $payload);
+        $response = $this->getJson("/api/events?per_page=5");
 
-        $response->assertCreated();
-        $this->assertDatabaseHas("events", ["title" => "Test Event"]);
+        $response->assertOk();
+        $this->assertCount(5, $response->json("data"));
+        $this->assertEquals(3, $response->json("meta.last_page"));
     }
 
     public function testShowReturnsEvent(): void

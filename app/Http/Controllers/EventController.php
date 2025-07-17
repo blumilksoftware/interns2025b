@@ -15,11 +15,10 @@ class EventController extends Controller
 {
     public function index(): JsonResponse
     {
-        $events = Event::loadWithOwnerRelations();
+        $perPage = request()->integer("per_page", 10);
+        $paginated = Event::with("owner")->paginate($perPage);
 
-        return response()->json([
-            "data" => EventResource::collection($events),
-        ]);
+        return EventResource::collection($paginated)->response();
     }
 
     public function show(Event $event): JsonResponse
