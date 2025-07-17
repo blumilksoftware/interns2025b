@@ -29,7 +29,6 @@ class UpdateAdminRequest extends FormRequest
             $this->input("last_name"),
             $this->input("avatar_url"),
             $this->input("email"),
-            null,
         );
     }
 }
