@@ -16,7 +16,7 @@ class OrganizationInvitationMail extends Mailable
     use SerializesModels;
 
     public function __construct(
-        public Organization $organization
+        public Organization $organization,
     ) {}
 
     public function build(): self
