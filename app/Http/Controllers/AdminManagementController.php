@@ -62,7 +62,7 @@ class AdminManagementController extends Controller
         $updateData = [
             "first_name" => $dto->firstName ?? $admin->first_name,
             "last_name" => $dto->lastName,
-            "avatar_url" => $dto->avatar_url ?? $admin->avatar_url,
+            "avatar_url" => $dto->avatarUrl ?? $admin->avatar_url,
             "email" => $dto->email ?? $admin->email,
         ];
 

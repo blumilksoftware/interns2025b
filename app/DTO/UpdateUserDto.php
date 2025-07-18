@@ -9,7 +9,7 @@ class UpdateUserDto
     public function __construct(
         public ?string $firstName,
         public ?string $lastName,
-        public ?string $avatar_url,
+        public ?string $avatarUrl,
         public ?string $email,
         public ?array $organizationIds = null,
     ) {}
