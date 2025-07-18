@@ -16,8 +16,8 @@ class EventSeeder extends Seeder
         $users = User::factory(10)->create();
         $organizations = Organization::factory(10)->create();
 
-        $randomLatitude = fn() => mt_rand(1100000, 1200000) / 10000000 + 51.0;
-        $randomLongitude = fn() => mt_rand(1610000, 1620000) / 10000000 + 16.0;
+        $randomLatitude = fn(): float => mt_rand(1100000, 1200000) / 10000000 + 51.0;
+        $randomLongitude = fn(): float => mt_rand(1610000, 1620000) / 10000000 + 16.0;
 
         Event::factory(10)->make()->each(function ($event) use ($users, $randomLatitude, $randomLongitude): void {
             $user = $users->random();
