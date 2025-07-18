@@ -15,4 +15,11 @@ return [
     "see_event" => "View event",
     "new_event_subject" => "New event: :title",
     "new_event_line" => "An organization or user you follow has published a new event.",
+    "created" => "Event created successfully.",
+    "updated" => "Event updated successfully.",
+    "deleted" => "Event deleted successfully.",
+    "not_found" => "Event not found.",
+    "unauthorized" => "You are not authorized to perform this action on the event.",
+    "deleted_from_organization" => "Event deleted from organization.",
+    "not_member" => "You are not a member of this organization.",
 ];

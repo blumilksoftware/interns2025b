@@ -11,3 +11,4 @@ Artisan::command("inspire", function (): void {
 })->purpose("Display an inspiring quote")->hourly();
 
 Schedule::command("followers:notify")->dailyAt("00:00");
+Schedule::command("events:update-statuses")->everyThirtyMinutes();
