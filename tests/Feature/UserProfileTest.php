@@ -145,18 +145,18 @@ class UserProfileTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        $newAvatarUrl = "https://example.com/new-avatar.png";
+        $new_avatar_url = "https://example.com/new-avatar.png";
 
         $response = $this->putJson("/api/profile", [
-            "avatar_url" => $newAvatarUrl,
+            "avatar_url" => $new_avatar_url,
         ]);
 
         $response->assertOk()
-            ->assertJsonPath("data.avatar_url", $newAvatarUrl);
+            ->assertJsonPath("data.avatar_url", $new_avatar_url);
 
         $this->assertDatabaseHas("users", [
             "id" => $this->user->id,
-            "avatar_url" => $newAvatarUrl,
+            "avatar_url" => $new_avatar_url,
         ]);
     }
 
