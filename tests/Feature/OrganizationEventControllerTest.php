@@ -12,30 +12,27 @@ use Tests\TestCase;
 
 class OrganizationEventControllerTest extends TestCase
 {
-    public function testUserCanListOrganizationEvents(): void
+    private User $user;
+    private Organization $org;
+    private Organization $org1;
+    private Organization $org2;
+    private array $validPayload;
+
+    protected function setUp(): void
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        parent::setUp();
 
-        $org = Organization::factory()->create();
-        $org->users()->attach($user);
+        $this->user = User::factory()->create();
 
-        Event::factory()->count(3)->for($org, "owner")->create();
+        $this->org = Organization::factory()->create();
+        $this->org->users()->attach($this->user);
 
-        $response = $this->getJson("/api/organizations/{$org->id}/events");
+        $this->org1 = Organization::factory()->create();
+        $this->org2 = Organization::factory()->create();
+        $this->org1->users()->attach($this->user);
+        $this->org2->users()->attach($this->user);
 
-        $response->assertOk()->assertJsonCount(3, "data");
-    }
-
-    public function testUserCanCreateEventInOrganizationTheyBelongTo(): void
-    {
-        $user = User::factory()->create();
-        $org = Organization::factory()->create();
-        $org->users()->attach($user);
-
-        Sanctum::actingAs($user);
-
-        $payload = [
+        $this->validPayload = [
             "title" => "Test Event",
             "start_time" => now()->addDay()->toDateTimeString(),
             "end_time" => now()->addDays(2)->toDateTimeString(),
@@ -44,29 +41,30 @@ class OrganizationEventControllerTest extends TestCase
             "status" => "published",
         ];
 
-        $response = $this->postJson("/api/organizations/{$org->id}/events", $payload);
+        Sanctum::actingAs($this->user);
+    }
 
-        $response->assertCreated()
-            ->assertJsonPath("data.title", "Test Event");
+    public function testUserCanListOrganizationEvents(): void
+    {
+        Event::factory()->count(3)->for($this->org, "owner")->create();
+
+        $response = $this->getJson("/api/organizations/{$this->org->id}/events");
+
+        $response->assertOk()->assertJsonCount(3, "data");
+    }
+
+    public function testUserCanCreateEventInOrganizationTheyBelongTo(): void
+    {
+        $response = $this->postJson("/api/organizations/{$this->org->id}/events", $this->validPayload);
+
+        $response->assertCreated()->assertJsonPath("data.title", "Test Event");
     }
 
     public function testUserCannotCreateEventInUnrelatedOrganization(): void
     {
-        $user = User::factory()->create();
-        $org = Organization::factory()->create();
+        $unrelatedOrg = Organization::factory()->create();
 
-        Sanctum::actingAs($user);
-
-        $payload = [
-            "title" => "Unauthorized Event",
-            "start_time" => now()->addDay()->toDateTimeString(),
-            "end_time" => now()->addDays(2)->toDateTimeString(),
-            "location" => "Test Location",
-            "is_paid" => true,
-            "status" => "published",
-        ];
-
-        $response = $this->postJson("/api/organizations/{$org->id}/events", $payload);
+        $response = $this->postJson("/api/organizations/{$unrelatedOrg->id}/events", $this->validPayload);
 
         $response->assertForbidden()
             ->assertJson(["message" => "This action is unauthorized."]);
@@ -74,116 +72,66 @@ class OrganizationEventControllerTest extends TestCase
 
     public function testUserCanUpdateEventInOrganization(): void
     {
-        $user = User::factory()->create();
-        $org = Organization::factory()->create();
-        $org->users()->attach($user);
+        $event = Event::factory()->for($this->org, "owner")->create();
 
-        $event = Event::factory()->for($org, "owner")->create();
-
-        Sanctum::actingAs($user);
-
-        $response = $this->putJson("/api/organizations/{$org->id}/events/{$event->id}", [
+        $updatePayload = [
             "title" => "Updated Event",
             "start_time" => now()->addDay()->toDateTimeString(),
             "end_time" => now()->addDays(2)->toDateTimeString(),
             "location" => "Updated Location",
             "is_paid" => false,
             "status" => "ongoing",
-        ]);
+        ];
 
-        $response->assertOk()
-            ->assertJsonPath("data.title", "Updated Event");
+        $response = $this->putJson("/api/organizations/{$this->org->id}/events/{$event->id}", $updatePayload);
+
+        $response->assertOk()->assertJsonPath("data.title", "Updated Event");
     }
 
     public function testUserCanDeleteEventFromOrganization(): void
     {
-        $user = User::factory()->create();
-        $org = Organization::factory()->create();
-        $org->users()->attach($user);
+        $event = Event::factory()->for($this->org, "owner")->create();
 
-        $event = Event::factory()->for($org, "owner")->create();
+        $response = $this->deleteJson("/api/organizations/{$this->org->id}/events/{$event->id}");
 
-        Sanctum::actingAs($user);
-
-        $response = $this->deleteJson("/api/organizations/{$org->id}/events/{$event->id}");
-
-        $response->assertOk()
-            ->assertJson(["message" => "Event deleted from organization."]);
+        $response->assertOk()->assertJson(["message" => "Event deleted from organization."]);
         $this->assertDatabaseMissing("events", ["id" => $event->id]);
     }
 
     public function testUserWithMultipleOrganizationsCanOnlyCreateEventInCorrectOne(): void
     {
-        $user = User::factory()->create();
-        $org1 = Organization::factory()->create();
-        $org2 = Organization::factory()->create();
-        $org1->users()->attach($user);
-        $org2->users()->attach($user);
+        $response = $this->postJson("/api/organizations/{$this->org1->id}/events", $this->validPayload);
 
-        Sanctum::actingAs($user);
-
-        $payload = [
-            "title" => "Org1 Event",
-            "start_time" => now()->addDay()->toDateTimeString(),
-            "end_time" => now()->addDays(2)->toDateTimeString(),
-            "location" => "Test Location",
-            "is_paid" => true,
-            "status" => "published",
-        ];
-
-        $response = $this->postJson("/api/organizations/{$org1->id}/events", $payload);
-
-        $response->assertCreated()
-            ->assertJsonPath("data.title", "Org1 Event");
+        $response->assertCreated()->assertJsonPath("data.title", "Test Event");
     }
 
     public function testUserCannotUpdateEventThatBelongsToDifferentOrganization(): void
     {
-        $user = User::factory()->create();
-        $org1 = Organization::factory()->create();
-        $org2 = Organization::factory()->create();
-        $org1->users()->attach($user);
-        $org2->users()->attach($user);
+        $event = Event::factory()->for($this->org2, "owner")->create();
 
-        $event = Event::factory()->for($org2, "owner")->create();
-
-        Sanctum::actingAs($user);
-
-        $response = $this->putJson("/api/organizations/{$org1->id}/events/{$event->id}", [
+        $updatePayload = [
             "title" => "Invalid Update",
             "start" => now()->addDay()->toDateTimeString(),
             "end" => now()->addDays(2)->toDateTimeString(),
-        ]);
+        ];
+
+        $response = $this->putJson("/api/organizations/{$this->org1->id}/events/{$event->id}", $updatePayload);
 
         $response->assertNotFound();
     }
 
     public function testUserCannotDeleteEventThatBelongsToDifferentOrganization(): void
     {
-        $user = User::factory()->create();
-        $org1 = Organization::factory()->create();
-        $org2 = Organization::factory()->create();
-        $org1->users()->attach($user);
-        $org2->users()->attach($user);
+        $event = Event::factory()->for($this->org2, "owner")->create();
 
-        $event = Event::factory()->for($org2, "owner")->create();
-
-        Sanctum::actingAs($user);
-
-        $response = $this->deleteJson("/api/organizations/{$org1->id}/events/{$event->id}");
+        $response = $this->deleteJson("/api/organizations/{$this->org1->id}/events/{$event->id}");
 
         $response->assertNotFound();
     }
 
     public function testCreatingEventWithMissingRequiredFieldsFails(): void
     {
-        $user = User::factory()->create();
-        $org = Organization::factory()->create();
-        $org->users()->attach($user);
-
-        Sanctum::actingAs($user);
-
-        $response = $this->postJson("/api/organizations/{$org->id}/events", []);
+        $response = $this->postJson("/api/organizations/{$this->org->id}/events", []);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(["title", "start_time", "end_time", "location", "is_paid", "status"]);
@@ -191,12 +139,6 @@ class OrganizationEventControllerTest extends TestCase
 
     public function testCreatingEventWithEndDateBeforeStartFails(): void
     {
-        $user = User::factory()->create();
-        $org = Organization::factory()->create();
-        $org->users()->attach($user);
-
-        Sanctum::actingAs($user);
-
         $payload = [
             "title" => "Invalid Time Event",
             "start_time" => now()->addDays(2)->toDateTimeString(),
@@ -206,7 +148,7 @@ class OrganizationEventControllerTest extends TestCase
             "status" => "published",
         ];
 
-        $response = $this->postJson("/api/organizations/{$org->id}/events", $payload);
+        $response = $this->postJson("/api/organizations/{$this->org->id}/events", $payload);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(["end_time"]);
