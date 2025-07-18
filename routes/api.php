@@ -14,6 +14,7 @@ use Interns2025b\Http\Controllers\FollowController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
+use Interns2025b\Http\Controllers\OrganizationEventController;
 use Interns2025b\Http\Controllers\OrganizationInvitationController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
@@ -66,6 +67,13 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::post("events", [EventController::class, "store"]);
     Route::put("events/{event}", [EventController::class, "update"]);
     Route::delete("events/{event}", [EventController::class, "destroy"]);
+});
+
+Route::middleware(["auth:sanctum"])->group(function (): void {
+    Route::get("organizations/{organization}/events", [OrganizationEventController::class, "index"]);
+    Route::post("organizations/{organization}/events", [OrganizationEventController::class, "store"]);
+    Route::put("organizations/{organization}/events/{event}", [OrganizationEventController::class, "update"]);
+    Route::delete("organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
 });
 
 Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {

@@ -33,7 +33,7 @@ class OrganizationEventController extends Controller
 
         if (!$belongsToOrganization) {
             return response()->json([
-                "message" => "You are not a member of this organization.",
+                "message" => __("events.not_member"),
             ], Status::HTTP_FORBIDDEN);
         }
 
@@ -58,6 +58,7 @@ class OrganizationEventController extends Controller
         ]);
 
         return response()->json([
+            "message" => __("events.created"),
             "data" => new EventResource($event),
         ], Status::HTTP_CREATED);
     }
@@ -92,6 +93,7 @@ class OrganizationEventController extends Controller
         $event->loadOwnerRelations();
 
         return response()->json([
+            "message" => __("events.updated"),
             "data" => new EventResource($event),
         ]);
     }
@@ -108,7 +110,7 @@ class OrganizationEventController extends Controller
         $event->delete();
 
         return response()->json([
-            "message" => "Event deleted from organization.",
+            "message" => __("events.deleted_from_organization"),
         ]);
     }
 }

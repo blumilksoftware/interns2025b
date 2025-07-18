@@ -41,6 +41,7 @@ class EventController extends Controller
         $event = Event::create($data);
 
         return response()->json([
+            "message" => __("events.created"),
             "data" => new EventResource($event),
         ], Status::HTTP_CREATED);
     }
@@ -55,6 +56,7 @@ class EventController extends Controller
         $event->loadOwnerRelations();
 
         return response()->json([
+            "message" => __("events.updated"),
             "data" => new EventResource($event),
         ]);
     }
@@ -66,7 +68,7 @@ class EventController extends Controller
         $event->delete();
 
         return response()->json([
-            "message" => "Event deleted successfully.",
+            "message" => __("events.deleted"),
         ]);
     }
 }
