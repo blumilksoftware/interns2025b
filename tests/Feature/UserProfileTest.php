@@ -159,4 +159,18 @@ class UserProfileTest extends TestCase
             "avatar_url" => $newAvatarUrl,
         ]);
     }
+
+    public function testProfileUpdateFailsWithInvalidAvatarUrl(): void
+    {
+        $this->actingAs($this->user);
+
+        $invalidAvatarUrl = "not-a-valid-url";
+
+        $response = $this->putJson("/api/profile", [
+            "avatar_url" => $invalidAvatarUrl,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors("avatar_url");
+    }
 }

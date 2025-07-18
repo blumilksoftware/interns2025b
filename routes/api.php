@@ -14,6 +14,7 @@ use Interns2025b\Http\Controllers\FollowController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
+use Interns2025b\Http\Controllers\OrganizationInvitationController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 use Interns2025b\Http\Controllers\UpdatePasswordController;
@@ -34,6 +35,7 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/followings", [FollowController::class, "followings"])->name("followings");
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
     Route::get("/profile/{user}", [UserProfileController::class, "showDetail"]);
+    Route::post("/organizations/{organization}/invite", [OrganizationInvitationController::class, "send"]);
 });
 
 Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
@@ -43,28 +45,28 @@ Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirm
 Route::prefix("auth")->group(function (): void {
     Route::post("/login", [LoginController::class, "login"])->name("login");
     Route::post("/register", [RegisterController::class, "register"])->name("register");
-
     Route::get("/facebook/redirect", [FacebookController::class, "redirect"]);
     Route::get("/facebook/callback", [FacebookController::class, "loginCallback"]);
-
     Route::post("/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"])->name("forgot.password");
     Route::post("/reset-password", [ResetPasswordController::class, "resetPassword"]);
-
     Route::get("/auth/verify-email/{id}/{hash}", [EmailVerificationController::class, "verify"])->middleware("signed")->name("verification.verify");
 });
+
+Route::get("/organizations/accept-invite", [OrganizationInvitationController::class, "accept"])
+    ->name("organizations.accept-invite")
+    ->middleware("signed");
 
 Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
 
 Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
     Route::get("/events", [EventController::class, "index"]);
-    Route::get("/organizations", [OrganizationController::class, "index"]);
-    Route::get("/organizations/{id}", [OrganizationController::class, "show"]);
     Route::get("/users", [UserManagementController::class, "index"])->name("users.index");
     Route::get("/users/{user}", [UserManagementController::class, "show"])->name("users.show");
     Route::post("/users", [UserManagementController::class, "store"])->name("users.store");
     Route::put("/users/{user}", [UserManagementController::class, "update"])->name("users.update");
     Route::delete("/users/{user}", [UserManagementController::class, "destroy"])->name("users.destroy");
+    Route::resource("organizations", OrganizationController::class);
 });
 
 Route::group(["middleware" => ["auth:sanctum", "role:superAdministrator"]], function (): void {
@@ -75,15 +77,11 @@ Route::group(["middleware" => ["auth:sanctum", "role:superAdministrator"]], func
     Route::delete("/admins/{admin}", [AdminManagementController::class, "destroy"])->name("admins.destroy");
 });
 
+Route::get("/organizations/{organization}", [OrganizationController::class, "show"])->name("organizations.show");
+
 Route::get("/reset-password/{token}", fn(string $token): JsonResponse => response()->json([
     "message" => "Temporary password reset.",
     "token" => $token,
 ]))->name("password.reset");
 
 Route::resource("events", EventController::class)->only(["index", "show"]);
-
-Route::prefix("admin")
-    ->middleware(["auth:sanctum", "role:administrator|superAdministrator"])
-    ->group(function (): void {
-        Route::resource("organizations", OrganizationController::class)->only(["index", "show"]);
-    });
