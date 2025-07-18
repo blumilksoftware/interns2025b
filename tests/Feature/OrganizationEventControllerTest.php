@@ -69,7 +69,7 @@ class OrganizationEventControllerTest extends TestCase
         $response = $this->postJson("/api/organizations/{$org->id}/events", $payload);
 
         $response->assertForbidden()
-            ->assertJson(["message" => "You are not a member of this organization."]);
+            ->assertJson(["message" => "This action is unauthorized."]);
     }
 
     public function testUserCanUpdateEventInOrganization(): void

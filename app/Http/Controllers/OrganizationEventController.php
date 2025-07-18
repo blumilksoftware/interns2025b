@@ -25,17 +25,7 @@ class OrganizationEventController extends Controller
 
     public function store(StoreEventRequest $request, Organization $organization): JsonResponse
     {
-        $user = $request->user();
-
-        $belongsToOrganization = $user->organizations()
-            ->where("organizations.id", $organization->id)
-            ->exists();
-
-        if (!$belongsToOrganization) {
-            return response()->json([
-                "message" => __("events.not_member"),
-            ], Status::HTTP_FORBIDDEN);
-        }
+        $this->authorize("create", [Event::class, $organization]);
 
         $data = $request->validated();
 
@@ -65,12 +55,11 @@ class OrganizationEventController extends Controller
 
     public function update(UpdateEventRequest $request, Organization $organization, Event $event): JsonResponse
     {
-        if (
-            $event->owner_type !== Organization::class ||
-            $event->owner_id !== $organization->id
-        ) {
+        if ($event->owner_type !== Organization::class || $event->owner_id !== $organization->id) {
             abort(Status::HTTP_NOT_FOUND);
         }
+
+        $this->authorize("update", $event);
 
         $data = $request->validated();
 
@@ -100,12 +89,11 @@ class OrganizationEventController extends Controller
 
     public function destroy(Organization $organization, Event $event): JsonResponse
     {
-        if (
-            $event->owner_type !== Organization::class ||
-            $event->owner_id !== $organization->id
-        ) {
+        if ($event->owner_type !== Organization::class || $event->owner_id !== $organization->id) {
             abort(Status::HTTP_NOT_FOUND);
         }
+
+        $this->authorize("delete", $event);
 
         $event->delete();
 
