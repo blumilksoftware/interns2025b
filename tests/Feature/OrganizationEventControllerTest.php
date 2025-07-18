@@ -153,4 +153,25 @@ class OrganizationEventControllerTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors(["end_time"]);
     }
+
+    public function testUserWithoutOrganizationCannotCreateEventThroughOrganization(): void
+    {
+        $userWithoutOrg = User::factory()->create();
+        Sanctum::actingAs($userWithoutOrg);
+
+        $org = Organization::factory()->create();
+
+        $payload = [
+            "title" => "Unauthorized Event",
+            "start_time" => now()->addDay()->toDateTimeString(),
+            "end_time" => now()->addDays(2)->toDateTimeString(),
+            "location" => "Nowhere",
+            "is_paid" => false,
+            "status" => "draft",
+        ];
+
+        $response = $this->postJson("/api/organizations/{$org->id}/events", $payload);
+
+        $response->assertForbidden()->assertJson(["message" => "This action is unauthorized."]);
+    }
 }

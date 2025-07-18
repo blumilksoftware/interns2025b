@@ -27,22 +27,7 @@ class OrganizationEventController extends Controller
     {
         $this->authorize("create", [Event::class, $organization]);
 
-        $data = $request->validated();
-
-        $event = $organization->ownedEvents()->create([
-            "title" => $data["title"],
-            "description" => $data["description"] ?? null,
-            "start" => $data["start_time"],
-            "end" => $data["end_time"],
-            "location" => $data["location"] ?? null,
-            "address" => $data["address"] ?? null,
-            "latitude" => $data["latitude"] ?? null,
-            "longitude" => $data["longitude"] ?? null,
-            "is_paid" => $data["is_paid"],
-            "price" => $data["price"] ?? null,
-            "status" => $data["status"],
-            "image_url" => $data["image_url"] ?? null,
-            "age_category" => $data["age_category"] ?? null,
+        $event = $organization->ownedEvents()->create($request->validated() + [
             "owner_type" => Organization::class,
             "owner_id" => $organization->id,
         ]);
@@ -61,23 +46,7 @@ class OrganizationEventController extends Controller
 
         $this->authorize("update", $event);
 
-        $data = $request->validated();
-
-        $event->update([
-            "title" => $data["title"] ?? $event->title,
-            "description" => $data["description"] ?? $event->description,
-            "start" => $data["start_time"] ?? $event->start,
-            "end" => $data["end_time"] ?? $event->end,
-            "location" => $data["location"] ?? $event->location,
-            "address" => $data["address"] ?? $event->address,
-            "latitude" => $data["latitude"] ?? $event->latitude,
-            "longitude" => $data["longitude"] ?? $event->longitude,
-            "is_paid" => $data["is_paid"] ?? $event->is_paid,
-            "price" => $data["price"] ?? $event->price,
-            "status" => $data["status"] ?? $event->status,
-            "image_url" => $data["image_url"] ?? $event->image_url,
-            "age_category" => $data["age_category"] ?? $event->age_category,
-        ]);
+        $event->update($request->validated());
 
         $event->loadOwnerRelations();
 
