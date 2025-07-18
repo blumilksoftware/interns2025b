@@ -26,7 +26,6 @@ use Interns2025b\Http\Controllers\UserProfileController;
 Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/user", fn(Request $request): JsonResponse => $request->user())->name("user.profile");
     Route::get("/link/facebook/callback", [FacebookController::class, "linkCallback"]);
-    Route::get("/user", fn(Request $request): JsonResponse => $request->user());
     Route::post("/auth/logout", LogoutController::class);
     Route::get("/profile", [UserProfileController::class, "show"]);
     Route::put("/profile", [UserProfileController::class, "update"]);

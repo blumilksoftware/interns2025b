@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Interns2025b\Enums\Role;
 use Interns2025b\Models\Event;
 use Interns2025b\Models\User;
 use Tests\TestCase;
@@ -15,7 +14,7 @@ class EventControllerTest extends TestCase
     protected User $owner;
     protected User $otherUser;
     protected User $admin;
-    protected User $superadmin;
+    protected User $superAdmin;
 
     protected function setUp(): void
     {
@@ -24,12 +23,8 @@ class EventControllerTest extends TestCase
         $this->user = User::factory()->create();
         $this->owner = User::factory()->create();
         $this->otherUser = User::factory()->create();
-
-        $this->admin = User::factory()->create();
-        $this->admin->assignRole(Role::Administrator->value);
-
-        $this->superadmin = User::factory()->create();
-        $this->superadmin->assignRole(Role::SuperAdministrator->value);
+        $this->admin = User::factory()->admin()->create();
+        $this->superadmin = User::factory()->superAdmin()->create();
     }
 
     public function testIndexReturnsPaginatedEvents(): void

@@ -111,8 +111,8 @@ class OrganizationEventControllerTest extends TestCase
 
         $updatePayload = [
             "title" => "Invalid Update",
-            "start" => now()->addDay()->toDateTimeString(),
-            "end" => now()->addDays(2)->toDateTimeString(),
+            "start_time" => now()->addDay()->toDateTimeString(),
+            "end_time" => now()->addDays(2)->toDateTimeString(),
         ];
 
         $response = $this->putJson("/api/organizations/{$this->org1->id}/events/{$event->id}", $updatePayload);
@@ -156,8 +156,7 @@ class OrganizationEventControllerTest extends TestCase
 
     public function testUserWithoutOrganizationCannotCreateEventThroughOrganization(): void
     {
-        $userWithoutOrg = User::factory()->create();
-        Sanctum::actingAs($userWithoutOrg);
+        $this->user->organizations()->detach();
 
         $org = Organization::factory()->create();
 
@@ -169,6 +168,8 @@ class OrganizationEventControllerTest extends TestCase
             "is_paid" => false,
             "status" => "draft",
         ];
+
+        Sanctum::actingAs($this->user);
 
         $response = $this->postJson("/api/organizations/{$org->id}/events", $payload);
 
