@@ -51,7 +51,7 @@ import BaseButton from '@/Components/BaseButton.vue'
       </div>
     </div>
     <div
-      class="w-full bg-gradient-to-tr from-brand font-normal to-brand-light py-16"
+      class="w-full bg-gradient-to-tr from-brand font-normal to-brand-light py-16 max-sm:pt-8 max-sm:pb-3"
     >
       <div
         class="flex flex-col items-center justify-center text-center text-white space-y-16 max-sm:space-y-8"
@@ -102,7 +102,7 @@ import BaseButton from '@/Components/BaseButton.vue'
                   </InertiaLink>
                 </li>
               </ul>
-              <div class="flex justify-center order-2 max-sm:order-1 gap-x-4 max-[475px]:mb-6 max-[475px]:gap-x-6 max-[475px]:[&>*]:size-10 [&>*]:size-4 gray-400">
+              <div class="flex justify-center items-center text-gray-500 order-2 max-sm:order-1 gap-x-4 max-sm:mb-6 max-sm:gap-x-6 max-sm:[&>*]:size-10 [&>*]:size-[14px] gray-400">
                 <a href="#"><img src="/images/x.svg" alt="X"></a>
                 <a href="#"><img src="/images/linkedin.svg" alt="LinkedIn"></a>
                 <a href="#"><img src="/images/youtube.svg" alt="Youtube"></a>
@@ -110,7 +110,7 @@ import BaseButton from '@/Components/BaseButton.vue'
               </div>
             </div>
           </div>
-          <div class="order-2 lg:order-1">
+          <div class="order-2 lg:order-1 max-sm:mt-5">
             <p>Wszystkie prawa zastrzeżone &copy; 2025 Interns2025b</p>
           </div>
         </div>

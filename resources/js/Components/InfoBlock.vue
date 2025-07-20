@@ -13,7 +13,7 @@ defineProps<{
 <template>
   <div class="flex gap-x-6 items-center">
     <div
-      class="flex bg-brand/10 size-20 rounded-2xl items-center justify-center"
+      class="flex bg-brand/10 size-20 rounded-2xl items-center justify-center aspect-square"
     >
       <component :is="icon || DefaultIcon" class="size-10 text-brand" />
     </div>

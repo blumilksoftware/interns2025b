@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div
-      class="flex font-medium items-center content-center md:justify-end justify-between gap-y-5 sm:gap-x-10 mx-5 my-10"
+      class="flex font-medium  items-center content-center md:justify-end justify-between gap-y-5 pt-10 sm:gap-x-10 mx-5 mb-10"
     >
       <InertiaLink href="/login">zaloguj się</InertiaLink><br>
       <InertiaLink
