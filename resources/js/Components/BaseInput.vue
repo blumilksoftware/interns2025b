@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 
-type InputType = 'text' | 'email' | 'password' | 'number' | 'search'
+type InputType = 'text' | 'email' | 'password' | 'number' | 'search' | 'date';
 
 const model = defineModel<string>()
 
@@ -26,7 +26,7 @@ const currentPlaceholder = computed(() => {
 </script>
 
 <template>
-  <label :for="id" class="block text-base text-gray-500 mb-1">
+  <label :for="id" class="block text-gray-500 mb-1">
     {{ label }}
   </label>
 
@@ -40,7 +40,7 @@ const currentPlaceholder = computed(() => {
       :class="[
         'w-full h-12 px-4 pr-10 font-medium rounded-lg transition duration-100 ease-in-out',
         'text-brand-light focus:outline-none focus:ring-1 focus:ring-brand-light focus:border-brand-light hover:bg-gray-100 focus:bg-gray-100',
-        error ? 'border border-red-500' : 'border border-brand'
+        error ? 'border border-red-500' : 'border border-brand',
       ]"
       @focus="isFocused = true"
       @blur="isFocused = false"
