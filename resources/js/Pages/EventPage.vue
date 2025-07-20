@@ -15,7 +15,6 @@ import {
   UsersIcon,
   UserIcon,
 } from '@heroicons/vue/24/outline'
-CalendarIcon
 
 const bannerSrc = 'https://picsum.photos/100/100'
 const eventDate = '26 maja 2025 – 12:00'
@@ -52,7 +51,9 @@ const isPaid = true
         class="w-full sm:py-16 pt-16 p-8 bg-white sm:shadow-lg sm:border sm:border-gray-300 flex justify-center items-center"
       >
         <div class="sm:w-11/12 w-full space-y-2">
-          <div class="flex max-sm:hidden justify-between items-center w-full text-center">
+          <div
+            class="flex max-sm:hidden justify-between items-center w-full text-center"
+          >
             <h2 class="text-2xl text-brand-light font-semibold">
               {{ eventDate }}
             </h2>
@@ -66,7 +67,9 @@ const isPaid = true
 
           <h1 class="text-5xl font-bold">{{ eventTitle }}</h1>
 
-          <div class="flex max-sm:hidden max-xl:flex-col sm:justify-between items-start">
+          <div
+            class="flex max-sm:hidden max-xl:flex-col sm:justify-between items-start"
+          >
             <div>
               <h3 class="text-2xl font-medium">{{ venueName }}</h3>
               <h4 class="text-lg text-gray-400 font-normal">
@@ -78,35 +81,55 @@ const isPaid = true
               <div
                 class="hidden max-sm:flex-wrap max-sm:flex max-sm:gap-2 sm:flex lg:justify-end font-semibold text-xl flex-wrap gap-3"
               >
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
+                <base-button
+                  class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                >
+                  <span
+                    class="inline-flex font-semibold items-center space-x-2"
+                  >
                     <StarIcon class="size-6" />
                     <span>Zainteresowany(a)</span>
                   </span>
                 </base-button>
 
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
+                <base-button
+                  class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                >
+                  <span
+                    class="inline-flex font-semibold items-center space-x-2"
+                  >
                     <CheckCircleIcon class="size-6" />
                     <span>Wezmę udział</span>
                   </span>
                 </base-button>
 
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
+                <base-button
+                  class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                >
+                  <span
+                    class="inline-flex font-semibold items-center space-x-2"
+                  >
                     <EnvelopeIcon class="size-6" />
                     <span>Zaproś</span>
                   </span>
                 </base-button>
 
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
+                <base-button
+                  class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                >
+                  <span
+                    class="inline-flex font-semibold items-center space-x-2"
+                  >
                     <ShareIcon class="size-6" />
                   </span>
                 </base-button>
 
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
+                <base-button
+                  class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                >
+                  <span
+                    class="inline-flex font-semibold items-center space-x-2"
+                  >
                     <span>...</span>
                   </span>
                 </base-button>
@@ -138,11 +161,14 @@ const isPaid = true
                 line2="03‑901 Warszawa"
               />
 
-              <div class="w-full flex flex-col min-[467px]:flex-row justify-between gap-4">
+              <div
+                class="w-full flex flex-col min-[467px]:flex-row justify-between gap-4"
+              >
                 <InfoBlock
                   :icon="UserIcon"
                   title="Piotr Nowak"
-                  line1="Organiztor" />
+                  line1="Organiztor"
+                />
                 <div class="flex items-center justify-start sm:justify-end">
                   <button class="bg-brand/10 text-brand px-3 py-1 rounded-xl">
                     Obserwuj
@@ -152,40 +178,48 @@ const isPaid = true
 
               <h1 class="font-medium text-3xl text-[#120D26]">Informacje</h1>
               <p class="font-normal text-xl text-[#120D26]">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem
+                ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum
+                dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor
+                sit amet, consectetur adipiscing elit Lorem ipsum dolor sit
+                amet, consectetur adipiscing elit Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit
               </p>
             </div>
           </div>
 
           <div class="flex flex-col space-y-6 md:w-2/6 justify-start">
-            <div class="sm:hidden fixed bottom-0 left-0 w-full z-[1001] bg-white p-4 shadow-t">
+            <div
+              class="sm:hidden fixed bottom-0 left-0 w-full z-[1001] bg-white p-4 shadow-t"
+            >
               <base-button
                 class="w-full text-base h-16 p-[15px] bg-brand-dark text-white rounded-2xl"
               >
-                <span class="inline-flex font-semibold items-center justify-center space-x-2">
+                <span
+                  class="inline-flex font-semibold items-center justify-center space-x-2"
+                >
                   <span>KUP BILET</span>
                   <ArrowRightCircleIcon class="size-6" />
                 </span>
               </base-button>
             </div>
 
-            <div class="max-sm:hidden w-full rounded-lg shadow-lg !mt-0 bg-white lg:py-11 lg:px-16 p-8 lg:space-y-8 space-y-4">
+            <div
+              class="max-sm:hidden w-full rounded-lg shadow-lg !mt-0 bg-white lg:py-11 lg:px-16 p-8 lg:space-y-8 space-y-4"
+            >
               <p class="text-2xl font-medium">Bilety</p>
               <div class="text-center">
                 <base-button
                   class="w-full mb-1 text-base p-[15px] bg-brand-dark text-white rounded-2xl"
                 >
-                  <span class="inline-flex font-semibold items-center justify-center space-x-2">
+                  <span
+                    class="inline-flex font-semibold items-center justify-center space-x-2"
+                  >
                     <span>KUP BILET</span>
                     <ArrowRightCircleIcon class="size-6" />
                   </span>
@@ -193,13 +227,19 @@ const isPaid = true
               </div>
             </div>
 
-            <div class="rounded-lg shadow-lg bg-white space-y-6 lg:py-11 lg:px-16 p-8">
-              <div class="lg:-mx-16 lg:-mt-11 -mt-8 -mx-8 bg-red-200 h-96 rounded-2xl">
+            <div
+              class="rounded-lg shadow-lg bg-white space-y-6 lg:py-11 lg:px-16 p-8"
+            >
+              <div
+                class="lg:-mx-16 lg:-mt-11 -mt-8 -mx-8 bg-red-200 h-96 rounded-2xl"
+              >
                 <Map />
               </div>
               <div class="content-center">
                 <p class="font-medium text-3xl">{{ venueName }}</p>
-                <p class="font-normal text-gray-400 text-xl">{{ venueAddress }}</p>
+                <p class="font-normal text-gray-400 text-xl">
+                  {{ venueAddress }}
+                </p>
               </div>
             </div>
           </div>

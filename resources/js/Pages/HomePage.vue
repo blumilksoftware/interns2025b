@@ -32,7 +32,7 @@ import BaseButton from '@/Components/BaseButton.vue'
             <div class="lg:w-3/12">
               <BaseInput id="date" name="email" label="Data" type="date" />
             </div>
-            <div class="lg:w-2/12 ">
+            <div class="lg:w-2/12">
               <BaseInput
                 id="city"
                 name="email"
@@ -40,7 +40,9 @@ import BaseButton from '@/Components/BaseButton.vue'
                 type="text"
               />
             </div>
-            <base-button class="bg-black !text-white justify-center font-bold px-10 mt-[24px] col-span-2">
+            <base-button
+              class="bg-black !text-white justify-center font-bold px-10 mt-[24px] col-span-2"
+            >
               Szukaj
             </base-button>
           </div>
@@ -60,7 +62,9 @@ import BaseButton from '@/Components/BaseButton.vue'
           Bądź na bieżaco<br>
           <span class="text-gradient-teal-light">dołącz do LetsEvent</span>
         </h1>
-        <div class="flex max-[475px]:flex-col font-normal justify-center gap-x-8 max-sm:gap-4">
+        <div
+          class="flex max-[475px]:flex-col font-normal justify-center gap-x-8 max-sm:gap-4"
+        >
           <inertia-link
             href="/event"
             class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]"
@@ -102,7 +106,9 @@ import BaseButton from '@/Components/BaseButton.vue'
                   </InertiaLink>
                 </li>
               </ul>
-              <div class="flex justify-center items-center text-gray-500 order-2 max-sm:order-1 gap-x-4 max-sm:mb-6 max-sm:gap-x-6 max-sm:[&>*]:size-10 [&>*]:size-[14px] gray-400">
+              <div
+                class="flex justify-center items-center text-gray-500 order-2 max-sm:order-1 gap-x-4 max-sm:mb-6 max-sm:gap-x-6 max-sm:[&>*]:size-10 [&>*]:size-[14px] gray-400"
+              >
                 <a href="#"><img src="/images/x.svg" alt="X"></a>
                 <a href="#"><img src="/images/linkedin.svg" alt="LinkedIn"></a>
                 <a href="#"><img src="/images/youtube.svg" alt="Youtube"></a>
