@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, useSlots } from 'vue'
+import { onBeforeMount } from 'vue'
+
+onBeforeMount(() => {
+  if (props.type === 'date' && !model.value) {
+    model.value = new Date().toISOString().slice(0,10)
+  }
+})
 
 type InputType = 'text' | 'email' | 'password' | 'number' | 'search' | 'date';
-
 const model = defineModel<string>()
 
 const props = defineProps<{
@@ -13,37 +19,33 @@ const props = defineProps<{
   placeholder?: string
   focusPlaceholder?: string
   error?: string | null
-
   appendPosition?: 'left' | 'right'
+  variant?: 'default' | 'event'
 }>()
 
 const isFocused = ref(false)
 const slots = useSlots()
 
-const paddingClasses = computed(() => {
-  const base = ['pl-4', 'pr-4']
-  if (slots.append) {
-    if (props.appendPosition === 'left') {
-      base[0] = 'pl-10'
-    } else {
-      base[1] = 'pr-10'
-    }
-  }
-  return base.join(' ')
+const padding = computed(() => {
+  const left = slots.append && props.appendPosition === 'left' ? 'pl-10' : 'pl-4'
+  const right = slots.append && props.appendPosition !== 'left' ? 'pr-10' : 'pr-4'
+  return `${left} ${right}`
 })
 
-const currentPlaceholder = computed(() => {
-  return isFocused.value && props.focusPlaceholder
-    ? props.focusPlaceholder
-    : props.placeholder
+const placeholderText = computed(() =>
+  isFocused.value && props.focusPlaceholder ? props.focusPlaceholder : props.placeholder,
+)
+
+const theme = computed(() => {
+  if (props.variant === 'event') {
+    return 'bg-white text-gray-400 hover:bg-gray-50 border-none focus:ring-2 focus:ring-brand-light focus:border-indigo-500'
+  }
+  return 'text-brand-light border-brand hover:bg-gray-100 focus:bg-gray-100 focus:ring-1 focus:ring-brand-light focus:border-brand-light'
 })
 </script>
 
 <template>
-  <label
-    :for="props.id"
-    class="block text-gray-500 mb-1 !bg-transparent"
-  >
+  <label v-if="props.label" :for="props.id" class="block text-gray-500 mb-1">
     {{ props.label }}
   </label>
 
@@ -53,12 +55,8 @@ const currentPlaceholder = computed(() => {
       v-model="model"
       :name="props.name"
       :type="props.type"
-      :placeholder="currentPlaceholder"
-      :class="[
-        'w-full h-12 font-medium rounded-lg transition duration-100 ease-in-out text-brand-light focus:outline-none focus:ring-1 focus:ring-brand-light focus:border-brand-light hover:bg-gray-100 focus:bg-gray-100 border',
-        paddingClasses,
-        props.error ? 'border-red-500' : 'border-brand'
-      ]"
+      :placeholder="placeholderText"
+      :class="[ 'w-full h-12 font-medium rounded-lg transition duration-100 ease-in-out focus:outline-none border', padding, theme, props.error ? 'border-red-500' : '' ]"
       @focus="isFocused = true"
       @blur="isFocused = false"
     >
@@ -71,9 +69,13 @@ const currentPlaceholder = computed(() => {
 </template>
 
 <style scoped>
-input[type="date"]::-webkit-inner-spin-button,
 input[type="date"]::-webkit-calendar-picker-indicator {
-  display: none;
-  -webkit-appearance: none;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
 </style>
