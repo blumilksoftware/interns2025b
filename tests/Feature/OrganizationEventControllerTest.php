@@ -25,7 +25,7 @@ class OrganizationEventControllerTest extends TestCase
         $this->user = User::factory()->create();
 
         [$this->org, $this->org1, $this->org2] = collect(range(1, 3))
-            ->map(fn() => $this->setUpOrganizationWithUser())
+            ->map(fn(int $i): Organization => $this->setUpOrganizationWithUser())
             ->all();
 
         $this->validPayload = [
