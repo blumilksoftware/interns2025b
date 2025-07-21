@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Interns2025b\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Interns2025b\Enums\EventStatus;
 
 class UpdateEventRequest extends FormRequest
 {
@@ -21,7 +23,7 @@ class UpdateEventRequest extends FormRequest
             "longitude" => ["nullable", "numeric"],
             "is_paid" => ["sometimes", "boolean"],
             "price" => ["nullable", "numeric", "min:0"],
-            "status" => ["sometimes", "in:draft,published,ongoing,ended,canceled"],
+            "status" => ["sometimes", Rule::enum(EventStatus::class)],
             "image_url" => ["nullable", "string", "url"],
             "age_category" => ["nullable", "string"],
             "owner_type" => ["sometimes", "string"],

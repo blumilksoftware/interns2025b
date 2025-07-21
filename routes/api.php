@@ -37,6 +37,13 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
     Route::get("/profile/{user}", [UserProfileController::class, "showDetail"]);
     Route::post("/organizations/{organization}/invite", [OrganizationInvitationController::class, "send"]);
+    Route::post("/events", [EventController::class, "store"]);
+    Route::put("/events/{event}", [EventController::class, "update"]);
+    Route::delete("/events/{event}", [EventController::class, "destroy"]);
+    Route::get("/organizations/{organization}/events", [OrganizationEventController::class, "index"]);
+    Route::post("/organizations/{organization}/events", [OrganizationEventController::class, "store"]);
+    Route::put("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "update"]);
+    Route::delete("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
 });
 
 Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
@@ -62,18 +69,6 @@ Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassw
 
 Route::get("/events", [EventController::class, "index"]);
 Route::get("/events/{event}", [EventController::class, "show"]);
-Route::middleware("auth:sanctum")->group(function (): void {
-    Route::post("/events", [EventController::class, "store"]);
-    Route::put("/events/{event}", [EventController::class, "update"]);
-    Route::delete("/events/{event}", [EventController::class, "destroy"]);
-});
-
-Route::middleware(["auth:sanctum"])->group(function (): void {
-    Route::get("/organizations/{organization}/events", [OrganizationEventController::class, "index"]);
-    Route::post("/organizations/{organization}/events", [OrganizationEventController::class, "store"]);
-    Route::put("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "update"]);
-    Route::delete("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
-});
 
 Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
     Route::get("/events", [EventController::class, "index"]);
