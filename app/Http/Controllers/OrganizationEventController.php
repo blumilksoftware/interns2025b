@@ -40,10 +40,6 @@ class OrganizationEventController extends Controller
 
     public function update(UpdateEventRequest $request, Organization $organization, Event $event): JsonResponse
     {
-        if ($event->owner_type !== Organization::class || $event->owner_id !== $organization->id) {
-            abort(Status::HTTP_NOT_FOUND);
-        }
-
         $this->authorize("update", $event);
 
         $event->update($request->validated());
@@ -58,10 +54,6 @@ class OrganizationEventController extends Controller
 
     public function destroy(Organization $organization, Event $event): JsonResponse
     {
-        if ($event->owner_type !== Organization::class || $event->owner_id !== $organization->id) {
-            abort(Status::HTTP_NOT_FOUND);
-        }
-
         $this->authorize("delete", $event);
 
         $event->delete();

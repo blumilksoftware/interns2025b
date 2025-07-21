@@ -40,10 +40,13 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::post("/events", [EventController::class, "store"]);
     Route::put("/events/{event}", [EventController::class, "update"]);
     Route::delete("/events/{event}", [EventController::class, "destroy"]);
-    Route::get("/organizations/{organization}/events", [OrganizationEventController::class, "index"]);
-    Route::post("/organizations/{organization}/events", [OrganizationEventController::class, "store"]);
-    Route::put("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "update"]);
-    Route::delete("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
+
+    Route::scopeBindings()->group(function (): void {
+        Route::get("/organizations/{organization}/events", [OrganizationEventController::class, "index"]);
+        Route::post("/organizations/{organization}/events", [OrganizationEventController::class, "store"]);
+        Route::put("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "update"]);
+        Route::delete("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
+    });
 });
 
 Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
@@ -70,7 +73,7 @@ Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassw
 Route::get("/events", [EventController::class, "index"]);
 Route::get("/events/{event}", [EventController::class, "show"]);
 
-Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
+Route::group(["prefix" => "admin", "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
     Route::get("/events", [EventController::class, "index"]);
     Route::get("/users", [UserManagementController::class, "index"])->name("users.index");
     Route::get("/users/{user}", [UserManagementController::class, "show"])->name("users.show");
@@ -87,9 +90,6 @@ Route::group(["middleware" => ["auth:sanctum", "role:superAdministrator"]], func
     Route::put("/admins/{admin}", [AdminManagementController::class, "update"])->name("admins.update");
     Route::delete("/admins/{admin}", [AdminManagementController::class, "destroy"])->name("admins.destroy");
 });
-
-Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
-Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
 
 Route::get("/organizations/{organization}", [OrganizationController::class, "show"])->name("organizations.show");
 
