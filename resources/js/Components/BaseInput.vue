@@ -26,7 +26,10 @@ const currentPlaceholder = computed(() => {
 </script>
 
 <template>
-  <label :for="id" class="block text-gray-500 mb-1">
+  <label
+    :for="id"
+    class="block text-gray-500 mb-1 !bg-transparent"
+  >
     {{ label }}
   </label>
 
@@ -37,11 +40,8 @@ const currentPlaceholder = computed(() => {
       :name="name"
       :type="type"
       :placeholder="currentPlaceholder"
-      :class="[
-        'w-full h-12 px-4 pr-10 font-medium rounded-lg transition duration-100 ease-in-out',
-        'text-brand-light focus:outline-none focus:ring-1 focus:ring-brand-light focus:border-brand-light hover:bg-gray-100 focus:bg-gray-100',
-        error ? 'border border-red-500' : 'border border-brand',
-      ]"
+      class="w-full h-12 px-4 pr-10 font-medium rounded-lg transition duration-100 ease-in-out text-brand-light focus:outline-none focus:ring-1 focus:ring-brand-light focus:border-brand-light hover:bg-gray-100 focus:bg-gray-100 border border-brand"
+      :class="error ? 'border-red-500' : 'border-brand'"
       @focus="isFocused = true"
       @blur="isFocused = false"
     >
@@ -51,3 +51,4 @@ const currentPlaceholder = computed(() => {
     {{ error }}
   </small>
 </template>
+

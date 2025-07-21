@@ -4,6 +4,8 @@ import Navbar from '@/Components/Navbar.vue'
 import Map from '@/Components/Map.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
+import Socials from '@/Components/Socials.vue'
+import { MapPinIcon } from '@heroicons/vue/24/outline'
 </script>
 
 <template>
@@ -24,15 +26,25 @@ import BaseButton from '@/Components/BaseButton.vue'
           class="w-full flex flex-col items-center lg:pt-6 bg-[#F2F2F2] md:rounded-xl"
         >
           <div
-            class="flex items-center justify-center mb-6 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 h-1/6 [&>*]:flex [&>*]:mb-1 [&>*]:flex-col [&_*]:text-black max-lg:grid max-lg:grid-cols-2"
+            class="flex items-center justify-center mb-6 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 [&>*]:bg-white  h-1/6 [&>*]:flex [&>*]:mb-1 [&>*]:flex-col [&_*]:text-black max-lg:grid max-lg:grid-cols-2"
           >
             <div class="lg:w-6/12 col-span-2">
-              <BaseInput id="city" name="email" label="Miasto" type="text" />
+              <BaseInput
+                id="city"
+                name="city"
+                label="Rodzaj wydarzenia"
+                type="text"
+                placeholder="Wpisz miasto"
+              >
+                <template #append>
+                  <MapPinIcon class="size-5 text-brand-light absolute left-3 top-3.5 pointer-events-none" />
+                </template>
+              </BaseInput>
             </div>
-            <div class="lg:w-3/12">
+            <div class="lg:w-4/12">
               <BaseInput id="date" name="email" label="Data" type="date" />
             </div>
-            <div class="lg:w-2/12">
+            <div class="lg:w-3/12">
               <BaseInput
                 id="city"
                 name="email"
@@ -40,11 +52,9 @@ import BaseButton from '@/Components/BaseButton.vue'
                 type="text"
               />
             </div>
-            <base-button
-              class="bg-black !text-white justify-center font-bold px-10 mt-[24px] col-span-2"
-            >
+            <BaseButton class="!bg-zinc-800 !text-white justify-center font-bold px-10 mt-[24px] col-span-2">
               Szukaj
-            </base-button>
+            </BaseButton>
           </div>
           <div class="w-full h-5/6 bg-white rounded-b-xl">
             <Map class="min-h-96 aspect-[2/1] max-md:aspect-square" />
@@ -69,7 +79,7 @@ import BaseButton from '@/Components/BaseButton.vue'
             href="/event"
             class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]"
           >
-            Dodaj własne wydarzenie
+            Dodawaj własne wydarzenia
           </inertia-link>
           <inertia-link
             href="/event"
@@ -106,14 +116,7 @@ import BaseButton from '@/Components/BaseButton.vue'
                   </InertiaLink>
                 </li>
               </ul>
-              <div
-                class="flex justify-center items-center text-gray-500 order-2 max-sm:order-1 gap-x-4 max-sm:mb-6 max-sm:gap-x-6 max-sm:[&>*]:size-10 [&>*]:size-[14px] gray-400"
-              >
-                <a href="#"><img src="/images/x.svg" alt="X"></a>
-                <a href="#"><img src="/images/linkedin.svg" alt="LinkedIn"></a>
-                <a href="#"><img src="/images/youtube.svg" alt="Youtube"></a>
-                <a href="#"><img src="/images/slack.svg" alt="Slack"></a>
-              </div>
+              <socials />
             </div>
           </div>
           <div class="order-2 lg:order-1 max-sm:mt-5">
