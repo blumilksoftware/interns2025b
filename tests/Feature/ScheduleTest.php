@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Console;
+namespace Tests\Feature;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Tests\TestCase;
@@ -15,7 +15,7 @@ class ScheduleTest extends TestCase
 
         $found = collect($schedule->events())
             ->contains(
-                fn($event) => str_contains($event->command, "events:update-statuses") &&
+                fn($event): bool => str_contains($event->command, "events:update-statuses") &&
                 $event->expression === "*/30 * * * *",
             );
 

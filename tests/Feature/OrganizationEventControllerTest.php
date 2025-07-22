@@ -24,13 +24,9 @@ class OrganizationEventControllerTest extends TestCase
 
         $this->user = User::factory()->create();
 
-        $this->org = Organization::factory()->create();
-        $this->org->users()->attach($this->user);
-
-        $this->org1 = Organization::factory()->create();
-        $this->org2 = Organization::factory()->create();
-        $this->org1->users()->attach($this->user);
-        $this->org2->users()->attach($this->user);
+        [$this->org, $this->org1, $this->org2] = collect(range(1, 3))
+            ->map(fn(int $i): Organization => $this->setUpOrganizationWithUser())
+            ->all();
 
         $this->validPayload = [
             "title" => "Test Event",
@@ -72,7 +68,16 @@ class OrganizationEventControllerTest extends TestCase
 
     public function testUserCanUpdateEventInOrganization(): void
     {
-        $event = Event::factory()->for($this->org, "owner")->create();
+        $event = $this->org->events()->create(
+            Event::factory()->make([
+                "title" => "Original Event",
+                "start_time" => now()->addDay()->toDateTimeString(),
+                "end_time" => now()->addDays(2)->toDateTimeString(),
+                "location" => "Old Location",
+                "is_paid" => true,
+                "status" => "draft",
+            ])->toArray(),
+        );
 
         $updatePayload = [
             "title" => "Updated Event",
@@ -90,7 +95,16 @@ class OrganizationEventControllerTest extends TestCase
 
     public function testUserCanDeleteEventFromOrganization(): void
     {
-        $event = Event::factory()->for($this->org, "owner")->create();
+        $event = $this->org->events()->create(
+            Event::factory()->make([
+                "title" => "Event to Delete",
+                "start_time" => now()->addDay()->toDateTimeString(),
+                "end_time" => now()->addDays(2)->toDateTimeString(),
+                "location" => "Somewhere",
+                "is_paid" => true,
+                "status" => "published",
+            ])->toArray(),
+        );
 
         $response = $this->deleteJson("/api/organizations/{$this->org->id}/events/{$event->id}");
 
@@ -174,5 +188,13 @@ class OrganizationEventControllerTest extends TestCase
         $response = $this->postJson("/api/organizations/{$org->id}/events", $payload);
 
         $response->assertForbidden()->assertJson(["message" => "This action is unauthorized."]);
+    }
+
+    private function setUpOrganizationWithUser(): Organization
+    {
+        $org = Organization::factory()->create();
+        $org->users()->attach($this->user);
+
+        return $org;
     }
 }

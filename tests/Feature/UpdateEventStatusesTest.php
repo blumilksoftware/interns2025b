@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Console;
+namespace Tests\Feature;
 
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Enums\EventStatus;
 use Interns2025b\Models\Event;
@@ -16,7 +15,7 @@ class UpdateEventStatusesTest extends TestCase
 
     public function testItUpdatesEventStatusesCorrectly(): void
     {
-        $now = Carbon::now();
+        $now = now();
 
         $publishedEvent = Event::factory()->create([
             "status" => EventStatus::Published,
