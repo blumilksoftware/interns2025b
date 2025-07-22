@@ -1,11 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
+  baseURL: 'http://interns2025b.blumilk.local.env/api',
 })
 
 api.interceptors.request.use((config) => {
