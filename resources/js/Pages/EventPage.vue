@@ -74,9 +74,11 @@ function Event(raw: RawEvent): EventData {
   }
 }
 
+const props = defineProps<{ eventId: number }>()
+
 onMounted(async () => {
   try {
-    const res = await api.get('/events/2')
+    const res = await api.get(`/events/${props.eventId}`)
     const raw: RawEvent = res.data.data
     event.value = Event(raw)
   } catch (err) {
