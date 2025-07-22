@@ -22,8 +22,11 @@ import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
     </div>
     <div class="md:w-5/6 flex flex-col">
       <div class="md:mb-36 mb-16">
+        <div class="w-full relative">
+          <img src="/images/Fade.svg" alt="" class="flex-1 absolute w-full h-[1000px] inset-0 top-[-430px] pointer-events-none">
+        </div>
         <div
-          class="w-full flex flex-col items-center lg:pt-6 bg-[#F2F2F2] md:rounded-xl"
+          class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl"
         >
           <div
             class="flex items-center border-none justify-center mb-6 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 h-1/6 [&>*]:mb-1 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
@@ -53,7 +56,7 @@ import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
                 variant="event"
               >
                 <template #append>
-                  <CalendarIcon class="absolute left-3 top-3.5 size-5 pointer-events-none" />
+                  <CalendarIcon class="absolute inset-0 -z-10 w-full pointer-events-none object-cover" />
                 </template>
               </BaseInput>
             </div>

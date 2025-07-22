@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 namespace Interns2025b\Providers;
-
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,5 +15,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+    Inertia::share([
+                'auth' => fn () => [
+                    'user' => Auth::user(),
+                ],
+            ]);
     }
 }
