@@ -45,7 +45,7 @@ class UserDeletionTest extends TestCase
 
     public function testDeletionFailsWithInvalidSignature(): void
     {
-        $this->deleteJson("/api/confirm-delete/{$this->user->id}?signature=invalid")
+        $this->getJson("/api/confirm-delete/{$this->user->id}?signature=invalid")
             ->assertStatus(403);
 
         $this->assertDatabaseHas("users", ["id" => $this->user->id]);

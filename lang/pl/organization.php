@@ -16,4 +16,5 @@ return [
     "invitation_unauthorized" => "Brak autoryzacji.",
     "invitation_accepted" => "Dołączyłeś(-aś) do organizacji.",
     "invitation_body" => 'Zostałeś(-aś) zaproszony(-a) do organizacji ":organization". Kliknij poniższy link, aby zaakceptować zaproszenie i dołączyć do :app.',
-    "invitation_throttled" => "Wysłano zbyt wiele zaproszeń do tego użytkownika. Proszę spróbować później.", ];
+    "invitation_throttled" => "Wysłano zbyt wiele zaproszeń do tego użytkownika. Proszę spróbować później.",
+];
