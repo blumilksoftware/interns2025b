@@ -14,6 +14,7 @@ use Interns2025b\Http\Controllers\FollowController;
 use Interns2025b\Http\Controllers\LoginController;
 use Interns2025b\Http\Controllers\LogoutController;
 use Interns2025b\Http\Controllers\OrganizationController;
+use Interns2025b\Http\Controllers\OrganizationEventController;
 use Interns2025b\Http\Controllers\OrganizationInvitationController;
 use Interns2025b\Http\Controllers\RegisterController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
@@ -24,8 +25,8 @@ use Interns2025b\Http\Controllers\UserProfileController;
 
 Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/user", fn(Request $request): JsonResponse => $request->user())->name("user.profile");
-    Route::post("/auth/logout", LogoutController::class)->name("logout");
     Route::get("/link/facebook/callback", [FacebookController::class, "linkCallback"]);
+    Route::post("/auth/logout", LogoutController::class);
     Route::get("/profile", [UserProfileController::class, "show"]);
     Route::put("/profile", [UserProfileController::class, "update"]);
     Route::put("/auth/change-password", [UpdatePasswordController::class, "updatePassword"]);
@@ -36,6 +37,16 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::get("/followers", [FollowController::class, "followers"])->name("followers");
     Route::get("/profile/{user}", [UserProfileController::class, "showDetail"]);
     Route::post("/organizations/{organization}/invite", [OrganizationInvitationController::class, "send"]);
+    Route::post("/events", [EventController::class, "store"]);
+    Route::put("/events/{event}", [EventController::class, "update"]);
+    Route::delete("/events/{event}", [EventController::class, "destroy"]);
+
+    Route::scopeBindings()->group(function (): void {
+        Route::get("/organizations/{organization}/events", [OrganizationEventController::class, "index"]);
+        Route::post("/organizations/{organization}/events", [OrganizationEventController::class, "store"]);
+        Route::put("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "update"]);
+        Route::delete("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
+    });
 });
 
 Route::delete("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
@@ -59,7 +70,10 @@ Route::get("/organizations/accept-invite", [OrganizationInvitationController::cl
 Route::post("/auth/forgot-password", [ResetPasswordController::class, "sendResetLinkEmail"]);
 Route::post("/auth/reset-password", [ResetPasswordController::class, "resetPassword"]);
 
-Route::group(["prefix" => "admin",  "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
+Route::get("/events", [EventController::class, "index"]);
+Route::get("/events/{event}", [EventController::class, "show"]);
+
+Route::group(["prefix" => "admin", "middleware" => ["auth:sanctum", "role:administrator|superAdministrator"]], function (): void {
     Route::get("/events", [EventController::class, "index"]);
     Route::get("/users", [UserManagementController::class, "index"])->name("users.index");
     Route::get("/users/{user}", [UserManagementController::class, "show"])->name("users.show");

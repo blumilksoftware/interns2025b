@@ -15,4 +15,11 @@ return [
     "see_event" => "Zobacz wydarzenie",
     "new_event_subject" => "Nowe wydarzenie: :title",
     "new_event_line" => "Organizacja lub użytkownik, którego obserwujesz, opublikował nowe wydarzenie.",
+    "created" => "Wydarzenie zostało pomyślnie utworzone.",
+    "updated" => "Wydarzenie zostało pomyślnie zaktualizowane.",
+    "deleted" => "Wydarzenie zostało pomyślnie usunięte.",
+    "not_found" => "Nie znaleziono wydarzenia.",
+    "unauthorized" => "Nie masz uprawnień do wykonania tej akcji na wydarzeniu.",
+    "deleted_from_organization" => "Wydarzenie zostało usunięte z organizacji.",
+    "not_member" => "Nie jesteś członkiem tej organizacji.",
 ];

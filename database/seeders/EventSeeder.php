@@ -16,17 +16,24 @@ class EventSeeder extends Seeder
         $users = User::factory(10)->create();
         $organizations = Organization::factory(10)->create();
 
-        Event::factory(10)->make()->each(function ($event) use ($users): void {
+        $randomLatitude = fn(): float => mt_rand(1100000, 1200000) / 10000000 + 51.0;
+        $randomLongitude = fn(): float => mt_rand(1610000, 1620000) / 10000000 + 16.0;
+
+        Event::factory(10)->make()->each(function (Event $event) use ($users, $randomLatitude, $randomLongitude): void {
             $user = $users->random();
             $event->owner_id = $user->id;
             $event->owner_type = User::class;
+            $event->latitude = $randomLatitude();
+            $event->longitude = $randomLongitude();
             $event->save();
         });
 
-        Event::factory(10)->make()->each(function ($event) use ($organizations): void {
+        Event::factory(10)->make()->each(function (Event $event) use ($organizations, $randomLatitude, $randomLongitude): void {
             $organization = $organizations->random();
             $event->owner_id = $organization->id;
             $event->owner_type = Organization::class;
+            $event->latitude = $randomLatitude();
+            $event->longitude = $randomLongitude();
             $event->save();
         });
     }
