@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, useSlots } from 'vue'
+import { onBeforeMount } from 'vue'
+
+onBeforeMount(() => {
+  if (props.type === 'date' && !model.value) {
+    model.value = new Date().toISOString().slice(0,10)
+  }
+})
 
 type InputType = 'text' | 'email' | 'password' | 'number' | 'search' | 'date';
-
 const model = defineModel<string>()
 
 const props = defineProps<{
@@ -13,42 +19,63 @@ const props = defineProps<{
   placeholder?: string
   focusPlaceholder?: string
   error?: string | null
+  appendPosition?: 'left' | 'right'
+  variant?: 'default' | 'event'
 }>()
 
 const isFocused = ref(false)
+const slots = useSlots()
 
-const currentPlaceholder = computed(() => {
-  if (isFocused.value && props.focusPlaceholder) {
-    return props.focusPlaceholder
+const padding = computed(() => {
+  const left = slots.append && props.appendPosition === 'left' ? 'pl-10' : 'pl-4'
+  const right = slots.append && props.appendPosition !== 'left' ? 'pr-10' : 'pr-4'
+  return `${left} ${right}`
+})
+
+const placeholderText = computed(() =>
+  isFocused.value && props.focusPlaceholder ? props.focusPlaceholder : props.placeholder,
+)
+
+const theme = computed(() => {
+  if (props.variant === 'event') {
+    return 'bg-white text-gray-400 hover:bg-gray-50 border-none focus:ring-2 focus:ring-brand-light focus:border-indigo-500'
   }
-  return props.placeholder
+  return 'text-brand-light border-brand hover:bg-gray-100 focus:bg-gray-100 focus:ring-1 focus:ring-brand-light focus:border-brand-light'
 })
 </script>
 
 <template>
-  <label
-    :for="id"
-    class="block text-gray-500 mb-1 !bg-transparent"
-  >
-    {{ label }}
+  <label v-if="props.label" :for="props.id" class="block text-gray-500 mb-1">
+    {{ props.label }}
   </label>
 
   <div class="relative">
     <input
-      :id="id"
+      :id="props.id"
       v-model="model"
-      :name="name"
-      :type="type"
-      :placeholder="currentPlaceholder"
-      class="w-full h-12 px-4 pr-10 font-medium rounded-lg transition duration-100 ease-in-out text-brand-light focus:outline-none focus:ring-1 focus:ring-brand-light focus:border-brand-light hover:bg-gray-100 focus:bg-gray-100 border border-brand"
-      :class="error ? 'border-red-500' : 'border-brand'"
+      :name="props.name"
+      :type="props.type"
+      :placeholder="placeholderText"
+      :class="[ 'w-full h-12 font-medium rounded-lg transition duration-100 ease-in-out focus:outline-none border', padding, theme, props.error ? 'border-red-500' : '' ]"
       @focus="isFocused = true"
       @blur="isFocused = false"
     >
     <slot name="append" />
   </div>
-  <small v-if="error" class="text-red-600 text-sm">
-    {{ error }}
+
+  <small v-if="props.error" class="text-red-600 text-sm">
+    {{ props.error }}
   </small>
 </template>
 
+<style scoped>
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+</style>

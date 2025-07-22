@@ -5,7 +5,7 @@ import Map from '@/Components/Map.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
 import Socials from '@/Components/Socials.vue'
-import { MapPinIcon } from '@heroicons/vue/24/outline'
+import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
 </script>
 
 <template>
@@ -26,15 +26,17 @@ import { MapPinIcon } from '@heroicons/vue/24/outline'
           class="w-full flex flex-col items-center lg:pt-6 bg-[#F2F2F2] md:rounded-xl"
         >
           <div
-            class="flex items-center justify-center mb-6 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 [&>*]:bg-white  h-1/6 [&>*]:flex [&>*]:mb-1 [&>*]:flex-col [&_*]:text-black max-lg:grid max-lg:grid-cols-2"
+            class="flex items-center border-none justify-center mb-6 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 h-1/6 [&>*]:mb-1 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
           >
             <div class="lg:w-6/12 col-span-2">
               <BaseInput
                 id="city"
                 name="city"
-                label="Rodzaj wydarzenia"
+                label="Miasto"
                 type="text"
-                placeholder="Wpisz miasto"
+                placeholder="Legnica"
+                append-position="left"
+                variant="event"
               >
                 <template #append>
                   <MapPinIcon class="size-5 text-brand-light absolute left-3 top-3.5 pointer-events-none" />
@@ -42,14 +44,27 @@ import { MapPinIcon } from '@heroicons/vue/24/outline'
               </BaseInput>
             </div>
             <div class="lg:w-4/12">
-              <BaseInput id="date" name="email" label="Data" type="date" />
+              <BaseInput
+                id="date"
+                name="date"
+                label="Data"
+                type="date"
+                append-position="left"
+                variant="event"
+              >
+                <template #append>
+                  <CalendarIcon class="absolute left-3 top-3.5 size-5 pointer-events-none" />
+                </template>
+              </BaseInput>
             </div>
             <div class="lg:w-3/12">
               <BaseInput
-                id="city"
+                id="xDD"
                 name="email"
                 label="Rodzaj wydarzenia"
                 type="text"
+                placeholder="koncert"
+                variant="event"
               />
             </div>
             <BaseButton class="!bg-zinc-800 !text-white justify-center font-bold px-10 mt-[24px] col-span-2">
