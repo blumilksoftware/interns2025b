@@ -16,4 +16,5 @@ return [
     "email_delete_button" => "Delete My Account",
     "email_deletion_warning" => "This link will expire in 60 minutes. If you didn’t request this, you can safely ignore this e-mail.",
     "email_signature" => "Regards",
+    "throttled" => "You have already requested account deletion recently. Please wait before trying again.",
 ];

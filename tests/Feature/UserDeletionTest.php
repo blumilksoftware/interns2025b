@@ -11,26 +11,43 @@ use Tests\TestCase;
 
 class UserDeletionTest extends TestCase
 {
+    private User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = User::factory()->create();
+        Mail::fake();
+    }
+
     public function testUserCanRequestDeletionEmail(): void
     {
-        Mail::fake();
-        $user = User::factory()->create();
-
-        $this->actingAs($user, "sanctum")
+        $this->actingAs($this->user, "sanctum")
             ->postJson("/api/profile/delete-request")
             ->assertStatus(200)
-            ->assertJson(["message" => "Confirmation e-mail sent."]);
+            ->assertJson(["message" => __("profile.email_sent")]);
 
-        Mail::assertSent(DeleteAccountLinkMail::class, fn($mail): bool => $mail->user->id === $user->id);
+        Mail::assertSent(DeleteAccountLinkMail::class, fn($mail): bool => $mail->user->id === $this->user->id);
+    }
+
+    public function testUserCannotRequestDeletionTooFrequently(): void
+    {
+        $this->actingAs($this->user, "sanctum")
+            ->postJson("/api/profile/delete-request")
+            ->assertStatus(200)
+            ->assertJson(["message" => __("profile.email_sent")]);
+
+        $this->postJson("/api/profile/delete-request")
+            ->assertStatus(429)
+            ->assertJson(["message" => __("profile.throttled")]);
     }
 
     public function testDeletionFailsWithInvalidSignature(): void
     {
-        $user = User::factory()->create();
+        $this->deleteJson("/api/confirm-delete/{$this->user->id}?signature=invalid")
+            ->assertStatus(403);
 
-        $url = "/api/confirm-delete/{$user->id}?signature=invalid";
-
-        $this->deleteJson($url)->assertStatus(403);
-        $this->assertDatabaseHas("users", ["id" => $user->id]);
+        $this->assertDatabaseHas("users", ["id" => $this->user->id]);
     }
 }
