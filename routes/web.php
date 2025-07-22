@@ -14,3 +14,11 @@ Route::get("/register", fn(): Response => inertia("Auth/RegisterPage"));
 Route::get("/forgot-password", fn(): Response => inertia("Auth/ForgotPasswordPage"));
 
 Route::get("/event", fn(): Response => inertia("EventPage"));
+
+Route::post("/logout", function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect("/");
+})->middleware("auth");
