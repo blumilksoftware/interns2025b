@@ -13,6 +13,7 @@ return new class() extends Migration {
             $table->id();
             $table->string("first_name");
             $table->string("last_name")->nullable();
+            $table->string("avatar_url")->nullable();
             $table->string("email")->unique();
             $table->timestamp("email_verified_at")->nullable();
             $table->string("password")->nullable();

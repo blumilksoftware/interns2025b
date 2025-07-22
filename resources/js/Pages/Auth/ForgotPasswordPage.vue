@@ -4,6 +4,7 @@ import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { ForgotPasswordForm } from '@/types/types'
+import AppHead from '@/Components/AppHead.vue'
 
 const {
   formData: form,
@@ -19,7 +20,7 @@ const {
     endpoint: '/api/auth/forgot-password',
     onSuccess: () => {
       globalMessage.value =
-        'Link do resetowania hasła został wysłany na podany adres email'
+        'Link do resetowania hasła został wysłany na podany adres e-mail'
     },
     onError: () => {
       globalMessage.value =
@@ -30,10 +31,11 @@ const {
 </script>
 
 <template>
+  <app-head title="Przypominj hasło" />
   <auth-layout>
     <template #header>
       <h2 class="font-bold text-3xl">Przypomnij hasło</h2>
-      <p class="font-medium">
+      <p class="font-medium mt-3">
         Pamiętasz hasło?
         <InertiaLink
           href="/login"
@@ -50,50 +52,50 @@ const {
         </InertiaLink>
       </p>
     </template>
-    <template #form>
-      <div class="flex flex-col items-center justify-center mt-6 text-xl">
-        <div
-          class="flex w-5/6 flex-col justify-center max-w-md mx-auto space-y-6"
-        >
-          <h2 class="text-2xl font-bold">Reset hasła</h2>
-          <p class="text-gray-600">
-            Wprowadź swój adres e-mail, a wyślemy Ci link do zresetowania hasła.
-          </p>
-          <div
-            v-if="globalMessage"
-            class="text-center bg-green-100 rounded-md p-4 max-w-md mx-auto"
-            :class="{
-              'text-red-600': globalMessage.includes('błąd'),
-              'text-green-600': globalMessage.includes('został wysłany'),
-            }"
-          >
-            {{ globalMessage }}
-          </div>
-          <form @submit.prevent="submitForm">
-            <div class="w-full mb-6">
-              <BaseInput
-                id="forgot-password-email"
-                v-model="form.email"
-                name="email"
-                label="Email"
-                type="email"
-              />
-              <small v-if="errors.email" class="text-red-600">
-                {{ errors.email }}
-              </small>
-            </div>
 
-            <div class="w-full flex justify-center">
-              <BaseButton
-                type="submit"
-                class="w-full h-12 bg-black shadow-[#375DFB] text-white font-bold"
-                :disabled="isSubmitting"
+    <template #form>
+      <div class="space-y-6 mb-6">
+        <form
+          class="flex flex-col items-center justify-center w-full space-y-4 text-xl"
+          @submit.prevent="submitForm"
+        >
+          <div class="w-5/6 space-y-2 mt-6">
+            <div class="flex-col items-center space-y-4 text-xl">
+              <h2 class="text-2xl text-gray-800 font-bold">Reset hasła</h2>
+              <p class="text-gray-600">
+                Wprowadź swój adres e-mail, a wyślemy Ci link do zresetowania
+                hasła.
+              </p>
+              <div
+                v-if="globalMessage"
+                class="text-center rounded-md p-4 mx-auto"
+                :class="{
+                  'text-red-600': globalMessage.includes('błąd'),
+                  'bg-green-100 text-green-600':
+                    globalMessage.includes('został wysłany'),
+                }"
               >
-                Wyślij link
-              </BaseButton>
+                {{ globalMessage }}
+              </div>
             </div>
-          </form>
-        </div>
+            <BaseInput
+              id="email"
+              v-model="form.email"
+              name="email"
+              label="E-mail"
+              type="email"
+              :error="errors.email"
+            />
+          </div>
+
+          <BaseButton
+            class="w-5/6 h-12 bg-black shadow-shadow-blue text-white font-bold"
+            :disabled="isSubmitting"
+            type="submit"
+          >
+            Zaloguj się
+          </BaseButton>
+        </form>
       </div>
     </template>
   </auth-layout>

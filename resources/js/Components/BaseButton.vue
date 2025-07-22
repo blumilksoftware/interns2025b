@@ -1,5 +1,4 @@
-<script lang="ts" setup>
-import { defineProps, defineEmits } from 'vue'
+<script setup lang="ts">
 
 defineProps<{
   type?: 'button' | 'submit' | 'reset'

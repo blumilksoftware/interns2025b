@@ -7,6 +7,7 @@ import { useApiForm } from '@/composables/useApiForm'
 import type { LoginForm, LoginResponse } from '@/types/types'
 import LoginFacebook from '@/Components/LoginFacebook.vue'
 import PasswordInput from '@/Components/PasswordInput.vue'
+import AppHead from '@/Components/AppHead.vue'
 
 const { notification } = defineProps<{
   notification?: string
@@ -24,10 +25,10 @@ const {
     remember: false,
   },
   {
-    endpoint: 'api/auth/login',
+    endpoint: '/api/auth/login',
     onSuccess: (response) => {
-      sessionStorage.setItem('token', response.data.token)
-      router.visit('/profile', {
+      localStorage.setItem('token', response.data.token)
+      router.visit('/', {
         method: 'get',
         preserveState: false,
         preserveScroll: false,
@@ -43,10 +44,11 @@ const {
 </script>
 
 <template>
+  <app-head title="Logowanie" />
   <auth-layout>
     <template #header>
       <h2 class="font-bold text-3xl">Zaloguj się</h2>
-      <p class="font-medium">
+      <p class="font-medium mt-3">
         Nie posiadasz konta?
         <InertiaLink
           href="/register"
@@ -65,7 +67,7 @@ const {
           <div class="w-full">
             <div
               v-if="notification"
-              class="w-5/6 mx-auto p-4 mb-4 text-center text-green-700 bg-green-100 rounded-lg"
+              class="w-5/6 mx-auto p-4 mt-6 text-center text-green-700 bg-green-100 rounded-lg"
             >
               {{ notification }}
             </div>
@@ -78,20 +80,15 @@ const {
               name="email"
               label="E-mail"
               type="email"
+              :error="errors.email"
             />
-            <small v-if="errors.email" class="text-red-600">
-              {{ errors.email }}
-            </small>
-
             <PasswordInput
               id="password"
               v-model="form.password"
               name="password"
               label="Hasło"
+              :error="errors.password"
             />
-            <small v-if="errors.password" class="text-red-600">
-              {{ errors.password }}
-            </small>
           </div>
 
           <div class="flex items-center justify-between w-5/6">
@@ -101,20 +98,20 @@ const {
                 v-model="form.remember"
                 name="remember_password"
                 type="checkbox"
-                class="mr-2 size-4 accent-[#025F60] bg-gray-100 rounded-sm border-gray-300"
+                class="mr-2 size-4 accent-brand-light bg-gray-100 rounded-sm border-gray-300"
               >
               <span class="text-base text-gray-700">Zapamiętaj mnie</span>
             </label>
             <inertia-link
               href="/forgot-password"
-              class="font-bold text-base text-[#025F60] hover:text-[#024c4d]"
+              class="font-bold text-base text-brand-light hover:text-brand-dark"
             >
               Nie pamiętasz hasła?
             </inertia-link>
           </div>
 
           <BaseButton
-            class="w-5/6 h-12 bg-black shadow-[#375DFB] text-white font-bold"
+            class="w-5/6 h-12 bg-black shadow-shadow-blue text-white font-bold"
             :disabled="isSubmitting"
             type="submit"
           >
@@ -136,14 +133,14 @@ const {
             Rejestrując się wyrażasz zgodę na
             <InertiaLink
               href="#"
-              class="text-[#025F60] hover:text-[#024c4d] font-semibold"
+              class="text-brand-light hover:text-brand-dark font-semibold"
             >
               Warunki świadczenia usług
             </InertiaLink>
             oraz
             <InertiaLink
               href="#"
-              class="text-[#025F60] hover:text-[#024c4d] font-semibold"
+              class="text-brand-light hover:text-brand-dark font-semibold"
             >
               Umowę o przetwarzaniu danych
             </InertiaLink>

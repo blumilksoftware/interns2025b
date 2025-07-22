@@ -1,15 +1,15 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
 
-defineProps<{
+withDefaults(defineProps<{
   title: string
   description?: string
-}>()
+}>(), { description: 'Default description'  })
 </script>
 
 <template>
   <Head>
     <title>{{ title }}</title>
-    <meta name="description" :content="description || 'Default description'">
+    <meta name="description" :content="description">
   </Head>
 </template>
