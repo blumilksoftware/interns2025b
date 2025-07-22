@@ -180,4 +180,134 @@ class EventControllerTest extends TestCase
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors(["start_time"]);
     }
+
+    public function testUserCannotCreateSecondPublishedOrOngoingEvent(): void
+    {
+        $user = $this->user;
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "published",
+        ]);
+
+        $payload = Event::factory()->make([
+            "status" => "ongoing",
+            "start_time" => now()->addHour(),
+            "end_time" => now()->addHours(2),
+        ])->toArray();
+
+        $payload["start_time"] = now()->addHour()->toISOString();
+        $payload["end_time"] = now()->addHours(2)->toISOString();
+
+        $response = $this->postJson("/api/events", $payload);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(["status"]);
+    }
+
+    public function testUserCanCreateDraftOrEndedEvenIfTheyHavePublishedEvent(): void
+    {
+        $user = $this->user;
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "published",
+        ]);
+
+        foreach (["draft", "ended"] as $status) {
+            $payload = Event::factory()->make([
+                "status" => $status,
+                "start_time" => now()->addDay(),
+                "end_time" => now()->addDays(2),
+            ])->toArray();
+
+            $payload["start_time"] = now()->addDay()->toISOString();
+            $payload["end_time"] = now()->addDays(2)->toISOString();
+
+            $response = $this->postJson("/api/events", $payload);
+
+            $response->assertCreated();
+        }
+    }
+
+    public function testUserCanUpdateWithoutChangingStatusEvenIfActiveEventExists(): void
+    {
+        $user = $this->user;
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "published",
+        ]);
+
+        $eventToUpdate = Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "draft",
+        ]);
+
+        $response = $this->putJson("/api/events/{$eventToUpdate->id}", [
+            "title" => "Updated Title",
+        ]);
+
+        $response->assertOk();
+    }
+
+    public function testUserCanChangeStatusToDraftOrEndedEvenIfAnotherActiveEventExists(): void
+    {
+        $user = $this->user;
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "published",
+        ]);
+
+        $eventToUpdate = Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "draft",
+        ]);
+
+        foreach (["draft", "ended"] as $newStatus) {
+            $response = $this->putJson("/api/events/{$eventToUpdate->id}", [
+                "status" => $newStatus,
+            ]);
+
+            $response->assertOk();
+        }
+    }
+
+    public function testUserCannotChangeEventToPublishedOrOngoingIfAnotherActiveEventExists(): void
+    {
+        $user = $this->user;
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "published",
+        ]);
+
+        $eventToUpdate = Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "draft",
+        ]);
+
+        foreach (["published", "ongoing"] as $newStatus) {
+            $response = $this->putJson("/api/events/{$eventToUpdate->id}", [
+                "status" => $newStatus,
+            ]);
+
+            $response->assertUnprocessable();
+            $response->assertJsonValidationErrors(["status"]);
+        }
+    }
 }
