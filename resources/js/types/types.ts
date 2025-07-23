@@ -4,6 +4,13 @@ export interface LoginForm {
   remember: boolean
 }
 
+export interface User {
+  id: number
+  name:string
+  email:string
+  passowrd:string
+}
+
 export interface LoginResponse {
   token: string
 }
