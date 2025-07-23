@@ -167,12 +167,7 @@ class EventControllerTest extends TestCase
     public function testUserCannotCreateSecondPublishedOrOngoingEvent(): void
     {
         $this->actingAs($this->user);
-
-        Event::factory()->create([
-            "owner_id" => $this->user->id,
-            "owner_type" => get_class($this->user),
-            "status" => "published",
-        ]);
+        $this->createPublishedEventForUser($this->user);
 
         $payload = Event::factory()->make([
             "status" => "ongoing",
@@ -192,12 +187,7 @@ class EventControllerTest extends TestCase
     public function testUserCanCreateDraftOrEndedEvenIfTheyHavePublishedEvent(): void
     {
         $this->actingAs($this->user);
-
-        Event::factory()->create([
-            "owner_id" => $this->user->id,
-            "owner_type" => get_class($this->user),
-            "status" => "published",
-        ]);
+        $this->createPublishedEventForUser($this->user);
 
         foreach (["draft", "ended"] as $status) {
             $payload = Event::factory()->make([
@@ -218,12 +208,7 @@ class EventControllerTest extends TestCase
     public function testUserCanUpdateWithoutChangingStatusEvenIfActiveEventExists(): void
     {
         $this->actingAs($this->user);
-
-        Event::factory()->create([
-            "owner_id" => $this->user->id,
-            "owner_type" => get_class($this->user),
-            "status" => "published",
-        ]);
+        $this->createPublishedEventForUser($this->user);
 
         $eventToUpdate = Event::factory()->create([
             "owner_id" => $this->user->id,
@@ -241,12 +226,7 @@ class EventControllerTest extends TestCase
     public function testUserCanChangeStatusToDraftOrEndedEvenIfAnotherActiveEventExists(): void
     {
         $this->actingAs($this->user);
-
-        Event::factory()->create([
-            "owner_id" => $this->user->id,
-            "owner_type" => get_class($this->user),
-            "status" => "published",
-        ]);
+        $this->createPublishedEventForUser($this->user);
 
         $eventToUpdate = Event::factory()->create([
             "owner_id" => $this->user->id,
@@ -266,12 +246,7 @@ class EventControllerTest extends TestCase
     public function testUserCannotChangeEventToPublishedOrOngoingIfAnotherActiveEventExists(): void
     {
         $this->actingAs($this->user);
-
-        Event::factory()->create([
-            "owner_id" => $this->user->id,
-            "owner_type" => get_class($this->user),
-            "status" => "published",
-        ]);
+        $this->createPublishedEventForUser($this->user);
 
         $eventToUpdate = Event::factory()->create([
             "owner_id" => $this->user->id,
@@ -287,5 +262,14 @@ class EventControllerTest extends TestCase
             $response->assertUnprocessable();
             $response->assertJsonValidationErrors(["status"]);
         }
+    }
+
+    private function createPublishedEventForUser(User $user): Event
+    {
+        return Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "published",
+        ]);
     }
 }

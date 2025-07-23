@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Response as Status;
 
 class UserDeletionController extends Controller
 {
+    private const REQUEST_COOLDOWN = 900;
+
     public function requestDelete(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -29,7 +31,7 @@ class UserDeletionController extends Controller
             ], Status::HTTP_TOO_MANY_REQUESTS);
         }
 
-        $limiter->hit($key, 900);
+        $limiter->hit($key, self::REQUEST_COOLDOWN);
 
         $url = URL::temporarySignedRoute(
             "api.confirmDelete",

@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response as Status;
 
 class UpdatePasswordController extends Controller
 {
+    private const REQUEST_COOLDOWN = 900;
+
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
         $user = Auth::user();
@@ -25,7 +27,7 @@ class UpdatePasswordController extends Controller
             ], Status::HTTP_TOO_MANY_REQUESTS);
         }
 
-        $limiter->hit($key, 900);
+        $limiter->hit($key, self::REQUEST_COOLDOWN);
 
         $newPassword = $request->getNewPassword();
 
