@@ -1,20 +1,64 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
+import { useLogout } from '@/composables/useLogOut'
+
+interface User {
+  id: number
+  name: string
+  email: string
+}
+
+interface PageProps {
+  auth: {
+    user: User | null
+  }
+  [key: string]: any
+}
+
+const page = usePage<PageProps>()
+const user = computed(() => page.props.auth.user)
+
+const { logout } = useLogout()
+</script>
+
 <template>
   <div class="w-full">
     <div
-      class="flex font-medium items-center content-center md:justify-end justify-between gap-y-5 pt-10 sm:gap-x-10 mx-5 mb-10"
+      class="flex font-medium items-center md:justify-end justify-between gap-y-5 pt-10 sm:gap-x-10 mx-5 mb-10"
     >
-      <InertiaLink href="/login">Zaloguj się</InertiaLink><br>
-      <InertiaLink
-        href="/register"
-        class="bg-black text-white rounded-full shadow-shadow-blue hover:scale-105 shadow-sm py-2 px-8"
-      >
-        Zarejestruj się
-      </InertiaLink>
+      <template v-if="!user">
+        <InertiaLink href="/login" class="hover:underline">
+          Zaloguj się
+        </InertiaLink>
+        <InertiaLink
+          href="/register"
+          class="bg-black text-white rounded-full shadow-shadow-blue hover:scale-105 shadow-sm py-2 px-8"
+        >
+          Zarejestruj się
+        </InertiaLink>
+      </template>
+
+      <template v-else>
+        <InertiaLink
+          href="/profile"
+          class="hover:underline"
+        >
+          Profil
+        </InertiaLink>
+        <button
+          class="bg-black text-white rounded-full shadow-shadow-blue hover:scale-105 shadow-sm py-2 px-8"
+          @click="logout"
+        >
+          Wyloguj się
+        </button>
+      </template>
     </div>
+
     <div
       class="flex flex-col space-y-6 items-center justify-center text-center mb-6"
     >
-      <img src="/images/LogoBrand.png" alt="LetsEvent" class="">
+      <img src="/images/LogoBrand.png" alt="LetsEvent">
       <slot />
     </div>
   </div>

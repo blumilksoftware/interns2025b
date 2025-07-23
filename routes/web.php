@@ -18,3 +18,11 @@ Route::get('/event/{id}', function (int $id): Response {
         'eventId' => $id,
     ]);
 });
+
+Route::post("/logout", function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect("/");
+})->middleware("auth");
