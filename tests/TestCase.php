@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Database\Seeders\BadgeSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -18,6 +19,7 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
         Notification::fake();
         $this->seed(RoleSeeder::class);
+        $this->seed(BadgeSeeder::class);
         $this->withoutVite();
     }
 }

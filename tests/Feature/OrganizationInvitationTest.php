@@ -163,4 +163,59 @@ class OrganizationInvitationTest extends TestCase
         $response->assertStatus(Response::HTTP_FORBIDDEN);
         $response->assertJson(["message" => __("organization.invitation_unauthorized")]);
     }
+
+    public function testInvitationThrottleWorks(): void
+    {
+        $this->actingAs($this->owner);
+
+        $response1 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+            "email" => $this->invitee->email,
+        ]);
+        $response1->assertOk();
+
+        $response2 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+            "email" => $this->invitee->email,
+        ]);
+        $response2->assertStatus(429)
+            ->assertJson(["message" => __("organization.invitation_throttled")]);
+    }
+
+    public function testUserCanInviteDifferentUsersWithoutThrottle(): void
+    {
+        $this->actingAs($this->owner);
+
+        $invitee2 = User::factory()->create(["email" => "invitee2@example.com"]);
+        $invitee3 = User::factory()->create(["email" => "invitee3@example.com"]);
+
+        $response1 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+            "email" => $this->invitee->email,
+        ]);
+        $response2 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+            "email" => $invitee2->email,
+        ]);
+        $response3 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+            "email" => $invitee3->email,
+        ]);
+
+        $response1->assertOk();
+        $response2->assertOk();
+        $response3->assertOk();
+    }
+
+    public function testUserCanInviteSameUserToDifferentOrganizationsWithoutThrottle(): void
+    {
+        $this->actingAs($this->owner);
+
+        $organization2 = Organization::factory()->for($this->owner, "owner")->create();
+
+        $response1 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+            "email" => $this->invitee->email,
+        ]);
+        $response2 = $this->postJson("/api/organizations/{$organization2->id}/invite", [
+            "email" => $this->invitee->email,
+        ]);
+
+        $response1->assertOk();
+        $response2->assertOk();
+    }
 }
