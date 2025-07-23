@@ -51,7 +51,7 @@ interface EventData {
   }
   participants: number
 }
-
+const rawEvent = ref<RawEvent | null>(null)
 const event = ref<EventData | null>(null)
 const loading = ref(true)
 
@@ -79,8 +79,9 @@ const props = defineProps<{ eventId: number }>()
 onMounted(async () => {
   try {
     const res = await api.get(`/events/${props.eventId}`)
-    const raw: RawEvent = res.data.data
-    event.value = Event(raw)
+    const raw = res.data.data
+    rawEvent.value = raw
+    event.value    = Event(raw)
   } catch (err) {
     console.error('Błąd pobierania wydarzenia:', err)
   } finally {
@@ -213,7 +214,11 @@ onMounted(async () => {
 
             <div class="rounded-lg shadow-lg bg-white space-y-6 lg:py-11 lg:px-16 p-8">
               <div class="lg:-mx-16 lg:-mt-11 -mt-8 -mx-8 bg-red-200 h-96 rounded-2xl">
-                <Map />
+                <Map
+                  v-if="rawEvent"
+                  :center="[ rawEvent.latitude ?? 0, rawEvent.longitude ?? 0 ]"
+                  disable-fetch
+                />
               </div>
               <div class="content-center">
                 <p class="font-medium text-3xl">{{ event.venueName }}</p>
