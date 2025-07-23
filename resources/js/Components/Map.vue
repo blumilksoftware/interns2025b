@@ -55,7 +55,7 @@ onMounted(async () => {
         const marker = L.marker([evt.latitude, evt.longitude]).addTo(map)
         marker.bindPopup(`
           <strong>${evt.title}</strong><br>
-          <a href="/events/${evt.id}">Zobacz szczegóły</a>
+          <a href="/event/${evt.id}">Zobacz szczegóły</a>
         `)
       }
     })
