@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class OrganizationInvitationController extends Controller
 {
+    private const DAY = 86400;
+
     public function send(SendOrganizationInvitationRequest $request, Organization $organization, Mailer $mailer): JsonResponse
     {
         $this->authorize("invite", $organization);
@@ -29,7 +31,7 @@ class OrganizationInvitationController extends Controller
             ], Response::HTTP_TOO_MANY_REQUESTS);
         }
 
-        $limiter->hit($key, 86400);
+        $limiter->hit($key, self::DAY);
 
         $mailer->to($request->email)->send(new OrganizationInvitationMail($organization));
 

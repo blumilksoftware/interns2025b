@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Interns2025b\Mail\DeleteAccountLinkMail;
 use Interns2025b\Models\User;
+use Symfony\Component\HttpFoundation\Response as Status;
 
 class UserDeletionController extends Controller
 {
@@ -23,8 +24,9 @@ class UserDeletionController extends Controller
 
         if ($limiter->tooManyAttempts($key, 1)) {
             return response()->json([
+                "status" => "error",
                 "message" => __("profile.throttled"),
-            ], 429);
+            ], Status::HTTP_TOO_MANY_REQUESTS);
         }
 
         $limiter->hit($key, 900);
@@ -37,7 +39,10 @@ class UserDeletionController extends Controller
 
         Mail::to($user->email)->send(new DeleteAccountLinkMail($user, $url));
 
-        return response()->json(["message" => __("profile.email_sent")], 200);
+        return response()->json([
+            "status" => "success",
+            "message" => __("profile.email_sent"),
+        ], Status::HTTP_OK);
     }
 
     public function confirmDelete(Request $request, $user): JsonResponse
@@ -46,6 +51,9 @@ class UserDeletionController extends Controller
 
         $user->delete();
 
-        return response()->json(["message" => __("profile.deleted")]);
+        return response()->json([
+            "status" => "success",
+            "message" => __("profile.deleted"),
+        ], Status::HTTP_OK);
     }
 }
