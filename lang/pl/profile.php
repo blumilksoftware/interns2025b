@@ -16,4 +16,5 @@ return [
     "email_delete_button" => "Usuń moje konto",
     "email_deletion_warning" => "Ten link wygaśnie za 60 minut. Jeśli to nie Ty złożyłeś tę prośbę, zignoruj tę wiadomość e-mail.",
     "email_signature" => "Pozdrawiam",
+    "throttled" => "Niedawno już wysłałeś prośbę o usunięcie konta. Proszę poczekaj przed ponowną próbą.",
 ];

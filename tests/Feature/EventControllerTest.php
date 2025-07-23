@@ -14,7 +14,8 @@ class EventControllerTest extends TestCase
     protected User $owner;
     protected User $otherUser;
     protected User $admin;
-    protected User $superAdmin;
+    protected User $superadmin;
+    protected Event $event;
 
     protected function setUp(): void
     {
@@ -25,6 +26,11 @@ class EventControllerTest extends TestCase
         $this->otherUser = User::factory()->create();
         $this->admin = User::factory()->admin()->create();
         $this->superadmin = User::factory()->superAdmin()->create();
+
+        $this->event = Event::factory()->create([
+            "owner_type" => get_class($this->owner),
+            "owner_id" => $this->owner->id,
+        ]);
     }
 
     public function testIndexReturnsPaginatedEvents(): void
@@ -33,12 +39,11 @@ class EventControllerTest extends TestCase
 
         $response = $this->getJson("/api/events");
 
-        $response->assertOk()
-            ->assertJsonStructure([
-                "data",
-                "links" => ["first", "last", "prev", "next"],
-                "meta" => ["current_page", "last_page", "per_page", "total"],
-            ]);
+        $response->assertOk()->assertJsonStructure([
+            "data",
+            "links" => ["first", "last", "prev", "next"],
+            "meta" => ["current_page", "last_page", "per_page", "total"],
+        ]);
 
         $this->assertCount(10, $response->json("data"));
     }
@@ -56,20 +61,13 @@ class EventControllerTest extends TestCase
 
     public function testShowReturnsEvent(): void
     {
-        $event = Event::factory()->create();
-
-        $this->getJson("/api/events/{$event->id}")->assertOk();
-        $this->actingAs($this->user)->getJson("/api/events/{$event->id}")->assertOk();
+        $this->getJson("/api/events/{$this->event->id}")->assertOk();
+        $this->actingAs($this->user)->getJson("/api/events/{$this->event->id}")->assertOk();
     }
 
     public function testOnlyOwnerCanUpdateEvent(): void
     {
-        $event = Event::factory()->create([
-            "owner_type" => get_class($this->owner),
-            "owner_id" => $this->owner->id,
-        ]);
-
-        $updatePayload = [
+        $payload = [
             "title" => "Updated Title",
             "description" => "Updated Description",
             "location" => "Updated Location",
@@ -79,20 +77,15 @@ class EventControllerTest extends TestCase
             "status" => "draft",
         ];
 
-        $this->actingAs($this->owner)->putJson("/api/events/{$event->id}", $updatePayload)->assertOk();
-        $this->actingAs($this->otherUser)->putJson("/api/events/{$event->id}", $updatePayload)->assertForbidden();
-        $this->putJson("/api/events/{$event->id}", $updatePayload)->assertForbidden();
+        $this->actingAs($this->owner)->putJson("/api/events/{$this->event->id}", $payload)->assertOk();
+        $this->actingAs($this->otherUser)->putJson("/api/events/{$this->event->id}", $payload)->assertForbidden();
+        $this->putJson("/api/events/{$this->event->id}", $payload)->assertForbidden();
     }
 
     public function testOnlyOwnerCanDeleteEvent(): void
     {
-        $event = Event::factory()->create([
-            "owner_type" => get_class($this->owner),
-            "owner_id" => $this->owner->id,
-        ]);
-
-        $this->actingAs($this->owner)->deleteJson("/api/events/{$event->id}")->assertOk();
-        $this->assertDatabaseMissing("events", ["id" => $event->id]);
+        $this->actingAs($this->owner)->deleteJson("/api/events/{$this->event->id}")->assertOk();
+        $this->assertDatabaseMissing("events", ["id" => $this->event->id]);
 
         $event = Event::factory()->create([
             "owner_type" => get_class($this->owner),
@@ -105,11 +98,6 @@ class EventControllerTest extends TestCase
 
     public function testAdminCanUpdateAnyEvent(): void
     {
-        $event = Event::factory()->create([
-            "owner_type" => get_class($this->owner),
-            "owner_id" => $this->owner->id,
-        ]);
-
         $payload = [
             "title" => "Admin Updated",
             "description" => "Changed",
@@ -120,19 +108,14 @@ class EventControllerTest extends TestCase
             "status" => "draft",
         ];
 
-        $this->actingAs($this->admin)->putJson("/api/events/{$event->id}", $payload)->assertOk();
-        $this->assertDatabaseHas("events", ["id" => $event->id, "title" => "Admin Updated"]);
+        $this->actingAs($this->admin)->putJson("/api/events/{$this->event->id}", $payload)->assertOk();
+        $this->assertDatabaseHas("events", ["id" => $this->event->id, "title" => "Admin Updated"]);
     }
 
     public function testSuperadminCanDeleteAnyEvent(): void
     {
-        $event = Event::factory()->create([
-            "owner_type" => get_class($this->owner),
-            "owner_id" => $this->owner->id,
-        ]);
-
-        $this->actingAs($this->superadmin)->deleteJson("/api/events/{$event->id}")->assertOk();
-        $this->assertDatabaseMissing("events", ["id" => $event->id]);
+        $this->actingAs($this->superadmin)->deleteJson("/api/events/{$this->event->id}")->assertOk();
+        $this->assertDatabaseMissing("events", ["id" => $this->event->id]);
     }
 
     public function testGuestCannotCreateEvent(): void
@@ -179,5 +162,130 @@ class EventControllerTest extends TestCase
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors(["start_time"]);
+    }
+
+    public function testUserCannotCreateSecondPublishedOrOngoingEvent(): void
+    {
+        $this->actingAs($this->user);
+
+        Event::factory()->create([
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
+            "status" => "published",
+        ]);
+
+        $payload = Event::factory()->make([
+            "status" => "ongoing",
+            "start_time" => now()->addHour(),
+            "end_time" => now()->addHours(2),
+        ])->toArray();
+
+        $payload["start_time"] = now()->addHour()->toISOString();
+        $payload["end_time"] = now()->addHours(2)->toISOString();
+
+        $response = $this->postJson("/api/events", $payload);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(["status"]);
+    }
+
+    public function testUserCanCreateDraftOrEndedEvenIfTheyHavePublishedEvent(): void
+    {
+        $this->actingAs($this->user);
+
+        Event::factory()->create([
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
+            "status" => "published",
+        ]);
+
+        foreach (["draft", "ended"] as $status) {
+            $payload = Event::factory()->make([
+                "status" => $status,
+                "start_time" => now()->addDay(),
+                "end_time" => now()->addDays(2),
+            ])->toArray();
+
+            $payload["start_time"] = now()->addDay()->toISOString();
+            $payload["end_time"] = now()->addDays(2)->toISOString();
+
+            $response = $this->postJson("/api/events", $payload);
+
+            $response->assertCreated();
+        }
+    }
+
+    public function testUserCanUpdateWithoutChangingStatusEvenIfActiveEventExists(): void
+    {
+        $this->actingAs($this->user);
+
+        Event::factory()->create([
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
+            "status" => "published",
+        ]);
+
+        $eventToUpdate = Event::factory()->create([
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
+            "status" => "draft",
+        ]);
+
+        $response = $this->putJson("/api/events/{$eventToUpdate->id}", [
+            "title" => "Updated Title",
+        ]);
+
+        $response->assertOk();
+    }
+
+    public function testUserCanChangeStatusToDraftOrEndedEvenIfAnotherActiveEventExists(): void
+    {
+        $this->actingAs($this->user);
+
+        Event::factory()->create([
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
+            "status" => "published",
+        ]);
+
+        $eventToUpdate = Event::factory()->create([
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
+            "status" => "draft",
+        ]);
+
+        foreach (["draft", "ended"] as $newStatus) {
+            $response = $this->putJson("/api/events/{$eventToUpdate->id}", [
+                "status" => $newStatus,
+            ]);
+
+            $response->assertOk();
+        }
+    }
+
+    public function testUserCannotChangeEventToPublishedOrOngoingIfAnotherActiveEventExists(): void
+    {
+        $this->actingAs($this->user);
+
+        Event::factory()->create([
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
+            "status" => "published",
+        ]);
+
+        $eventToUpdate = Event::factory()->create([
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
+            "status" => "draft",
+        ]);
+
+        foreach (["published", "ongoing"] as $newStatus) {
+            $response = $this->putJson("/api/events/{$eventToUpdate->id}", [
+                "status" => $newStatus,
+            ]);
+
+            $response->assertUnprocessable();
+            $response->assertJsonValidationErrors(["status"]);
+        }
     }
 }
