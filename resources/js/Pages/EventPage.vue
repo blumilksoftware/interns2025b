@@ -6,6 +6,8 @@ import Map from '@/Components/Map.vue'
 import Navbar from '@/Components/Navbar.vue'
 import api from '@/services/api'
 import { onMounted, ref } from 'vue'
+import { formatDate, formatTime } from '@/utilities/formatDate'
+import type { RawEvent, EventData } from '@/types/events'
 
 import {
   ArrowRightCircleIcon,
@@ -18,39 +20,6 @@ import {
   UserIcon,
 } from '@heroicons/vue/24/outline'
 
-interface RawEvent {
-  id: number
-  title: string
-  description: string | null
-  start: string | null
-  end: string | null
-  location: string | null
-  address: string | null
-  latitude: number | null
-  longitude: number | null
-  is_paid: boolean
-  price: number | null
-  status: string
-  image_url: string | null
-  age_category: string | null
-  owner: { name: string, role: string }
-  participants: unknown[]
-}
-
-interface EventData {
-  bannerSrc: string
-  eventDate: string
-  title: string
-  venueName: string
-  venueAddress: string
-  isPaid: boolean
-  description: string
-  organizer: {
-    name: string
-    role: string
-  }
-  participants: number
-}
 const rawEvent = ref<RawEvent | null>(null)
 const event = ref<EventData | null>(null)
 const loading = ref(true)
@@ -58,7 +27,8 @@ const loading = ref(true)
 function Event(raw: RawEvent): EventData {
   return {
     bannerSrc: raw.image_url ?? 'https://picsum.photos/100/100',
-    eventDate: raw.start ? raw.start.split('T')[0] : '',
+    eventDate: formatDate(raw.start),
+    eventTime: formatTime(raw.start),
     title: raw.title,
     venueName: raw.location ?? '',
     venueAddress: raw.address ?? '',
@@ -115,10 +85,13 @@ onMounted(async () => {
         <div class="sm:w-11/12 w-full space-y-2">
           <div class="flex max-sm:hidden justify-between items-center w-full text-center">
             <h2 class="text-2xl text-brand-light font-semibold">
-              {{ event.eventDate }}
+              {{ event.eventDate }} - {{ event.eventTime }}
             </h2>
             <p v-if="event.isPaid" class="bg-[#0A84FF33] px-8 py-2 rounded-2xl font-semibold text-blue-600">
               Płatny
+            </p>
+            <p v-else class="bg-green-100 px-8 py-2 rounded-2xl font-semibold text-green-600">
+              Darmowy
             </p>
           </div>
 
@@ -127,7 +100,9 @@ onMounted(async () => {
           <div class="flex max-sm:hidden max-xl:flex-col sm:justify-between items-start">
             <div>
               <h3 class="text-2xl font-medium">{{ event.venueName }}</h3>
-              <h4 class="text-lg text-gray-400 font-normal">Brak ograniczenia wiekowego</h4>
+              <h4 class="text-lg text-gray-400 font-normal">
+                {{ rawEvent?.age_category ?? 'Brak ograniczenia wiekowego' }}
+              </h4>
             </div>
 
             <div>
@@ -175,7 +150,7 @@ onMounted(async () => {
           <div class="flex w-full flex-col rounded-lg shadow-lg bg-white lg:py-16 p-8 lg:px-32 md:w-4/6 max-w-full">
             <div class="flex flex-col gap-y-8 w-full">
               <InfoBlock :icon="UsersIcon" :title="`${event.participants} osób weźmie udział`" class="max-sm:hidden" />
-              <InfoBlock :icon="CalendarIcon" :title="event.eventDate" line2="Godzina 12:00" />
+              <InfoBlock :icon="CalendarIcon" :title="event.eventDate" :line2="event.eventTime" />
               <InfoBlock :title="event.venueName" :line2="event.venueAddress" />
 
               <div class="w-full flex flex-col min-[467px]:flex-row justify-between gap-4">

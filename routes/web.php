@@ -26,3 +26,5 @@ Route::post("/logout", function () {
 
     return redirect("/");
 })->middleware("auth");
+
+Route::get('/EventList', fn () => inertia('EventList'));
