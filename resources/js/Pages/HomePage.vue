@@ -110,7 +110,7 @@ import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
           href="/register"
           class="bg-white font-normal rounded-full text-black shadow-shadow-blue hover:scale-105 shadow-sm py-3 px-8"
         >
-          zarejestruj się
+          Zarejestruj się
         </InertiaLink>
         <div class="lg:w-5/6 lg:flex lg:justify-between text-gray-500">
           <div class="order-1 lg:order-2 max-lg:mb-1">
