@@ -1,24 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { usePage } from '@inertiajs/vue3'
+import { useUser } from '@/composables/useUser'
 import { useLogout } from '@/composables/useLogOut'
 
-interface User {
-  id: number
-  name: string
-  email: string
-}
-
-interface PageProps {
-  auth: {
-    user: User | null
-  }
-  [key: string]: any
-}
-
-const page = usePage<PageProps>()
-const user = computed(() => page.props.auth.user)
-
+const { isLoggedIn } = useUser()
 const { logout } = useLogout()
 </script>
 
@@ -27,7 +11,7 @@ const { logout } = useLogout()
     <div
       class="flex font-medium items-center md:justify-end justify-between gap-y-5 pt-10 sm:gap-x-10 mx-5 mb-10"
     >
-      <template v-if="!user">
+      <template v-if="!isLoggedIn">
         <InertiaLink href="/login" class="hover:underline">
           Zaloguj się
         </InertiaLink>
@@ -63,3 +47,4 @@ const { logout } = useLogout()
     </div>
   </div>
 </template>
+
