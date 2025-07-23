@@ -9,36 +9,28 @@ use Interns2025b\Http\Requests\StoreEventRequest;
 use Interns2025b\Http\Requests\UpdateEventRequest;
 use Interns2025b\Http\Resources\EventResource;
 use Interns2025b\Models\Event;
+use Interns2025b\Models\Organization;
 use Symfony\Component\HttpFoundation\Response as Status;
 
-class EventController extends Controller
+class OrganizationEventController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Organization $organization): JsonResponse
     {
-        $perPage = request()->integer("per_page", 10);
-        $paginated = Event::with("owner")->paginate($perPage);
-
-        return EventResource::collection($paginated)->response();
-    }
-
-    public function show(Event $event): JsonResponse
-    {
-        $event->load("owner");
+        $events = $organization->ownedEvents()->with("owner")->get();
 
         return response()->json([
-            "data" => new EventResource($event),
+            "data" => EventResource::collection($events),
         ]);
     }
 
-    public function store(StoreEventRequest $request): JsonResponse
+    public function store(StoreEventRequest $request, Organization $organization): JsonResponse
     {
-        $user = $request->user();
+        $this->authorize("create", [Event::class, $organization]);
 
-        $data = $request->validated();
-        $data["owner_type"] = get_class($user);
-        $data["owner_id"] = $user->id;
-
-        $event = Event::create($data);
+        $event = $organization->ownedEvents()->create($request->validated() + [
+            "owner_type" => Organization::class,
+            "owner_id" => $organization->id,
+        ]);
 
         return response()->json([
             "message" => __("events.created"),
@@ -46,13 +38,12 @@ class EventController extends Controller
         ], Status::HTTP_CREATED);
     }
 
-    public function update(UpdateEventRequest $request, Event $event): JsonResponse
+    public function update(UpdateEventRequest $request, Organization $organization, Event $event): JsonResponse
     {
         $this->authorize("update", $event);
 
-        $data = $request->validated();
+        $event->update($request->validated());
 
-        $event->update($data);
         $event->loadOwnerRelations();
 
         return response()->json([
@@ -61,14 +52,14 @@ class EventController extends Controller
         ]);
     }
 
-    public function destroy(Event $event): JsonResponse
+    public function destroy(Organization $organization, Event $event): JsonResponse
     {
         $this->authorize("delete", $event);
 
         $event->delete();
 
         return response()->json([
-            "message" => __("events.deleted"),
+            "message" => __("events.deleted_from_organization"),
         ]);
     }
 }

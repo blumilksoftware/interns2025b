@@ -25,7 +25,7 @@ const {
     remember: false,
   },
   {
-    endpoint: 'api/auth/login',
+    endpoint: '/api/auth/login',
     onSuccess: (response) => {
       sessionStorage.setItem('token', response.data.token)
       router.visit('/profile', {

@@ -30,7 +30,7 @@ class UserDeletionTest extends TestCase
 
         $url = "/api/confirm-delete/{$user->id}?signature=invalid";
 
-        $this->getJson($url)->assertStatus(403);
+        $this->deleteJson($url)->assertStatus(403);
         $this->assertDatabaseHas("users", ["id" => $user->id]);
     }
 }

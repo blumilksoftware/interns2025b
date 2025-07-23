@@ -8,15 +8,17 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 use Interns2025b\DTO\RegisterUserDto;
 
-class RegisterRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
             "first_name" => ["required", "string", "max:225"],
             "last_name" => ["nullable", "string", "max:225"],
-            "email" => ["required", "email", "max:225"],
+            "email" => ["required", "string", "email", "max:225", "unique:users,email"],
             "password" => ["required", "confirmed", Password::min(8)],
+            "organization_ids" => ["array", "nullable"],
+            "organization_ids.*" => ["exists:organizations,id"],
         ];
     }
 

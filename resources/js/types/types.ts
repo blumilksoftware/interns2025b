@@ -6,9 +6,8 @@ export interface LoginForm {
 
 export interface User {
   id: number
-  name:string
-  email:string
-  passowrd:string
+  name: string
+  email: string
 }
 
 export interface LoginResponse {

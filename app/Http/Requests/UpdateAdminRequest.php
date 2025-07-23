@@ -8,22 +8,17 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Interns2025b\DTO\UpdateUserDto;
 
-class UpdateUserRequest extends FormRequest
+class UpdateAdminRequest extends FormRequest
 {
     public function rules(): array
     {
+        $adminId = $this->route("admin")?->id;
+
         return [
             "first_name" => ["sometimes", "string", "max:225"],
             "last_name" => ["nullable", "string", "max:225"],
             "avatar_url" => ["nullable", "url", "max:2048"],
-            "email" => [
-                "sometimes",
-                "email",
-                "max:225",
-                Rule::unique("users", "email")->ignore($this->route("user")?->id),
-            ],
-            "organization_ids" => ["nullable", "array"],
-            "organization_ids.*" => ["exists:organizations,id"],
+            "email" => ["sometimes", "email", "max:225", Rule::unique("users", "email")->ignore($adminId)],
         ];
     }
 
@@ -34,7 +29,6 @@ class UpdateUserRequest extends FormRequest
             $this->input("last_name"),
             $this->input("avatar_url"),
             $this->input("email"),
-            $this->input("organization_ids"),
         );
     }
 }
