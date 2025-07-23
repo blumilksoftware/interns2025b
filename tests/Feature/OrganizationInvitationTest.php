@@ -168,10 +168,9 @@ class OrganizationInvitationTest extends TestCase
     {
         $this->actingAs($this->owner);
 
-        $response1 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
-        $response1->assertOk();
+        ])->assertOk();
 
         $response2 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
