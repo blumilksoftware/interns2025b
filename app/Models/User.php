@@ -103,6 +103,22 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         );
     }
 
+    public function badge()
+    {
+        return $this->belongsTo(Badge::class);
+    }
+
+    public function eventLimit(): int
+    {
+        if (!$this->relationLoaded("badge")) {
+            $this->load("badge");
+        }
+
+        $bonus = $this->badge?->type->eventLimitBonus() ?? 0;
+
+        return 1 + $bonus;
+    }
+
     protected function casts(): array
     {
         return [

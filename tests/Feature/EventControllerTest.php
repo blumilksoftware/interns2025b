@@ -20,7 +20,6 @@ class EventControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->user = User::factory()->create();
         $this->owner = User::factory()->create();
         $this->otherUser = User::factory()->create();
@@ -287,5 +286,124 @@ class EventControllerTest extends TestCase
             $response->assertUnprocessable();
             $response->assertJsonValidationErrors(["status"]);
         }
+    }
+
+    public function testUserWithBadgeCanCreateMultiplePublishedEvents(): void
+    {
+        $user = User::factory()->urbanLegend()->create();
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "published",
+        ]);
+
+        $payload = Event::factory()->make([
+            "status" => "published",
+            "start_time" => now()->addHours(2),
+            "end_time" => now()->addHours(5),
+        ])->toArray();
+
+        $payload["start_time"] = now()->addHours(2)->toISOString();
+        $payload["end_time"] = now()->addHours(5)->toISOString();
+
+        $this->postJson("/api/events", $payload)->assertCreated();
+    }
+
+    public function testUserWithBadgeCanCreateMultipleOngoingEvents(): void
+    {
+        $user = User::factory()->urbanLegend()->create();
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "ongoing",
+        ]);
+
+        $payload = Event::factory()->make([
+            "status" => "ongoing",
+            "start_time" => now()->addMinutes(10),
+            "end_time" => now()->addHours(1),
+        ])->toArray();
+
+        $payload["start_time"] = now()->addMinutes(10)->toISOString();
+        $payload["end_time"] = now()->addHours(1)->toISOString();
+
+        $this->postJson("/api/events", $payload)->assertCreated();
+    }
+
+    public function testUserWithoutBadgeCannotCreateMultiplePublishedEvents(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "published",
+        ]);
+
+        $payload = Event::factory()->make([
+            "status" => "published",
+            "start_time" => now()->addDay(),
+            "end_time" => now()->addDays(2),
+        ])->toArray();
+
+        $payload["start_time"] = now()->addDay()->toISOString();
+        $payload["end_time"] = now()->addDays(2)->toISOString();
+
+        $this->postJson("/api/events", $payload)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(["status"]);
+    }
+
+    public function testUserWithBadgeCanUpdateEventToPublishedDespiteOtherActive(): void
+    {
+        $user = User::factory()->urbanLegend()->create();
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "ongoing",
+        ]);
+
+        $event = Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "draft",
+        ]);
+
+        $response = $this->putJson("/api/events/{$event->id}", [
+            "status" => "published",
+        ]);
+
+        $response->assertOk();
+    }
+
+    public function testUserWithBadgeCanUpdateEventToOngoingDespiteOtherActive(): void
+    {
+        $user = User::factory()->urbanLegend()->create();
+        $this->actingAs($user);
+
+        Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "published",
+        ]);
+
+        $event = Event::factory()->create([
+            "owner_id" => $user->id,
+            "owner_type" => get_class($user),
+            "status" => "draft",
+        ]);
+
+        $response = $this->putJson("/api/events/{$event->id}", [
+            "status" => "ongoing",
+        ]);
+
+        $response->assertOk();
     }
 }
