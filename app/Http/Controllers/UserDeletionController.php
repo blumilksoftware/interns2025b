@@ -4,34 +4,23 @@ declare(strict_types=1);
 
 namespace Interns2025b\Http\Controllers;
 
-use Illuminate\Cache\RateLimiter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use Interns2025b\Actions\ThrottleAction;
 use Interns2025b\Mail\DeleteAccountLinkMail;
 use Interns2025b\Models\User;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 class UserDeletionController extends Controller
 {
-    private const REQUEST_COOLDOWN = 900;
-
-    public function requestDelete(Request $request): JsonResponse
+    public function requestDelete(Request $request, ThrottleAction $throttle): JsonResponse
     {
         $user = $request->user();
-        $limiter = app(RateLimiter::class);
-
         $key = "delete-request:" . $user->id;
 
-        if ($limiter->tooManyAttempts($key, 1)) {
-            return response()->json([
-                "status" => "error",
-                "message" => __("profile.throttled"),
-            ], Status::HTTP_TOO_MANY_REQUESTS);
-        }
-
-        $limiter->hit($key, self::REQUEST_COOLDOWN);
+        $throttle->handle($key, "15min", "profile.throttled");
 
         $url = URL::temporarySignedRoute(
             "api.confirmDelete",
