@@ -32,3 +32,15 @@ export interface EventData {
   }
   participants: number
 }
+
+export interface EventMarker {
+  id: number
+  title: string
+  start: string
+  latitude: number
+  longitude: number
+  image_url: string | null
+  location: string | null
+  is_paid: boolean
+  age_category: string | null
+}

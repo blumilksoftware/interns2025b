@@ -10,3 +10,12 @@
   @apply bg-[linear-gradient(90deg,#FFFFFF_0%,#B0F8F9_33%,#A1FEFF_66%,#FFFFFF_100%)]
   bg-clip-text text-transparent
 }
+
+.leaflet-popup-content-wrapper {
+  background: transparent !important;
+}
+
+.leaflet-popup-content,
+.leaflet-popup-content p {
+  margin: 0 !important;
+}

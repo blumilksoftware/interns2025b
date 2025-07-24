@@ -6,6 +6,7 @@ import { type RawEvent } from '@/types/events'
 import AppHead from '@/Components/AppHead.vue'
 import Navbar from '@/Components/Navbar.vue'
 import BaseInput from '@/Components/BaseInput.vue'
+import Map from '@/Components/Map.vue'
 
 const events = ref<RawEvent[]>([])
 const loading = ref(true)
@@ -26,7 +27,8 @@ onMounted(async () => {
   <AppHead title="Event" />
   <div class="flex flex-col">
     <navbar />
-    <BaseInput id="search" type="search" placeholder="Szukaj wydarzenia" />
+    <BaseInput id="search" type="search" />
+    <Map />
     <div class="p-6">
       <p v-if="loading" class="text-center">Ładowanie wydarzeń...</p>
 

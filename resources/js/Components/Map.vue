@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import api from '@/services/api'
-import { ref, onMounted, defineProps } from 'vue'
+import { ref, onMounted, defineProps, createApp, h } from 'vue'
 import L from 'leaflet'
-import { eventMapPopup, type EventMarker } from '@/utilities/eventMapPopup'
+import EventPopUp from '@/Components/EventPopUp.vue'
+import type { EventMarker } from '@/types/events'
 
 const INITIAL_ZOOM = 14
 const MIN_ZOOM = 1
@@ -50,8 +51,12 @@ onMounted(async () => {
       res.data.data.forEach(evt => {
         if (evt.latitude != null && evt.longitude != null) {
           const marker = L.marker([evt.latitude, evt.longitude]).addTo(map)
-          marker.bindPopup(eventMapPopup(evt), {
-            maxWidth: 300,
+          const container = document.createElement('div')
+          createApp({ render: () => h(EventPopUp, { evt }) }).mount(container)
+          marker.bindPopup(container, {
+            minWidth: 213,
+            maxWidth: 213,
+            autoPanPadding: [0, 0],
             className: 'leaflet-popup--custom',
           })
         }
