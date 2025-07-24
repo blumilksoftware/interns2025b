@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use Interns2025b\Models\Event;
 use Interns2025b\Models\User;
+use Symfony\Component\HttpFoundation\Response as Http;
 use Tests\TestCase;
 
 class EventControllerTest extends TestCase
@@ -39,7 +40,7 @@ class EventControllerTest extends TestCase
 
         $response = $this->getJson("/api/events");
 
-        $response->assertOk()->assertJsonStructure([
+        $response->assertStatus(Http::HTTP_OK)->assertJsonStructure([
             "data",
             "links" => ["first", "last", "prev", "next"],
             "meta" => ["current_page", "last_page", "per_page", "total"],
@@ -54,15 +55,15 @@ class EventControllerTest extends TestCase
 
         $response = $this->getJson("/api/events?per_page=5");
 
-        $response->assertOk();
+        $response->assertStatus(Http::HTTP_OK);
         $this->assertCount(5, $response->json("data"));
         $this->assertEquals(3, $response->json("meta.last_page"));
     }
 
     public function testShowReturnsEvent(): void
     {
-        $this->getJson("/api/events/{$this->event->id}")->assertOk();
-        $this->actingAs($this->user)->getJson("/api/events/{$this->event->id}")->assertOk();
+        $this->getJson("/api/events/{$this->event->id}")->assertStatus(Http::HTTP_OK);
+        $this->actingAs($this->user)->getJson("/api/events/{$this->event->id}")->assertStatus(Http::HTTP_OK);
     }
 
     public function testOnlyOwnerCanUpdateEvent(): void
@@ -77,14 +78,14 @@ class EventControllerTest extends TestCase
             "status" => "draft",
         ];
 
-        $this->actingAs($this->owner)->putJson("/api/events/{$this->event->id}", $payload)->assertOk();
-        $this->actingAs($this->otherUser)->putJson("/api/events/{$this->event->id}", $payload)->assertForbidden();
-        $this->putJson("/api/events/{$this->event->id}", $payload)->assertForbidden();
+        $this->actingAs($this->owner)->putJson("/api/events/{$this->event->id}", $payload)->assertStatus(Http::HTTP_OK);
+        $this->actingAs($this->otherUser)->putJson("/api/events/{$this->event->id}", $payload)->assertStatus(Http::HTTP_FORBIDDEN);
+        $this->putJson("/api/events/{$this->event->id}", $payload)->assertStatus(Http::HTTP_FORBIDDEN);
     }
 
     public function testOnlyOwnerCanDeleteEvent(): void
     {
-        $this->actingAs($this->owner)->deleteJson("/api/events/{$this->event->id}")->assertOk();
+        $this->actingAs($this->owner)->deleteJson("/api/events/{$this->event->id}")->assertStatus(Http::HTTP_OK);
         $this->assertDatabaseMissing("events", ["id" => $this->event->id]);
 
         $event = Event::factory()->create([
@@ -92,8 +93,8 @@ class EventControllerTest extends TestCase
             "owner_id" => $this->owner->id,
         ]);
 
-        $this->actingAs($this->otherUser)->deleteJson("/api/events/{$event->id}")->assertForbidden();
-        $this->deleteJson("/api/events/{$event->id}")->assertForbidden();
+        $this->actingAs($this->otherUser)->deleteJson("/api/events/{$event->id}")->assertStatus(Http::HTTP_FORBIDDEN);
+        $this->deleteJson("/api/events/{$event->id}")->assertStatus(Http::HTTP_FORBIDDEN);
     }
 
     public function testAdminCanUpdateAnyEvent(): void
@@ -108,13 +109,13 @@ class EventControllerTest extends TestCase
             "status" => "draft",
         ];
 
-        $this->actingAs($this->admin)->putJson("/api/events/{$this->event->id}", $payload)->assertOk();
+        $this->actingAs($this->admin)->putJson("/api/events/{$this->event->id}", $payload)->assertStatus(Http::HTTP_OK);
         $this->assertDatabaseHas("events", ["id" => $this->event->id, "title" => "Admin Updated"]);
     }
 
     public function testSuperadminCanDeleteAnyEvent(): void
     {
-        $this->actingAs($this->superadmin)->deleteJson("/api/events/{$this->event->id}")->assertOk();
+        $this->actingAs($this->superadmin)->deleteJson("/api/events/{$this->event->id}")->assertStatus(Http::HTTP_OK);
         $this->assertDatabaseMissing("events", ["id" => $this->event->id]);
     }
 
@@ -130,7 +131,7 @@ class EventControllerTest extends TestCase
             "status" => "published",
         ];
 
-        $this->postJson("/api/events", $payload)->assertUnauthorized();
+        $this->postJson("/api/events", $payload)->assertStatus(Http::HTTP_UNAUTHORIZED);
     }
 
     public function testInvalidPayloadFailsValidation(): void
@@ -142,7 +143,7 @@ class EventControllerTest extends TestCase
 
         $response = $this->actingAs($this->user)->postJson("/api/events", $payload);
 
-        $response->assertUnprocessable();
+        $response->assertStatus(Http::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(["title", "location", "start_time", "end_time", "is_paid", "status"]);
     }
 
@@ -160,7 +161,7 @@ class EventControllerTest extends TestCase
 
         $response = $this->actingAs($this->user)->postJson("/api/events", $payload);
 
-        $response->assertUnprocessable();
+        $response->assertStatus(Http::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(["start_time"]);
     }
 
@@ -180,7 +181,7 @@ class EventControllerTest extends TestCase
 
         $response = $this->postJson("/api/events", $payload);
 
-        $response->assertUnprocessable();
+        $response->assertStatus(Http::HTTP_UNPROCESSABLE_ENTITY);
         $response->assertJsonValidationErrors(["status"]);
     }
 
@@ -199,9 +200,7 @@ class EventControllerTest extends TestCase
             $payload["start_time"] = now()->addDay()->toISOString();
             $payload["end_time"] = now()->addDays(2)->toISOString();
 
-            $response = $this->postJson("/api/events", $payload);
-
-            $response->assertCreated();
+            $this->postJson("/api/events", $payload)->assertStatus(Http::HTTP_CREATED);
         }
     }
 
@@ -220,7 +219,7 @@ class EventControllerTest extends TestCase
             "title" => "Updated Title",
         ]);
 
-        $response->assertOk();
+        $response->assertStatus(Http::HTTP_OK);
     }
 
     public function testUserCanChangeStatusToDraftOrEndedEvenIfAnotherActiveEventExists(): void
@@ -239,7 +238,7 @@ class EventControllerTest extends TestCase
                 "status" => $newStatus,
             ]);
 
-            $response->assertOk();
+            $response->assertStatus(Http::HTTP_OK);
         }
     }
 
@@ -259,7 +258,7 @@ class EventControllerTest extends TestCase
                 "status" => $newStatus,
             ]);
 
-            $response->assertUnprocessable();
+            $response->assertStatus(Http::HTTP_UNPROCESSABLE_ENTITY);
             $response->assertJsonValidationErrors(["status"]);
         }
     }
