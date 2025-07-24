@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { Link as InertiaLink } from '@inertiajs/vue3'
+import { Link as InertiaLink, usePage } from '@inertiajs/vue3'
 import Navbar from '@/Components/Navbar.vue'
 import Map from '@/Components/Map.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
 import Socials from '@/Components/Socials.vue'
 import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
-import { useUser } from '@/composables/useUser'
+import type { AuthProps } from '@/types/types'
+import { computed } from 'vue'
 
-const { user } = useUser()
+const page = usePage()
+const authProps = computed(() => (page.props as unknown) as AuthProps)
+const isLoggedIn = computed(() => !!authProps.value.auth.user)
 </script>
 
 <template>
@@ -120,7 +123,7 @@ const { user } = useUser()
           </inertia-link>
         </div>
         <InertiaLink
-          v-if="!user"
+          v-if="!isLoggedIn"
           href="/register"
           class="bg-white font-normal rounded-full text-black shadow-shadow-blue hover:scale-105 shadow-sm py-3 px-8"
         >

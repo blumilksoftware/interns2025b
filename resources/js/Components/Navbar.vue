@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { useUser } from '@/composables/useUser'
-import { useLogout } from '@/composables/useLogOut'
+import { Link as InertiaLink, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
+import { useLogout } from '@/composables/useLogout'
+import { type AuthProps } from '@/types/types'
 
-const { isLoggedIn } = useUser()
+const page = usePage()
+
+const authProps = computed(() => (page.props as unknown) as AuthProps)
+const isLoggedIn = computed(() => !!authProps.value.auth.user)
+
 const { logout } = useLogout()
 </script>
 
@@ -32,7 +38,7 @@ const { logout } = useLogout()
         </InertiaLink>
         <button
           class="bg-black text-white rounded-full shadow-shadow-blue hover:scale-105 shadow-sm py-2 px-8"
-          @click="logout"
+          @click.prevent="logout"
         >
           Wyloguj się
         </button>
@@ -47,4 +53,3 @@ const { logout } = useLogout()
     </div>
   </div>
 </template>
-

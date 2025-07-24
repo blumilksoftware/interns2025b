@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, useSlots } from 'vue'
-import { onBeforeMount } from 'vue'
+import { ref, computed, useSlots, onBeforeMount } from 'vue'
 
 onBeforeMount(() => {
   if (props.type === 'date' && !model.value) {

@@ -1,6 +1,3 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <div
     class="flex justify-center items-center order-2 max-sm:order-1 gap-x-4 max-sm:mb-6 max-sm:gap-x-6 max-sm:[&>*]:size-10 [&>*]:size-[14px] gray-400"
