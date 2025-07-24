@@ -16,4 +16,5 @@ return [
     "invitation_unauthorized" => "Unauthorized.",
     "invitation_accepted" => "You have joined the organization.",
     "invitation_body" => 'You have been invited to join the organization ":organization". Click the link below to accept the invitation and join on :app.',
+    "invitation_throttled" => "Too many invitations sent to this user. Please try again later.",
 ];
