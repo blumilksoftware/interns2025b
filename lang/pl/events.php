@@ -22,4 +22,5 @@ return [
     "unauthorized" => "Nie masz uprawnień do wykonania tej akcji na wydarzeniu.",
     "deleted_from_organization" => "Wydarzenie zostało usunięte z organizacji.",
     "not_member" => "Nie jesteś członkiem tej organizacji.",
+    "limit_reached" => "Możesz mieć tylko jedno opublikowane lub trwające wydarzenie.",
 ];

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Interns2025b\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Interns2025b\Enums\EventStatus;
+use Interns2025b\Enums\Role;
 
 class StoreEventRequest extends FormRequest
 {
@@ -27,5 +29,25 @@ class StoreEventRequest extends FormRequest
             "image_url" => ["nullable", "string", "url"],
             "age_category" => ["nullable", "string"],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $user = $this->user();
+            $status = $this->input("status");
+
+            if ($user->hasRole(Role::User->value) &&
+                in_array($status, [EventStatus::Published->value, EventStatus::Ongoing->value], true)
+            ) {
+                $hasActiveEvent = $user->ownedEvents()
+                    ->whereIn("status", [EventStatus::Published->value, EventStatus::Ongoing->value])
+                    ->exists();
+
+                if ($hasActiveEvent) {
+                    $validator->errors()->add("status", __("events.limit_reached"));
+                }
+            }
+        });
     }
 }
