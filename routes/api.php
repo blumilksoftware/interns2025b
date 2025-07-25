@@ -17,6 +17,7 @@ use Interns2025b\Http\Controllers\OrganizationController;
 use Interns2025b\Http\Controllers\OrganizationEventController;
 use Interns2025b\Http\Controllers\OrganizationInvitationController;
 use Interns2025b\Http\Controllers\RegisterController;
+use Interns2025b\Http\Controllers\ReportController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 use Interns2025b\Http\Controllers\UpdatePasswordController;
 use Interns2025b\Http\Controllers\UserDeletionController;
@@ -48,7 +49,7 @@ Route::middleware("auth:sanctum")->group(function (): void {
         Route::delete("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
     });
 });
-
+Route::middleware("auth:sanctum")->post("/reports", [ReportController::class, "store"]);
 Route::get("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
     ->middleware("signed")
     ->name("api.confirmDelete");
