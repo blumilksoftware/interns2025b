@@ -17,6 +17,7 @@ class UpdateAdminRequest extends FormRequest
         return [
             "first_name" => ["sometimes", "string", "max:225"],
             "last_name" => ["nullable", "string", "max:225"],
+            "avatar_url" => ["nullable", "url", "max:2048"],
             "email" => ["sometimes", "email", "max:225", Rule::unique("users", "email")->ignore($adminId)],
         ];
     }
@@ -26,6 +27,7 @@ class UpdateAdminRequest extends FormRequest
         return new UpdateUserDto(
             $this->input("first_name"),
             $this->input("last_name"),
+            $this->input("avatar_url"),
             $this->input("email"),
         );
     }

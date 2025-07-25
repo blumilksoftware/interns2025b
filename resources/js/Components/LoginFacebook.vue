@@ -6,7 +6,7 @@ async function handleFacebookLogin() {
   try {
     const response = await axios.get('/api/auth/facebook/redirect')
     if (response.data.url) {
-      localStorage.setItem('loginRedirectUrl', window.location.href)
+      sessionStorage.setItem('loginRedirectUrl', window.location.href)
       window.location.href = response.data.url
     }
   } catch (error: any) {

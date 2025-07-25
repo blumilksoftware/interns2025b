@@ -15,6 +15,7 @@ class UserDetailResource extends JsonResource
             "id" => $this->id,
             "first_name" => $this->first_name,
             "last_name" => $this->last_name,
+            "avatar_url" => $this->avatar_url,
             "email" => $this->email,
             "events" => EventResource::collection($this->whenLoaded("ownedEvents")),
             "events_count" => $this->owned_events_count,

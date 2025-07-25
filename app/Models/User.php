@@ -22,6 +22,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $id
  * @property string $first_name
  * @property ?string $last_name
+ * @property ?string $avatar_url
  * @property string $email
  * @property ?string $full_name
  * @property ?string $password
@@ -40,6 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
     protected $fillable = [
         "first_name",
         "last_name",
+        "avatar_url",
         "email",
         "password",
         "facebook_id",

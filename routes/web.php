@@ -12,6 +12,10 @@ Route::get("/login", fn() => Inertia::render("Auth/LoginPage"))->name("login");
 Route::get("/register", fn(): Response => inertia("Auth/RegisterPage"));
 Route::get("/forgot-password", fn(): Response => inertia("Auth/ForgotPasswordPage"));
 
-Route::get("/event", fn(): Response => inertia("EventPage"));
+Route::get("/event/{id}", fn(int $id): Response => inertia("EventPage", [
+    "eventId" => $id,
+]));
 
 Route::middleware(["auth:sanctum"])->get("/profile", fn() => Inertia::render("ProfilePage"))->name("profile");
+
+Route::get("/EventList", fn() => inertia("EventList"));
