@@ -8,29 +8,27 @@ export interface RawEvent {
   address: string | null
   latitude: number | null
   longitude: number | null
-  is_paid: boolean
-  price: number | null
-  status: string
   image_url: string | null
+  is_paid: boolean
+  price: number
+  status: string
   age_category: string | null
-  owner: { name: string, role: string }
   participants: unknown[]
-}
 
-export interface EventData {
-  bannerSrc: string
-  eventDate: string
-  eventTime: string
-  title: string
-  venueName: string
-  venueAddress: string
-  isPaid: boolean
-  description: string
-  organizer: {
-    name: string
-    role: string
-  }
-  participants: number
+  owner_type: string
+  owner_id: number
+  owner: {
+    id: number | null
+    first_name?: string | null
+    last_name?: string | null
+    name?: string
+    avatar_url?: string
+    group_url?: string
+    users?: any[]
+  } | null
+
+  created_at: string
+  updated_at: string
 }
 
 export interface EventMarker {

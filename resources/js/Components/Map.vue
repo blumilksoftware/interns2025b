@@ -54,8 +54,8 @@ onMounted(async () => {
           const container = document.createElement('div')
           createApp({ render: () => h(EventPopUp, { evt }) }).mount(container)
           marker.bindPopup(container, {
-            minWidth: 213,
-            maxWidth: 213,
+            minWidth: 250,
+            maxWidth: 250,
             autoPanPadding: [0, 0],
             className: 'leaflet-popup--custom',
           })

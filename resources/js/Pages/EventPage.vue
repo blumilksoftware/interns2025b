@@ -4,11 +4,8 @@ import BaseButton from '@/Components/BaseButton.vue'
 import InfoBlock from '@/Components/InfoBlock.vue'
 import Map from '@/Components/Map.vue'
 import Navbar from '@/Components/Navbar.vue'
-import api from '@/services/api'
-import { onMounted, ref } from 'vue'
-import { formatDate, formatTime } from '@/utilities/formatDate'
-import type { RawEvent, EventData } from '@/types/events'
-
+import type { RawEvent } from '@/types/events'
+import { formatDate, formatTime, formatDay } from '@/utilities/formatDate'
 import {
   ArrowRightCircleIcon,
   CheckCircleIcon,
@@ -19,39 +16,49 @@ import {
   UsersIcon,
   UserIcon,
 } from '@heroicons/vue/24/outline'
-
-const rawEvent = ref<RawEvent | null>(null)
-const event = ref<EventData | null>(null)
-const loading = ref(true)
-
-function Event(raw: RawEvent): EventData {
-  return {
-    bannerSrc: raw.image_url ?? 'https://picsum.photos/100/100',
-    eventDate: formatDate(raw.start),
-    eventTime: formatTime(raw.start),
-    title: raw.title,
-    venueName: raw.location ?? '',
-    venueAddress: raw.address ?? '',
-    isPaid: raw.is_paid,
-    description: raw.description ?? '',
-    organizer: {
-      name: raw.owner?.name ?? '',
-      role: raw.owner?.role ?? '',
-    },
-    participants: Array.isArray(raw.participants)
-      ? raw.participants.length
-      : 0,
-  }
-}
+import api from '@/services/api'
+import { computed, onMounted, ref } from 'vue'
 
 const props = defineProps<{ eventId: number }>()
 
+const rawEvent = ref<RawEvent | null>(null)
+const loading = ref(true)
+
+const event = computed(() => {
+  if (!rawEvent.value) return null
+  const r = rawEvent.value
+
+  let name = 'Nieznany organizator'
+  let role = ''
+
+  if (r.owner_type?.includes('Models\\User') && r.owner) {
+    name = r.owner.first_name ?? 'Nieznany'
+    if (r.owner.last_name) name += ' ' + r.owner.last_name
+    role = 'Użytkownik'
+  } else if (r.owner_type?.includes('Models\\Organization') && r.owner?.name) {
+    name = r.owner.name
+    role = 'Organizacja'
+  }
+
+  return {
+    bannerSrc: r.image_url ?? 'https://picsum.photos/640/480',
+    eventDay: r.start ? formatDay(r.start) : 'Brak dnia',
+    eventDate: r.start ? formatDate(r.start) : 'Brak daty',
+    eventTime: r.start ? formatTime(r.start) : '',
+    title: r.title,
+    venueName: r.location ?? '',
+    venueAddress: r.address ?? '',
+    isPaid: r.is_paid,
+    description: r.description ?? '',
+    organizer: { name, role },
+    participants: Array.isArray(r.participants) ? r.participants.length : 0,
+  }
+})
+
 onMounted(async () => {
   try {
-    const res = await api.get(`/events/${props.eventId}`)
-    const raw = res.data.data
-    rawEvent.value = raw
-    event.value    = Event(raw)
+    const res = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
+    rawEvent.value = res.data.data
   } catch (err) {
     console.error('Błąd pobierania wydarzenia:', err)
   } finally {
@@ -81,7 +88,7 @@ onMounted(async () => {
     </div>
 
     <div class="flex flex-col items-center justify-center">
-      <div class="w-full sm:py-16 pt-16 p-8 bg-white sm:shadow-lg sm:border sm:border-gray-300 flex justify-center items-center">
+      <div class="w-full py-16 p-8 max-sm:pb-2 max-sm:pt-8 bg-white sm:shadow-lg sm:border sm:border-gray-300 flex justify-center items-center">
         <div class="sm:w-11/12 w-full space-y-2">
           <div class="flex max-sm:hidden justify-between items-center w-full text-center">
             <h2 class="text-2xl text-brand-light font-semibold">
@@ -95,7 +102,7 @@ onMounted(async () => {
             </p>
           </div>
 
-          <h1 class="text-5xl font-bold">{{ event.title }}</h1>
+          <h1 class="sm:text-5xl text-3xl font-bold">{{ event.title }}</h1>
 
           <div class="flex max-sm:hidden max-xl:flex-col sm:justify-between items-start">
             <div>
@@ -146,27 +153,27 @@ onMounted(async () => {
       </div>
 
       <div class="flex sm:w-11/12 sm:mt-6">
-        <div class="flex w-full max-md:flex-col md:space-x-6 max-md:space-y-6">
-          <div class="flex w-full flex-col rounded-lg shadow-lg bg-white lg:py-16 p-8 lg:px-32 md:w-4/6 max-w-full">
-            <div class="flex flex-col gap-y-8 w-full">
+        <div class="flex w-full max-lg:flex-col lg:space-x-6 max-lg:space-y-6">
+          <div class="flex w-full flex-col rounded-lg shadow-lg bg-white lg:py-16 p-8 max-sm:pt-2 lg:px-32 lg:w-4/6 max-w-full">
+            <div class="flex flex-col sm:gap-y-8 gap-y-3 w-full">
               <InfoBlock :icon="UsersIcon" :title="`${event.participants} osób weźmie udział`" class="max-sm:hidden" />
-              <InfoBlock :icon="CalendarIcon" :title="event.eventDate" :line2="event.eventTime" />
+              <InfoBlock :icon="CalendarIcon" :title="event.eventDate" :line2="`${event?.eventDay} ${event?.eventTime}`" />
               <InfoBlock :title="event.venueName" :line2="event.venueAddress" />
 
-              <div class="w-full flex flex-col min-[467px]:flex-row justify-between gap-4">
+              <div class="w-full flex justify-between gap-4">
                 <InfoBlock :icon="UserIcon" :title="event.organizer.name" :line1="event.organizer.role" />
-                <div class="flex items-center justify-start sm:justify-end">
-                  <button class="bg-brand/10 text-brand px-3 py-1 rounded-xl">Obserwuj</button>
+                <div class="flex items-center justify-end">
+                  <button class="bg-brand/10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl">Obserwuj</button>
                 </div>
               </div>
 
-              <h1 class="font-medium text-3xl text-[#120D26]">Informacje</h1>
-              <p class="font-normal text-xl text-[#120D26]">{{ event.description }}</p>
+              <h1 class="font-medium sm:text-3xl text-xl text-[#120D26]">Informacje</h1>
+              <p class="font-normal sm:text-xl text-sm text-[#120D26]">{{ event.description }}</p>
             </div>
           </div>
 
-          <div class="flex flex-col space-y-6 md:w-2/6 justify-start">
-            <div class="sm:hidden fixed bottom-0 left-0 w-full z-[1001] bg-white p-4 shadow-t">
+          <div class="flex flex-col space-y-6 lg:w-2/6 justify-start">
+            <div v-if="event.isPaid" class="sm:hidden fixed bottom-0 left-0 w-full z-[1001] bg-white p-4 shadow-t">
               <base-button class="w-full text-base h-16 p-[15px] bg-brand-dark text-white rounded-2xl">
                 <span class="inline-flex font-semibold items-center justify-center space-x-2">
                   <span>KUP BILET</span>
@@ -175,7 +182,7 @@ onMounted(async () => {
               </base-button>
             </div>
 
-            <div class="max-sm:hidden w-full rounded-lg shadow-lg !mt-0 bg-white lg:py-11 lg:px-16 p-8 lg:space-y-8 space-y-4">
+            <div v-if="event.isPaid" class="max-sm:hidden w-full rounded-lg shadow-lg !mt-0 bg-white lg:py-11 lg:px-16 p-8 lg:space-y-8 space-y-4">
               <p class="text-2xl font-medium">Bilety</p>
               <div class="text-center">
                 <base-button class="w-full mb-1 text-base p-[15px] bg-brand-dark text-white rounded-2xl">
@@ -196,8 +203,8 @@ onMounted(async () => {
                 />
               </div>
               <div class="content-center">
-                <p class="font-medium text-3xl">{{ event.venueName }}</p>
-                <p class="font-normal text-gray-400 text-xl">{{ event.venueAddress }}</p>
+                <p class="font-medium sm:text-xl text-sm">{{ event.venueName }}</p>
+                <p class="font-normal text-gray-400 sm:text-xl text-sm">{{ event.venueAddress }}</p>
               </div>
             </div>
           </div>

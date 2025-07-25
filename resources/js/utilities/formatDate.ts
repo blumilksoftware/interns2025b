@@ -1,10 +1,13 @@
-export function formatDate(
+export function formatFullDateTime(
   dateString: string | null | undefined,
   locale = 'pl-PL',
   options: Intl.DateTimeFormatOptions = {
-    year:  'numeric',
-    month: 'short',
-    day:   'numeric',
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   },
 ): string {
   if (!dateString) return 'Brak daty'
@@ -13,17 +16,21 @@ export function formatDate(
   return new Intl.DateTimeFormat(locale, options).format(date)
 }
 
-export function formatTime(
-  dateString: string | null | undefined,
-  locale = 'pl-PL',
-  options: Intl.DateTimeFormatOptions = {
-    hour:   '2-digit',
-    minute: '2-digit',
-  },
-): string {
-  if (!dateString) return 'Brak godziny'
-  const date = new Date(dateString)
-  if (isNaN(date.getTime())) return 'Brak godziny'
-  return new Intl.DateTimeFormat(locale, options).format(date)
+export function formatDay(dateString: string | null | undefined): string {
+  return formatFullDateTime(dateString, 'pl-PL', { weekday: 'long' })
 }
 
+export function formatDate(dateString: string | null | undefined): string {
+  return formatFullDateTime(dateString, 'pl-PL', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
+export function formatTime(dateString: string | null | undefined): string {
+  return formatFullDateTime(dateString, 'pl-PL', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
