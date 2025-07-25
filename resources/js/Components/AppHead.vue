@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
 
-withDefaults(defineProps<{
-  title: string
-  description?: string
-}>(), { description: 'Default description'  })
+withDefaults(
+  defineProps<{
+    title: string
+    description?: string
+  }>(),
+  { description: 'Default description' },
+)
 </script>
 
 <template>

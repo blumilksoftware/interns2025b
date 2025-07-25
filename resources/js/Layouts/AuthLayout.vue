@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <div class="w-full bg-white rounded-lg shadow-lg pb-5">
