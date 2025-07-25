@@ -7,14 +7,19 @@ namespace Interns2025b\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Interns2025b\Actions\ThrottleAction;
 use Interns2025b\Http\Requests\UpdatePasswordRequest;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 class UpdatePasswordController extends Controller
 {
-    public function updatePassword(UpdatePasswordRequest $request): JsonResponse
+    public function updatePassword(UpdatePasswordRequest $request, ThrottleAction $throttle): JsonResponse
     {
         $user = Auth::user();
+        $key = "password-update:" . $user->id;
+
+        $throttle->handle($key, "15min", "passwords.throttled");
+
         $newPassword = $request->getNewPassword();
 
         if (Hash::check($newPassword, $user->password)) {
