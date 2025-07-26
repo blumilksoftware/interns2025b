@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import api from '@/services/api'
-import { ref, onMounted, defineProps, createApp, h } from 'vue'
+import { ref, onMounted, createApp, h } from 'vue'
 import L from 'leaflet'
 import EventPopUp from '@/Components/EventPopUp.vue'
 import type { EventMarker } from '@/types/events'
@@ -48,11 +48,11 @@ onMounted(async () => {
   try {
     if (!props.disableFetch) {
       const res = await api.get<{ data: EventMarker[] }>('/events')
-      res.data.data.forEach(evt => {
-        if (evt.latitude != null && evt.longitude != null) {
-          const marker = L.marker([evt.latitude, evt.longitude]).addTo(map)
+      res.data.data.forEach(event => {
+        if (event.latitude != null && event.longitude != null) {
+          const marker = L.marker([event.latitude, event.longitude]).addTo(map)
           const container = document.createElement('div')
-          createApp({ render: () => h(EventPopUp, { evt }) }).mount(container)
+          createApp({ render: () => h(EventPopUp, { event }) }).mount(container)
           marker.bindPopup(container, {
             minWidth: 250,
             maxWidth: 250,
@@ -62,8 +62,8 @@ onMounted(async () => {
         }
       })
     }
-  } catch (err) {
-    console.error('Nie udało się pobrać wydarzeń:', err)
+  } catch (error) {
+    console.error('Nie udało się pobrać wydarzeń:', error)
   }
 })
 </script>

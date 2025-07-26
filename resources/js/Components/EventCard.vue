@@ -1,56 +1,54 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { RawEvent } from '@/types/events'
-import { formatDate } from '@/utilities/formatDate'
 
-const props = defineProps<{
-  event: RawEvent
-}>()
-
-const { event: evt } = props
-
-const bannerSrc = computed(
-  () => evt.image_url ?? 'https://picsum.photos/200/300',
+const props = withDefaults(
+  defineProps<{
+    id: number | string
+    imageUrl?: string
+    start: string
+    isPaid: boolean
+    title: string
+    location?: string
+    ageCategory?: string
+  }>(),
+  {
+    imageUrl: 'https://picsum.photos/200/300',
+    location: 'Brak lokalizacji',
+    ageCategory: 'Brak',
+  },
 )
-
-const formattedDate = computed(() => formatDate(evt.start))
-
-const isPaid = computed(() => evt.is_paid)
-const title = computed(() => evt.title)
-const venueName = computed(() => evt.location ?? 'Brak lokalizacji')
-const ageCategory= computed(() => evt.age_category)
 </script>
 
 <template>
   <InertiaLink
-    :href="`/event/${evt.id}`"
-    class="block max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+    :href="`/event/${props.id}`"
+    class="block max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition delay-100 duration-300 hover:scale-105"
   >
     <img
-      :src="bannerSrc"
+      :src="props.imageUrl"
       alt="Event Banner"
       class="w-full h-48 object-cover"
     >
 
     <div class="p-4 space-y-2">
       <div class="flex items-center justify-between">
-        <time class="text-sm text-gray-500">{{ formattedDate }}</time>
+        <div> class="text-sm text-gray-500">{{ props.start }}</div>
         <span
           class="text-xs font-semibold px-2 py-1 rounded-full"
-          :class="isPaid ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'"
+          :class="props.isPaid ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'"
         >
-          {{ isPaid ? 'Płatny' : 'Darmowy' }}
+          {{ props.isPaid ? 'Płatny' : 'Darmowy' }}
         </span>
       </div>
 
-      <h3 class="text-lg font-bold text-gray-900">{{ title }}</h3>
+      <h3 class="text-lg font-bold text-gray-900">{{ props.title }}</h3>
 
       <p class="text-sm text-gray-600 flex items-center">
-        {{ venueName }}
+        {{ props.location }}
       </p>
 
       <p class="text-sm text-gray-600">
-        Ograniczenie wiekowe: <span class="font-medium">{{ ageCategory ?? 'Brak' }}</span>
+        Ograniczenie wiekowe:
+        <span class="font-medium">{{ props.ageCategory }}</span>
       </p>
     </div>
   </InertiaLink>
