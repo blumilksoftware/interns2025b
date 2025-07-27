@@ -8,19 +8,25 @@ import BaseButton from '@/Components/BaseButton.vue'
 import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
 import { formatDate } from '@/utilities/formatDate'
 import { useEvents } from '@/composables/useEvents'
+import PaginationComponent from '@/Components/PaginationComponent.vue'
 
-const { events, search, page, meta, prevPage, nextPage } = useEvents()
+const { events, search, page, meta } = useEvents()
 </script>
 
 <template>
   <AppHead title="Wydarzenia" />
   <div class="flex items-center flex-col w-full">
     <Navbar />
+
     <div class="md:w-5/6 flex flex-col">
       <div class="md:mb-36 mb-16">
         <div class="w-full relative">
-          <img src="/images/Fade.svg" alt="" class="flex-1 absolute w-full h-[1000px] inset-0 top-[-430px] pointer-events-none">
+          <img src="/images/Fade.svg"
+               alt=""
+               class="absolute inset-0 w-full h-[1000px] top-[-430px] pointer-events-none"
+          >
         </div>
+
         <div class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl">
           <div class="flex items-center border-none justify-center mb-6 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 h-1/6 [&>*]:mb-1 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2">
             <div class="lg:w-6/12 col-span-2">
@@ -52,7 +58,7 @@ const { events, search, page, meta, prevPage, nextPage } = useEvents()
                 v-for="event in events"
                 :id="event.id"
                 :key="event.id"
-                :image-url="event.image_url"
+                :image-url="event.image_url ?? undefined"
                 :start="formatDate(event.start)"
                 :is-paid="event.is_paid"
                 :title="event.title"
@@ -60,28 +66,34 @@ const { events, search, page, meta, prevPage, nextPage } = useEvents()
                 :age-category="event.age_category"
               />
             </div>
+
+            <PaginationComponent
+              v-model:page="page"
+              :last-page="meta.last_page"
+            />
           </section>
 
           <section class="w-full max-w-4xl mx-auto mt-12 flex flex-col gap-6">
             <InfoBlock
               v-for="event in events"
               :key="event.id"
-              :icon="MapPinIcon"
+              :image-url="event.image_url"
               :title="event.title"
               :line1="event.location || 'Brak lokalizacji'"
               :line2="formatDate(event.start)"
               :line3="event.age_category || 'Brak'"
             />
-            <p v-if="events.length === 0" class="col-span-full text-center text-gray-500">
+            <p v-if="events.length === 0"
+               class="text-center text-gray-500 italic"
+            >
               Brak wydarzeń do wyświetlenia.
             </p>
-          </section>
 
-          <div v-if="meta.last_page > 1" class="flex justify-center items-center gap-4 mt-8 mb-12">
-            <button class="px-4 py-2 bg-gray-200 rounded" :disabled="page === 1" @click="prevPage">Poprzednia</button>
-            <span>Strona {{ page }} z {{ meta.last_page }}</span>
-            <button class="px-4 py-2 bg-gray-200 rounded" :disabled="page === meta.last_page" @click="nextPage">Następna</button>
-          </div>
+            <PaginationComponent
+              v-model:page="page"
+              :last-page="meta.last_page"
+            />
+          </section>
         </div>
       </div>
     </div>

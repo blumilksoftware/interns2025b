@@ -6,6 +6,11 @@ import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
 import Socials from '@/Components/Socials.vue'
 import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
+import AppHead from '@/Components/AppHead.vue'
+import { useAuth } from '@/composables/useAuth'
+
+const { isLoggedIn } = useAuth()
+
 </script>
 
 <template>
@@ -23,7 +28,11 @@ import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
     <div class="md:w-5/6 flex flex-col">
       <div class="md:mb-36 mb-16">
         <div class="w-full relative">
-          <img src="/images/Fade.svg" alt="" class="flex-1 absolute w-full h-[1000px] inset-0 top-[-430px] pointer-events-none">
+          <img
+            src="/images/Fade.svg"
+            alt=""
+            class="flex-1 absolute w-full h-[1000px] inset-0 top-[-430px] pointer-events-none"
+          >
         </div>
         <div
           class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl"
@@ -42,7 +51,9 @@ import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
                 variant="event"
               >
                 <template #append>
-                  <MapPinIcon class="size-5 text-brand-light absolute left-3 top-3.5 pointer-events-none" />
+                  <MapPinIcon
+                    class="size-5 text-brand-light absolute left-3 top-3.5 pointer-events-none"
+                  />
                 </template>
               </BaseInput>
             </div>
@@ -56,7 +67,9 @@ import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
                 variant="event"
               >
                 <template #append>
-                  <CalendarIcon class="absolute inset-0 -z-10 w-full pointer-events-none object-cover" />
+                  <CalendarIcon
+                    class="absolute inset-0 -z-10 w-full pointer-events-none object-cover"
+                  />
                 </template>
               </BaseInput>
             </div>
@@ -70,7 +83,9 @@ import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
                 variant="event"
               />
             </div>
-            <BaseButton class="!bg-zinc-800 !text-white justify-center font-bold px-10 mt-[24px] col-span-2">
+            <BaseButton
+              class="!bg-zinc-800 !text-white justify-center font-bold px-10 mt-[24px] col-span-2"
+            >
               Szukaj
             </BaseButton>
           </div>
@@ -107,10 +122,11 @@ import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
           </inertia-link>
         </div>
         <InertiaLink
+          v-if="!isLoggedIn"
           href="/register"
           class="bg-white font-normal rounded-full text-black shadow-shadow-blue hover:scale-105 shadow-sm py-3 px-8"
         >
-          zarejestruj się
+          Zarejestruj się
         </InertiaLink>
         <div class="lg:w-5/6 lg:flex lg:justify-between text-gray-500">
           <div class="order-1 lg:order-2 max-lg:mb-1">

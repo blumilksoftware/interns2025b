@@ -38,10 +38,10 @@ const props = withDefaults(
       />
     </div>
     <div class="flex flex-col">
-      <h2 class="sm:text-3xl text-sm font-bold">{{ props.title }}</h2>
-      <p v-if="props.line1" class="sm:text-sm text-xs text-gray-500">{{ props.line1 }}</p>
-      <p v-if="props.line2" class="sm:text-sm text-xs text-gray-500">{{ props.line2 }}</p>
-      <p v-if="props.line3" class="sm:text-sm text-xs text-gray-500">{{ props.line3 }}</p>
+      <h2 class="sm:text-3xl text-left text-sm font-bold">{{ props.title }}</h2>
+      <p v-if="props.line1" class="sm:text-sm text-xs text-left text-gray-500">{{ props.line1 }}</p>
+      <p v-if="props.line2" class="sm:text-sm text-xs text-left text-gray-500">{{ props.line2 }}</p>
+      <p v-if="props.line3" class="sm:text-sm text-xs text-left text-gray-500">{{ props.line3 }}</p>
     </div>
   </div>
 </template>
