@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { usePage, router } from '@inertiajs/vue3'
 import api from '@/services/api'
-
+import type { AuthProps } from '@/types/types'
 
 export function useAuth() {
   const page = usePage()
