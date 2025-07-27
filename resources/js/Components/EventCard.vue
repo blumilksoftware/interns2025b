@@ -3,12 +3,12 @@
 const props = withDefaults(
   defineProps<{
     id: number | string
-    imageUrl?: string
+    imageUrl?: string | undefined
     start: string
     isPaid: boolean
     title: string
-    location?: string
-    ageCategory?: string
+    location?: string | null
+    ageCategory?: string | null
   }>(),
   {
     imageUrl: 'https://picsum.photos/200/300',
@@ -31,7 +31,7 @@ const props = withDefaults(
 
     <div class="p-4 space-y-2">
       <div class="flex items-center justify-between">
-        <div> class="text-sm text-gray-500">{{ props.start }}</div>
+        <div class="text-sm text-gray-500">{{ props.start }}</div>
         <span
           class="text-xs font-semibold px-2 py-1 rounded-full"
           :class="props.isPaid ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'"
