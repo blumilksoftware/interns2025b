@@ -1,45 +1,49 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import api from '@/services/api'
 import { router } from '@inertiajs/vue3'
 import BaseButton from '@/Components/BaseButton.vue'
+import InfoBlock from '@/Components/InfoBlock.vue'
+import PaginationComponent from '@/Components/PaginationComponent.vue'
 import type { UserDetail } from '@/types/types'
 import { useAuth } from '@/composables/useAuth'
 import { useInteractions } from '@/composables/useInteractions'
-import { formatDate } from '@/utilities/formatDate'
-import InfoBlock from '@/Components/InfoBlock.vue'
 import { useEvents } from '@/composables/useEvents'
-import PaginationComponent from '@/Components/PaginationComponent.vue'
+import { formatDate } from '@/utilities/formatDate'
 
 const props = defineProps<{ userId?: number }>()
-const { events, page, meta } = useEvents()
-
-const user = ref<UserDetail | null>(null)
-
-async function fetchProfile() {
-  try {
-    const response = await api.get(
-      props.userId ? `/profile/${props.userId}` : '/profile',
-      { validateStatus: s => s < 400 || s === 302 },
-    )
-    if (response.status === 302 && response.data?.message === 'profile.redirected') {
-      const target = response.data.redirect.replace(/^\/api/, '')
-      router.visit(target, { replace: true })
-      return
-    }
-    user.value = response.data.data
-  } catch (error) {
-    console.error('Błąd pobierania profilu:', error)
-  }
-}
-onMounted(fetchProfile)
 
 const { authUser, authUserId, logout } = useAuth()
 
-const { isFollowing, followUser } = useInteractions()
-function onFollow() {
-  if (!props.userId) return
-  followUser(props.userId)
+const {
+  fetchFollowings,
+  toggleFollow,
+  useIsFollowing,
+} = useInteractions()
+
+const user = ref<UserDetail | null>(null)
+async function fetchProfile() {
+  const endpoint = props.userId ? `/profile/${props.userId}` : '/profile'
+  const res = await api.get(endpoint, { validateStatus: s => s < 400 || s === 302 })
+  if (res.status === 302 && res.data.redirect) {
+    router.visit(res.data.redirect.replace(/^\/api/, ''), { replace: true })
+    return
+  }
+  user.value = res.data.data
+}
+onMounted(async () => {
+  await fetchProfile()
+  await fetchFollowings()
+})
+
+const targetUserId = computed(() => props.userId ?? authUserId.value)
+const isFollowingTarget = useIsFollowing('user', targetUserId)
+
+const { events, page, meta } = useEvents()
+
+async function onFollow() {
+  if (!targetUserId.value) return
+  await toggleFollow('user', targetUserId.value)
 }
 </script>
 
@@ -59,7 +63,7 @@ function onFollow() {
           </div>
           <div class="md:space-y-4 space-y-2 max-md:mt-14 text-center">
             <h2 class="text-2xl font-bold">
-              {{ user?.first_name || '' }} {{ user?.last_name || '' }}
+              {{ user?.first_name }} {{ user?.last_name }}
             </h2>
 
             <div class="flex justify-around text-sm">
@@ -68,24 +72,20 @@ function onFollow() {
             </div>
 
             <BaseButton
-              v-if="authUserId === user?.id"
+              v-if="targetUserId === authUserId"
               as="a"
               href="/settings"
               class="w-3/4 bg-black text-white"
             >
               Edytuj profil
             </BaseButton>
-
             <BaseButton
               v-else
               class="w-3/4 bg-black text-white"
               @click="onFollow"
             >
-              {{ isFollowing ? 'Odobserwuj' : 'Obserwuj' }}
+              {{ isFollowingTarget ? 'Odobserwuj' : 'Obserwuj' }}
             </BaseButton>
-          </div>
-          <div class="">
-            <h3 class="text-left text-[#120D26]">Badges</h3>
           </div>
         </div>
         <div>

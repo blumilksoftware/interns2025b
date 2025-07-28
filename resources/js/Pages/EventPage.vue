@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import AppHead from '@/Components/AppHead.vue'
 import Navbar from '@/Components/Navbar.vue'
 import BaseButton from '@/Components/BaseButton.vue'
@@ -8,18 +8,15 @@ import Map from '@/Components/Map.vue'
 import type { RawEvent } from '@/types/events'
 import api from '@/services/api'
 import { formatDate, formatTime, formatDay } from '@/utilities/formatDate'
+import { useInteractions } from '@/composables/useInteractions'
 import {
   ArrowRightCircleIcon,
   CheckCircleIcon,
-  EnvelopeIcon,
-  ShareIcon,
-  StarIcon,
   CalendarIcon,
   UsersIcon,
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{ eventId: number }>()
-
 const event = ref<RawEvent | null>(null)
 const loading = ref(true)
 
@@ -33,6 +30,34 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+const {
+  fetchFollowings,
+  fetchFollowers,
+  toggleFollow,
+  useIsFollowing,
+} = useInteractions()
+
+onMounted(() => {
+  fetchFollowings()
+  fetchFollowers()
+})
+
+onMounted(async () => {
+  const { data } = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
+  event.value = data.data
+  loading.value = false
+})
+
+const ownerIdRef = computed(() => event.value?.owner_id)
+
+const isOwnerFollowed    = useIsFollowing('user', ownerIdRef)
+
+async function handleFollowOwner() {
+  if (ownerIdRef.value) {
+    await toggleFollow('user', ownerIdRef.value)
+  }
+}
 </script>
 
 <template>
@@ -81,37 +106,11 @@ onMounted(async () => {
             </div>
 
             <div>
-              <div class="hidden max-sm:flex-wrap max-sm:flex max-sm:gap-2 sm:flex lg:justify-end font-semibold text-xl flex-wrap gap-3">
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
-                    <StarIcon class="size-6" />
-                    <span>Zainteresowany(a)</span>
-                  </span>
-                </base-button>
-
+              <div class="max-sm:flex-wrap justify-end font-semibold text-xl flex-wrap gap-3">
                 <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
                   <span class="inline-flex font-semibold items-center space-x-2">
                     <CheckCircleIcon class="size-6" />
                     <span>Wezmę udział</span>
-                  </span>
-                </base-button>
-
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
-                    <EnvelopeIcon class="size-6" />
-                    <span>Zaproś</span>
-                  </span>
-                </base-button>
-
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
-                    <ShareIcon class="size-6" />
-                  </span>
-                </base-button>
-
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
-                    <span>...</span>
                   </span>
                 </base-button>
               </div>
@@ -145,7 +144,12 @@ onMounted(async () => {
                   :line2="event.owner_type"
                 />
                 <div class="flex items-center justify-end">
-                  <button class="bg-brand/10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl">Obserwuj</button>
+                  <BaseButton
+                    class="bg-brand/10 h-10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl"
+                    @click="handleFollowOwner"
+                  >
+                    {{ isOwnerFollowed ? 'Obserwuj' : 'Obserwujesz' }}
+                  </BaseButton>
                 </div>
               </div>
 
