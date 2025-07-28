@@ -7,7 +7,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 Route::get("/", fn(): Response => inertia("HomePage"));
-Route::get("/login", fn() => Inertia::render("Auth/LoginPage"))->name("login");
+Route::get("/login", fn(): Response => Inertia::render("Auth/LoginPage"))->name("login");
 
 Route::get("/register", fn(): Response => inertia("Auth/RegisterPage"));
 Route::get("/forgot-password", fn(): Response => inertia("Auth/ForgotPasswordPage"));
