@@ -45,27 +45,28 @@ function onFollow() {
 
 <template>
   <div class="bg-gradient-to-tr from-brand-light to-brand-dark min-h-screen w-full flex items-start justify-center py-10">
-    <div class="relative max-w-md w-full">
-      <div class="absolute left-1/2 -translate-x-1/2">
-        <img
-          :src="user?.avatar_url || 'https://via.placeholder.com/150'"
-          alt="Avatar"
-          class="size-32 rounded-3xl border border-white object-cover shadow-lg"
-        >
-      </div>
-
-      <div class="mt-16 bg-white rounded-[50px] shadow-lg p-6 space-y-6">
-        <div class="space-y-4 mt-16 text-center">
-          <h2 class="text-2xl font-bold">
-            {{ user?.first_name || '' }} {{ user?.last_name || '' }}
-          </h2>
-
-          <div class="flex justify-around text-sm">
-            <p class="font-bold">{{ user?.followers_count ?? 0 }} <span class="font-medium text-[#777777]">Obserwujący</span></p>
-            <p class="font-bold">{{ user?.events_count ?? 0 }} <span class="font-medium text-[#777777]">Wydarzenia</span></p>
+    <div class="w-11/12 max-md:w-full">
+      <div class="mt-16 bg-white rounded-[50px] shadow-lg p-6 md:p-12 space-y-6">
+        <div class="md:flex md:space-x-4">
+          <div class="max-md:relative">
+            <div class="max-md:absolute max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2">
+              <img
+                :src="user?.avatar_url || 'https://via.placeholder.com/150'"
+                alt="Avatar"
+                class="size-32 max-md:-mt-36 rounded-3xl border border-white object-cover shadow-lg"
+              >
+            </div>
           </div>
+          <div class="md:space-y-4 space-y-2 max-md:mt-14 text-center">
+            <h2 class="text-2xl font-bold">
+              {{ user?.first_name || '' }} {{ user?.last_name || '' }}
+            </h2>
 
-          <div>
+            <div class="flex justify-around text-sm">
+              <p class="font-bold">{{ user?.followers_count ?? 0 }} <span class="font-medium text-[#777777]">Obserwujący</span></p>
+              <p class="font-bold">{{ user?.events_count ?? 0 }} <span class="font-medium text-[#777777]">Wydarzenia</span></p>
+            </div>
+
             <BaseButton
               v-if="authUserId === user?.id"
               as="a"
@@ -82,40 +83,44 @@ function onFollow() {
             >
               {{ isFollowing ? 'Odobserwuj' : 'Obserwuj' }}
             </BaseButton>
-            <div>
-              <h3 class="text-xl text-left text-[#120D26] font-semibold mt-5 mb-2">Wydarzenia</h3>
-              <div class="space-y-4">
-                <InfoBlock
-                  v-for="event in events"
-                  :key="event.id"
-                  :image-url="event.image_url"
-                  :title="event.title"
-                  :line1="event.location || 'Brak lokalizacji'"
-                  :line2="formatDate(event.start)"
-                  :line3="event.age_category || 'Brak'"
-                />
-                <p v-if="events.length === 0" class="col-span-full text-center text-gray-500">
-                  Brak wydarzeń do wyświetlenia.
-                </p>
-              </div>
-              <PaginationComponent
-                v-model:page="page"
-                :last-page="meta.last_page"
-              />
-            </div>
-            <BaseButton
-              v-if="!props.userId && authUser"
-              class="w-full bg-red-600 text-white"
-              @click="logout"
-            >
-              Wyloguj się
-            </BaseButton>
           </div>
+          <div class="">
+            <h3 class="text-left text-[#120D26]">Badges</h3>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xl text-left text-[#120D26] font-semibold mt-5 mb-2">Wydarzenia</h3>
+          <div class="space-y-4">
+            <InfoBlock
+              v-for="event in events"
+              :key="event.id"
+              :image-url="event.image_url"
+              :title="event.title"
+              :line1="event.location || 'Brak lokalizacji'"
+              :line2="formatDate(event.start)"
+              :line3="event.age_category || 'Brak'"
+            />
+            <p v-if="events.length === 0" class="col-span-full text-center text-gray-500">
+              Brak wydarzeń do wyświetlenia.
+            </p>
+          </div>
+          <PaginationComponent
+            v-model:page="page"
+            :last-page="meta.last_page"
+          />
+        </div>
+        <BaseButton
+          v-if="!props.userId && authUser"
+          class="w-full bg-red-600 text-white"
+          @click="logout"
+        >
+          Wyloguj się
+        </BaseButton>
 
-          <div class="pt-4 border-t border-gray-200 text-left text-sm space-y-1">
-            <p><span class="font-semibold">ID:</span> {{ user?.id ?? '' }}</p>
-            <p><span class="font-semibold">E-mail:</span> {{ user?.email || '' }}</p>
-          </div>
+
+        <div class="pt-4 border-t border-gray-200 text-left text-sm space-y-1">
+          <p><span class="font-semibold">ID:</span> {{ user?.id ?? '' }}</p>
+          <p><span class="font-semibold">E-mail:</span> {{ user?.email || '' }}</p>
         </div>
       </div>
     </div>
