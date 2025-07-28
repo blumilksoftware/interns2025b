@@ -1,19 +1,31 @@
 <script setup lang="ts">
-defineProps<{
-  type?: 'button' | 'submit' | 'reset'
-}>()
+import { type PropType } from 'vue'
+
+const props = defineProps({
+  type: {
+    type: String as PropType<'button' | 'submit' | 'reset'>,
+    default: 'button',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 const emit = defineEmits<(e: 'click', event: MouseEvent) => void>()
 
-const handleClick = (event: MouseEvent) => {
-  emit('click', event)
+function handleClick(event: MouseEvent) {
+  if (!props.disabled) {
+    emit('click', event)
+  }
 }
 </script>
 
 <template>
   <button
-    :type="type"
-    class="h-12 rounded-lg shadow-sm transition delay-100 duration-300 hover:scale-105"
+    :type="props.type"
+    :disabled="props.disabled"
+    class="h-12 rounded-lg shadow-sm transition delay-100 duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
     @click="handleClick"
   >
     <slot />
