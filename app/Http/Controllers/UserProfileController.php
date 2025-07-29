@@ -22,7 +22,7 @@ class UserProfileController extends Controller
             "ownedEvents",
             "followers",
             "followingUsers",
-        ])->load(["organizations"]);
+        ])->load(["organizations", "ownedEvents"]);
 
         return response()->json([
             "message" => __("profile.retrieved"),
@@ -40,7 +40,7 @@ class UserProfileController extends Controller
             "followers",
             "followingUsers",
         ])->load([
-            "organizations",
+            "organizations", "ownedEvents",
         ]);
 
         return response()->json([
