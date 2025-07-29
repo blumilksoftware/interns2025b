@@ -9,6 +9,7 @@ import { useAuth } from '@/composables/useAuth'
 import { useInteractions } from '@/composables/useInteractions'
 import { useEvents } from '@/composables/useEvents'
 import { formatDate } from '@/utilities/formatDate'
+import { MagnifyingGlassIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps<{ userId?: number }>()
 
@@ -103,7 +104,7 @@ async function onFollow() {
           <h3 class="text-xl text-left text-[#120D26] font-semibold mt-5 mb-2">
             Wydarzenia
           </h3>
-          <div class="space-y-4">
+          <div class="space-y-4 ">
             <InfoBlock
               v-for="event in eventsByOwner"
               :key="event.id"
@@ -113,9 +114,12 @@ async function onFollow() {
               :line2="formatDate(event.start)"
               :line3="event.age_category || 'Brak'"
             />
-            <p v-if="eventsByOwner.length === 0" class="col-span-full text-center text-gray-500">
-              Ten użytkownik nie utworzył jeszcze żadnego wydarzenia.
-            </p>
+            <div v-if="eventsByOwner.length === 0 " class="flex flex-col size-full space-y-20 mt-10 align-bottom place-content-center ">
+              <magnifying-glass-icon class="h-64 " />
+              <p class="col-span-full  text-center text-gray-500">
+                Ten użytkownik nie utworzył jeszcze żadnego wydarzenia.
+              </p>
+            </div>
           </div>
         </div>
         <BaseButton
