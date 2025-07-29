@@ -96,7 +96,7 @@ async function onFollow() {
               class="w-3/4 bg-black text-white"
               @click="onFollow"
             >
-              {{ isFollowingTarget ? 'Odobserwuj' : 'Obserwuj' }}
+              {{ isFollowingTarget ? 'Przestań obserwować' : 'Obserwuj' }}
             </BaseButton>
           </div>
         </div>
