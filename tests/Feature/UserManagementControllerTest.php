@@ -56,9 +56,9 @@ class UserManagementControllerTest extends TestCase
                         ->where("email_verified_at", $this->userWithRole->email_verified_at ? $this->userWithRole->email_verified_at->toJSON() : null)
                         ->where("created_at", $this->userWithRole->created_at->toJSON())
                         ->where("updated_at", $this->userWithRole->updated_at->toJSON())
-                        ->where("events_count", $this->userWithRole->owned_events_count)
-                        ->where("followers_count", $this->userWithRole->followers_count)
-                        ->where("following_count", $this->userWithRole->following_users_count)
+                        ->where("events_count", $this->userWithRole->ownedEvents()->count())
+                        ->where("followers_count", $this->userWithRole->followers()->count())
+                        ->where("following_count", $this->userWithRole->followingUsers()->count())
                         ->has("organizations", 1),
                 ),
         );
