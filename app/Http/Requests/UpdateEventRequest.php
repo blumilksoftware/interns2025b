@@ -17,8 +17,8 @@ class UpdateEventRequest extends FormRequest
         return [
             "title" => ["sometimes", "string", "max:255"],
             "description" => ["nullable", "string"],
-            "start_time" => ["sometimes", "date", "before:end_time"],
-            "end_time" => ["sometimes", "date", "after:start_time"],
+            "start" => ["sometimes", "date", "before:end"],
+            "end" => ["sometimes", "date", "after:start"],
             "location" => ["sometimes", "string"],
             "address" => ["nullable", "string"],
             "latitude" => ["nullable", "numeric"],

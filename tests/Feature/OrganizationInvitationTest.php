@@ -44,67 +44,58 @@ class OrganizationInvitationTest extends TestCase
     {
         $this->actingAs($this->owner);
 
-        $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
+        ])->assertOk();
 
-        $response->assertOk();
-        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($this->invitee->email));
+        Mail::assertSent(OrganizationInvitationMail::class, fn($mail): bool => $mail->hasTo($this->invitee->email));
     }
 
     public function testOrganizationMemberCannotInviteUser(): void
     {
         $this->actingAs($this->member);
 
-        $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
-
-        $response->assertForbidden();
+        ])->assertForbidden();
     }
 
     public function testSuperAdminCanInviteUser(): void
     {
         $this->actingAs($this->superAdmin);
 
-        $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
+        ])->assertOk();
 
-        $response->assertOk();
-        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($this->invitee->email));
+        Mail::assertSent(OrganizationInvitationMail::class, fn($mail): bool => $mail->hasTo($this->invitee->email));
     }
 
     public function testAdminCanInviteUser(): void
     {
         $this->actingAs($this->admin);
 
-        $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
+        ])->assertOk();
 
-        $response->assertOk();
-        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($this->invitee->email));
+        Mail::assertSent(OrganizationInvitationMail::class, fn($mail): bool => $mail->hasTo($this->invitee->email));
     }
 
     public function testNonOwnerNonMemberNonSuperAdminCannotInvite(): void
     {
         $this->actingAs($this->nonMember);
 
-        $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
-
-        $response->assertForbidden();
+        ])->assertForbidden();
     }
 
     public function testGuestCannotInvite(): void
     {
-        $response = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
-
-        $response->assertUnauthorized();
+        ])->assertUnauthorized();
     }
 
     public function testUserCanAcceptInvitation(): void
@@ -116,9 +107,8 @@ class OrganizationInvitationTest extends TestCase
 
         $this->actingAs($this->invitee);
 
-        $response = $this->getJson($url);
+        $this->getJson($url)->assertOk();
 
-        $response->assertOk();
         $this->assertTrue($this->organization->fresh()->users->contains($this->invitee));
     }
 
@@ -131,9 +121,7 @@ class OrganizationInvitationTest extends TestCase
 
         $this->actingAs($this->invitee);
 
-        $response = $this->getJson($url);
-
-        $response->assertStatus(403);
+        $this->getJson($url)->assertStatus(403);
     }
 
     public function testAcceptInvitationUnauthorizedIfUserMissing(): void
@@ -143,10 +131,9 @@ class OrganizationInvitationTest extends TestCase
             "email" => $this->invitee->email,
         ]);
 
-        $response = $this->getJson($url);
-
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
-        $response->assertJson(["message" => __("organization.invitation_unauthorized")]);
+        $this->getJson($url)
+            ->assertStatus(Response::HTTP_FORBIDDEN)
+            ->assertJson(["message" => __("organization.invitation_unauthorized")]);
     }
 
     public function testAcceptInvitationUnauthorizedIfEmailMismatch(): void
@@ -158,25 +145,22 @@ class OrganizationInvitationTest extends TestCase
 
         $this->actingAs($this->invitee);
 
-        $response = $this->getJson($url);
-
-        $response->assertStatus(Response::HTTP_FORBIDDEN);
-        $response->assertJson(["message" => __("organization.invitation_unauthorized")]);
+        $this->getJson($url)
+            ->assertStatus(Response::HTTP_FORBIDDEN)
+            ->assertJson(["message" => __("organization.invitation_unauthorized")]);
     }
 
     public function testInvitationThrottleWorks(): void
     {
         $this->actingAs($this->owner);
 
-        $response1 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
-        $response1->assertOk();
+        ])->assertOk();
 
-        $response2 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
-        $response2->assertStatus(429)
+        ])->assertStatus(429)
             ->assertJson(["message" => __("organization.invitation_throttled")]);
     }
 
@@ -187,19 +171,17 @@ class OrganizationInvitationTest extends TestCase
         $invitee2 = User::factory()->create(["email" => "invitee2@example.com"]);
         $invitee3 = User::factory()->create(["email" => "invitee3@example.com"]);
 
-        $response1 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
-        $response2 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
-            "email" => $invitee2->email,
-        ]);
-        $response3 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
-            "email" => $invitee3->email,
-        ]);
+        ])->assertOk();
 
-        $response1->assertOk();
-        $response2->assertOk();
-        $response3->assertOk();
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+            "email" => $invitee2->email,
+        ])->assertOk();
+
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+            "email" => $invitee3->email,
+        ])->assertOk();
     }
 
     public function testUserCanInviteSameUserToDifferentOrganizationsWithoutThrottle(): void
@@ -208,14 +190,12 @@ class OrganizationInvitationTest extends TestCase
 
         $organization2 = Organization::factory()->for($this->owner, "owner")->create();
 
-        $response1 = $this->postJson("/api/organizations/{$this->organization->id}/invite", [
+        $this->postJson("/api/organizations/{$this->organization->id}/invite", [
             "email" => $this->invitee->email,
-        ]);
-        $response2 = $this->postJson("/api/organizations/{$organization2->id}/invite", [
-            "email" => $this->invitee->email,
-        ]);
+        ])->assertOk();
 
-        $response1->assertOk();
-        $response2->assertOk();
+        $this->postJson("/api/organizations/{$organization2->id}/invite", [
+            "email" => $this->invitee->email,
+        ])->assertOk();
     }
 }

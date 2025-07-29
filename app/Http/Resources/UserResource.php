@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             "email_verified_at" => $this->email_verified_at,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
+            "events" => EventResource::collection($this->whenLoaded("ownedEvents")),
             "events_count" => $this->owned_events_count,
             "followers_count" => $this->followers_count,
             "following_count" => $this->following_users_count,

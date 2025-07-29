@@ -27,7 +27,7 @@ const {
   {
     endpoint: '/api/auth/login',
     onSuccess: (response) => {
-      localStorage.setItem('token', response.data.token)
+      sessionStorage.setItem('token', response.data.token)
       router.visit('/', {
         method: 'get',
         preserveState: false,

@@ -17,8 +17,8 @@ class StoreEventRequest extends FormRequest
         return [
             "title" => ["required", "string", "max:255"],
             "description" => ["nullable", "string"],
-            "start_time" => ["required", "date", "before:end_time"],
-            "end_time" => ["required", "date", "after:start_time"],
+            "start" => ["required", "date", "before:end"],
+            "end" => ["required", "date", "after:start"],
             "location" => ["required", "string"],
             "address" => ["nullable", "string"],
             "latitude" => ["nullable", "numeric"],

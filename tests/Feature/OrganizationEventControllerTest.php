@@ -30,8 +30,8 @@ class OrganizationEventControllerTest extends TestCase
 
         $this->validPayload = [
             "title" => "Test Event",
-            "start_time" => now()->addDay()->toDateTimeString(),
-            "end_time" => now()->addDays(2)->toDateTimeString(),
+            "start" => now()->addDay()->toDateTimeString(),
+            "end" => now()->addDays(2)->toDateTimeString(),
             "location" => "Test Location",
             "is_paid" => true,
             "status" => "published",
@@ -71,8 +71,8 @@ class OrganizationEventControllerTest extends TestCase
         $event = $this->org->events()->create(
             Event::factory()->make([
                 "title" => "Original Event",
-                "start_time" => now()->addDay()->toDateTimeString(),
-                "end_time" => now()->addDays(2)->toDateTimeString(),
+                "start" => now()->addDay()->toDateTimeString(),
+                "end" => now()->addDays(2)->toDateTimeString(),
                 "location" => "Old Location",
                 "is_paid" => true,
                 "status" => "draft",
@@ -81,8 +81,8 @@ class OrganizationEventControllerTest extends TestCase
 
         $updatePayload = [
             "title" => "Updated Event",
-            "start_time" => now()->addDay()->toDateTimeString(),
-            "end_time" => now()->addDays(2)->toDateTimeString(),
+            "start" => now()->addDay()->toDateTimeString(),
+            "end" => now()->addDays(2)->toDateTimeString(),
             "location" => "Updated Location",
             "is_paid" => false,
             "status" => "ongoing",
@@ -98,8 +98,8 @@ class OrganizationEventControllerTest extends TestCase
         $event = $this->org->events()->create(
             Event::factory()->make([
                 "title" => "Event to Delete",
-                "start_time" => now()->addDay()->toDateTimeString(),
-                "end_time" => now()->addDays(2)->toDateTimeString(),
+                "start" => now()->addDay()->toDateTimeString(),
+                "end" => now()->addDays(2)->toDateTimeString(),
                 "location" => "Somewhere",
                 "is_paid" => true,
                 "status" => "published",
@@ -125,8 +125,8 @@ class OrganizationEventControllerTest extends TestCase
 
         $updatePayload = [
             "title" => "Invalid Update",
-            "start_time" => now()->addDay()->toDateTimeString(),
-            "end_time" => now()->addDays(2)->toDateTimeString(),
+            "start" => now()->addDay()->toDateTimeString(),
+            "end" => now()->addDays(2)->toDateTimeString(),
         ];
 
         $response = $this->putJson("/api/organizations/{$this->org1->id}/events/{$event->id}", $updatePayload);
@@ -148,15 +148,15 @@ class OrganizationEventControllerTest extends TestCase
         $response = $this->postJson("/api/organizations/{$this->org->id}/events", []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(["title", "start_time", "end_time", "location", "is_paid", "status"]);
+            ->assertJsonValidationErrors(["title", "start", "end", "location", "is_paid", "status"]);
     }
 
     public function testCreatingEventWithEndDateBeforeStartFails(): void
     {
         $payload = [
             "title" => "Invalid Time Event",
-            "start_time" => now()->addDays(2)->toDateTimeString(),
-            "end_time" => now()->addDay()->toDateTimeString(),
+            "start" => now()->addDays(2)->toDateTimeString(),
+            "end" => now()->addDay()->toDateTimeString(),
             "location" => "Test Location",
             "is_paid" => true,
             "status" => "published",
@@ -165,7 +165,7 @@ class OrganizationEventControllerTest extends TestCase
         $response = $this->postJson("/api/organizations/{$this->org->id}/events", $payload);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(["end_time"]);
+            ->assertJsonValidationErrors(["end"]);
     }
 
     public function testUserWithoutOrganizationCannotCreateEventThroughOrganization(): void
@@ -176,8 +176,8 @@ class OrganizationEventControllerTest extends TestCase
 
         $payload = [
             "title" => "Unauthorized Event",
-            "start_time" => now()->addDay()->toDateTimeString(),
-            "end_time" => now()->addDays(2)->toDateTimeString(),
+            "start" => now()->addDay()->toDateTimeString(),
+            "end" => now()->addDays(2)->toDateTimeString(),
             "location" => "Nowhere",
             "is_paid" => false,
             "status" => "draft",
