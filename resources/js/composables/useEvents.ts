@@ -10,8 +10,14 @@ export function useEvents() {
 
   async function fetchEvents() {
     try {
-      const res = await api.get('/events', {
-        params: { search: search.value, page: page.value },
+      const res = await api.get<{
+        data: RawEvent[]
+        meta: { current_page: number, last_page: number }
+      }>('/events', {
+        params: {
+          search: search.value,
+          page: page.value,
+        },
       })
       events.value = res.data.data
       meta.value.current_page = res.data.meta.current_page
@@ -26,7 +32,6 @@ export function useEvents() {
   function prevPage() {
     if (page.value > 1) page.value--
   }
-
   function nextPage() {
     if (page.value < meta.value.last_page) page.value++
   }
