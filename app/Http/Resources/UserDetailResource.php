@@ -18,9 +18,9 @@ class UserDetailResource extends JsonResource
             "avatar_url" => $this->avatar_url,
             "email" => $this->email,
             "events" => EventResource::collection($this->whenLoaded("ownedEvents")),
-            "events_count" => $this->owned_events_count,
-            "followers_count" => $this->followers_count,
-            "following_count" => $this->following_users_count,
+            "events_count" => $this->ownedEvents()->count(),
+            "followers_count" => $this->followers()->count(),
+            "following_count" => $this->followingUsers()->count(),
         ];
     }
 }
