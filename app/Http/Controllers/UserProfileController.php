@@ -19,10 +19,10 @@ class UserProfileController extends Controller
         $user = $request->user();
 
         $user->loadCount([
-            'ownedEvents',
-            'followers',
-            'followingUsers',
-        ])->load(['organizations',]);
+            "ownedEvents",
+            "followers",
+            "followingUsers",
+        ])->load(["organizations"]);
 
         return response()->json([
             "message" => __("profile.retrieved"),
@@ -36,11 +36,11 @@ class UserProfileController extends Controller
         $user->update($request->validated());
 
         $user->loadCount([
-            'ownedEvents',
-            'followers',
-            'followingUsers',
+            "ownedEvents",
+            "followers",
+            "followingUsers",
         ])->load([
-            'organizations',
+            "organizations",
         ]);
 
         return response()->json([
