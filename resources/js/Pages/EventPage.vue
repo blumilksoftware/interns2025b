@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import AppHead from '@/Components/AppHead.vue'
 import Navbar from '@/Components/Navbar.vue'
 import BaseButton from '@/Components/BaseButton.vue'
@@ -8,54 +8,59 @@ import Map from '@/Components/Map.vue'
 import type { RawEvent } from '@/types/events'
 import api from '@/services/api'
 import { formatDate, formatTime, formatDay } from '@/utilities/formatDate'
+import { useAuth } from '@/composables/useAuth'
 import { useInteractions } from '@/composables/useInteractions'
 import {
-  ArrowRightCircleIcon,
   CheckCircleIcon,
+  ArrowRightCircleIcon,
   CalendarIcon,
   UsersIcon,
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{ eventId: number }>()
+
+const { authUserId } = useAuth()
+
+const {
+  toggleFollow,
+  participateEvent,
+  useIsFollowing,
+  useIsParticipating,
+  fetchFollowings,
+} = useInteractions()
+
+// stan eventu
 const event = ref<RawEvent | null>(null)
 const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const response = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
-    event.value = response.data.data
-  } catch (error) {
-    console.error('Błąd pobierania wydarzenia:', error)
+    const res = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
+    event.value = res.data.data
+  } catch (e) {
+    console.error('Błąd pobierania wydarzenia:', e)
   } finally {
     loading.value = false
   }
+  if (authUserId.value) {
+    await fetchFollowings()
+  }
 })
 
-const {
-  fetchFollowings,
-  fetchFollowers,
-  toggleFollow,
-  useIsFollowing,
-} = useInteractions()
+const ownerIdRef   = computed(() => event.value?.owner_id ?? 0)
+const eventIdRef   = computed(() => props.eventId)
 
-onMounted(() => {
-  fetchFollowings()
-  fetchFollowers()
-})
+const isOwnerFollowed  = useIsFollowing('user', ownerIdRef)
+const isParticipating  = useIsParticipating('event', eventIdRef)
 
-onMounted(async () => {
-  const { data } = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
-  event.value = data.data
-  loading.value = false
-})
-
-const ownerIdRef = computed(() => event.value?.owner_id)
-
-const isOwnerFollowed    = useIsFollowing('user', ownerIdRef)
-
-async function handleFollowOwner() {
+async function handleToggleFollow() {
   if (ownerIdRef.value) {
     await toggleFollow('user', ownerIdRef.value)
+  }
+}
+async function handleParticipate() {
+  if (eventIdRef.value) {
+    await participateEvent(eventIdRef.value)
   }
 }
 </script>
@@ -74,8 +79,11 @@ async function handleFollowOwner() {
         <p class="text-brand-dark font-medium whitespace-nowrap">
           {{ event.participants?.length || 0 }} osób weźmie udział
         </p>
-        <BaseButton class="ml-4 h-[28px] bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap">
-          Invite
+        <BaseButton v-if="authUserId"
+                    class="ml-4 h-[28px] bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap"
+                    @click="handleParticipate"
+        >
+          {{ isParticipating ? 'Rezygnuj' : 'Wezmę udział' }}
         </BaseButton>
       </div>
     </div>
@@ -107,12 +115,15 @@ async function handleFollowOwner() {
 
             <div>
               <div class="max-sm:flex-wrap justify-end font-semibold text-xl flex-wrap gap-3">
-                <base-button class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
-                  <span class="inline-flex font-semibold items-center space-x-2">
+                <BaseButton v-if="authUserId"
+                            class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                            @click="handleParticipate"
+                >
+                  <span class="inline-flex items-center space-x-2">
                     <CheckCircleIcon class="size-6" />
-                    <span>Wezmę udział</span>
+                    <span>{{ isParticipating ? 'Rezygnuj' : 'Wezmę udział' }}</span>
                   </span>
-                </base-button>
+                </BaseButton>
               </div>
             </div>
           </div>
@@ -143,13 +154,13 @@ async function handleFollowOwner() {
                   :title="`${event.owner?.first_name?? ''} ${event.owner?.last_name?? ''} ${event.owner?.name ?? ''}`.trim() ?? 'Nieznany'"
                   :line2="event.owner_type"
                 />
-                <div class="flex items-center justify-end">
+                <div v-if="authUserId" class="flex items-center justify-end">
                   <BaseButton
                     class="bg-brand/10 h-10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl"
-                    @click="handleFollowOwner"
+                    @click="handleToggleFollow"
                   >
-                    {{ isOwnerFollowed ? 'Obserwuj' : 'Obserwujesz' }}
-                  </BaseButton>
+                    <span>{{ isOwnerFollowed ? 'Odobserwuj' : 'Obserwuj' }}</span>
+                  </basebutton>
                 </div>
               </div>
 
@@ -183,8 +194,7 @@ async function handleFollowOwner() {
             <div class="rounded-lg shadow-lg bg-white space-y-6 lg:py-11 lg:px-16 p-8">
               <div class="lg:-mx-16 lg:-mt-11 -mt-8 -mx-8 bg-red-200 h-96 rounded-2xl">
                 <Map
-                  v-if="event"
-                  :center="[ event.latitude ?? 0, event.longitude ?? 0 ]"
+                  :center="[event.latitude ?? 0, event.longitude ?? 0]"
                   disable-fetch
                 />
               </div>

@@ -4,7 +4,6 @@ import api from '@/services/api'
 import { router } from '@inertiajs/vue3'
 import BaseButton from '@/Components/BaseButton.vue'
 import InfoBlock from '@/Components/InfoBlock.vue'
-import PaginationComponent from '@/Components/PaginationComponent.vue'
 import type { UserDetail } from '@/types/types'
 import { useAuth } from '@/composables/useAuth'
 import { useInteractions } from '@/composables/useInteractions'
@@ -13,13 +12,7 @@ import { formatDate } from '@/utilities/formatDate'
 
 const props = defineProps<{ userId?: number }>()
 
-const { authUser, authUserId, logout } = useAuth()
-
-const {
-  fetchFollowings,
-  toggleFollow,
-  useIsFollowing,
-} = useInteractions()
+const { authUserId, logout } = useAuth()
 
 const user = ref<UserDetail | null>(null)
 async function fetchProfile() {
@@ -31,19 +24,31 @@ async function fetchProfile() {
   }
   user.value = res.data.data
 }
+
+const { fetchFollowings, toggleFollow, useIsFollowing } = useInteractions()
+const { events } = useEvents()
+
 onMounted(async () => {
   await fetchProfile()
   await fetchFollowings()
 })
 
 const targetUserId = computed(() => props.userId ?? authUserId.value)
+const isMyProfile = computed(() => targetUserId.value === authUserId.value)
 const isFollowingTarget = useIsFollowing('user', targetUserId)
 
-const { events, page, meta } = useEvents()
+const eventsByOwner = computed(() =>
+  events.value.filter(e => e.owner_id === targetUserId.value),
+)
 
 async function onFollow() {
-  if (!targetUserId.value) return
+  if (!targetUserId.value || !user.value) return
+
+  const wasFollowing = isFollowingTarget.value
+
   await toggleFollow('user', targetUserId.value)
+
+  user.value.followers_count = (user.value.followers_count ?? 0) + (wasFollowing ? -1 : 1)
 }
 </script>
 
@@ -67,12 +72,18 @@ async function onFollow() {
             </h2>
 
             <div class="flex justify-around text-sm">
-              <p class="font-bold">{{ user?.followers_count ?? 0 }} <span class="font-medium text-[#777777]">Obserwujący</span></p>
-              <p class="font-bold">{{ user?.events_count ?? 0 }} <span class="font-medium text-[#777777]">Wydarzenia</span></p>
+              <p class="font-bold">
+                {{ user?.followers_count ?? 0 }}
+                <span class="font-medium text-[#777777]">Obserwujący</span>
+              </p>
+              <p class="font-bold">
+                {{ user?.events_count ?? 0 }}
+                <span class="font-medium text-[#777777]">Wydarzenia</span>
+              </p>
             </div>
 
             <BaseButton
-              v-if="targetUserId === authUserId"
+              v-if="isMyProfile"
               as="a"
               href="/settings"
               class="w-3/4 bg-black text-white"
@@ -89,10 +100,12 @@ async function onFollow() {
           </div>
         </div>
         <div>
-          <h3 class="text-xl text-left text-[#120D26] font-semibold mt-5 mb-2">Wydarzenia</h3>
+          <h3 class="text-xl text-left text-[#120D26] font-semibold mt-5 mb-2">
+            Wydarzenia
+          </h3>
           <div class="space-y-4">
             <InfoBlock
-              v-for="event in events"
+              v-for="event in eventsByOwner"
               :key="event.id"
               :image-url="event.image_url"
               :title="event.title"
@@ -100,23 +113,18 @@ async function onFollow() {
               :line2="formatDate(event.start)"
               :line3="event.age_category || 'Brak'"
             />
-            <p v-if="events.length === 0" class="col-span-full text-center text-gray-500">
-              Brak wydarzeń do wyświetlenia.
+            <p v-if="eventsByOwner.length === 0" class="col-span-full text-center text-gray-500">
+              Ten użytkownik nie utworzył jeszcze żadnego wydarzenia.
             </p>
           </div>
-          <PaginationComponent
-            v-model:page="page"
-            :last-page="meta.last_page"
-          />
         </div>
         <BaseButton
-          v-if="!props.userId && authUser"
+          v-if="!props.userId && user"
           class="w-full bg-red-600 text-white"
           @click="logout"
         >
           Wyloguj się
         </BaseButton>
-
 
         <div class="pt-4 border-t border-gray-200 text-left text-sm space-y-1">
           <p><span class="font-semibold">ID:</span> {{ user?.id ?? '' }}</p>

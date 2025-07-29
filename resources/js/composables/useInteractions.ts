@@ -1,51 +1,85 @@
-import { ref, computed, type Ref } from 'vue'
+import { ref, computed } from 'vue'
 import api from '@/services/api'
 
-export type FollowType = 'user' | 'organization'
+export type FollowType = 'user' | 'organization' | 'event'
 
 export interface Followings {
   users: any[]
   organizations: any[]
+  events: any[]
 }
 
 export function useInteractions() {
-  const followings = ref<Followings>({ users: [], organizations: [] })
-  const followers  = ref<any[]>([])
+  const followings = ref<Followings>({
+    users: [],
+    organizations: [],
+    events: [],
+  })
 
-  async function fetchFollowings(userId?: number) {
-    const url = userId ? `/followings?user=${userId}` : '/followings'
-    const { data } = await api.get<Followings>(url)
-    followings.value = data
-    return data
+  const followKeyMap: Record<FollowType, keyof Followings> = {
+    user: 'users',
+    organization: 'organizations',
+    event: 'events',
   }
 
-  async function fetchFollowers(userId?: number) {
-    const url = userId ? `/followers?user=${userId}` : '/followers'
-    const { data } = await api.get<{ followers: any[] }>(url)
-    followers.value = data.followers
-    return data.followers
+  async function fetchFollowings() {
+    try {
+      const { data } = await api.get<Followings>('/followings')
+      followings.value = data
+    } catch (e: any) {
+      console.error('Fetch followings error:', e)
+    }
   }
 
   async function toggleFollow(type: FollowType, id: number) {
-    const { data } = await api.post<{ message: string }>(`/follow/${type}/${id}`)
-    await fetchFollowings()
-    return data.message
+    try {
+      const { data } = await api.post<{ message: string }>(`/follow/${type}/${id}`)
+      const key = followKeyMap[type]
+      const list = followings.value[key]
+      const idx  = list.findIndex((i: any) => i.id === id)
+
+      if (idx >= 0) list.splice(idx, 1)
+      else          list.push({ id })
+
+      return data.message
+    } catch (e: any) {
+      console.error('Toggle follow error:', e)
+      throw e
+    }
   }
 
-  function useIsFollowing(type: FollowType, idRef: Ref<number|undefined>) {
+  function useIsFollowing(type: FollowType, idRef: number | { value: number }) {
     return computed(() => {
-      const key = `${type}s` as keyof Followings
-      return !!(idRef.value != null &&
-        followings.value[key]?.some(item => item.id === idRef.value))
+      const id = typeof idRef === 'number' ? idRef : idRef.value
+      const key = followKeyMap[type]
+      return followings.value[key].some((i: any) => i.id === id)
     })
+  }
+
+  const isParticipating = ref<boolean>(false)
+
+  async function participateEvent(eventId: number) {
+    try {
+      const { data } = await api.post<{ message: string }>(`/events/${eventId}/participate`)
+      isParticipating.value = !isParticipating.value
+      return data.message
+    } catch (e: any) {
+      console.error('Participation error:', e)
+      throw e
+    }
+  }
+
+  function useIsParticipating() {
+    return computed(() => isParticipating.value)
   }
 
   return {
     followings,
-    followers,
     fetchFollowings,
-    fetchFollowers,
     toggleFollow,
     useIsFollowing,
+    isParticipating,
+    participateEvent,
+    useIsParticipating,
   }
 }

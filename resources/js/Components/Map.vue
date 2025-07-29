@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import api from '@/services/api'
-import { ref, onMounted, createApp, h } from 'vue'
+import { ref, onMounted } from 'vue'
 import L from 'leaflet'
+import { useEvents } from '@/composables/useEvents'
 import EventPopUp from '@/Components/EventPopUp.vue'
+import { createApp, h } from 'vue'
 import type { EventMarker } from '@/types/events'
 
 const INITIAL_ZOOM = 14
@@ -17,7 +18,9 @@ const props = defineProps<{
 }>()
 
 const DEFAULT_CENTER: [number, number] = [51.21006, 16.1619]
-const mapElement = ref<HTMLDivElement | null>(null)
+const mapElement = ref<HTMLDivElement|null>(null)
+
+const { events, fetchAll } = useEvents({ all: true })
 
 onMounted(async () => {
   if (!mapElement.value) return
@@ -43,16 +46,19 @@ onMounted(async () => {
     },
   ).addTo(map)
 
-  L.marker(mapCenter).addTo(map).bindPopup('You are here.')
+  L.marker(mapCenter)
+    .addTo(map)
+    .bindPopup('You are here.')
 
-  try {
-    if (!props.disableFetch) {
-      const res = await api.get<{ data: EventMarker[] }>('/events')
-      res.data.data.forEach(event => {
-        if (event.latitude != null && event.longitude != null) {
-          const marker = L.marker([event.latitude, event.longitude]).addTo(map)
+  if (!props.disableFetch) {
+    try {
+      await fetchAll()
+
+      events.value.forEach((evt: EventMarker) => {
+        if (evt.latitude != null && evt.longitude != null) {
+          const marker = L.marker([evt.latitude, evt.longitude]).addTo(map)
           const container = document.createElement('div')
-          createApp({ render: () => h(EventPopUp, { event }) }).mount(container)
+          createApp({ render: () => h(EventPopUp, { event: evt }) }).mount(container)
           marker.bindPopup(container, {
             minWidth: 250,
             maxWidth: 250,
@@ -61,9 +67,8 @@ onMounted(async () => {
           })
         }
       })
+    } catch (e) {
     }
-  } catch (error) {
-    console.error('Nie udało się pobrać wydarzeń:', error)
   }
 })
 </script>
