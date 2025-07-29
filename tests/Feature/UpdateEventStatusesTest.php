@@ -11,8 +11,6 @@ use Tests\TestCase;
 
 class UpdateEventStatusesTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testItUpdatesEventStatusesCorrectly(): void
     {
         $now = now();

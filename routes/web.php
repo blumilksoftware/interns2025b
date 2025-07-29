@@ -15,3 +15,5 @@ Route::get("/forgot-password", fn(): Response => inertia("Auth/ForgotPasswordPag
 Route::get("/event", fn(): Response => inertia("EventPage"));
 
 Route::middleware(["auth:sanctum"])->get("/profile", fn(): Response => Inertia::render("ProfilePage"))->name("profile");
+
+Route::get("/create-event", fn(): Response => inertia("CreateEventPage"));
