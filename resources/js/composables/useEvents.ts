@@ -4,7 +4,7 @@ import type { RawEvent } from '@/types/events'
 
 export function useEvents() {
   const events = ref<RawEvent[]>([])
-  const search = ref<string>('')
+  const search = ref<string | null>(null)
   const page = ref<number>(1)
   const meta = ref<{ current_page: number, last_page: number }>({ current_page: 1, last_page: 1 })
 
@@ -17,7 +17,7 @@ export function useEvents() {
       meta.value.current_page = res.data.meta.current_page
       meta.value.last_page = res.data.meta.last_page
     } catch (error) {
-      console.error('useEvents fetchEvents error:', error)
+      alert('useEvents fetchEvents error')
     }
   }
 

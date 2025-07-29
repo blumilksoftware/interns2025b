@@ -1,4 +1,4 @@
-export function formatFullDateTime(
+function formatFullDateTime(
   dateString: string | null | undefined,
   locale = 'pl-PL',
   options: Intl.DateTimeFormatOptions = {

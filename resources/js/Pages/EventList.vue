@@ -23,7 +23,7 @@ const { events, search, page, meta } = useEvents()
         <div class="w-full relative">
           <img src="/images/Fade.svg"
                alt=""
-               class="absolute inset-0 w-full h-[1000px] top-[-430px] pointer-events-none"
+               class="absolute inset-0 w-full h-[64rem] top-[-27rem] pointer-events-none"
           >
         </div>
 
@@ -46,7 +46,7 @@ const { events, search, page, meta } = useEvents()
             <div class="lg:w-3/12">
               <BaseInput id="type" name="type" label="Rodzaj wydarzenia" type="text" placeholder="koncert" variant="event" />
             </div>
-            <BaseButton class="!bg-zinc-800 !text-white justify-center font-bold px-10 mt-[24px] col-span-2" @click="page = 1">
+            <BaseButton class="!bg-zinc-800 !text-white justify-center font-bold px-10 mt-6 col-span-2" @click="page = 1">
               Szukaj
             </BaseButton>
           </div>
@@ -79,9 +79,11 @@ const { events, search, page, meta } = useEvents()
               :key="event.id"
               :image-url="event.image_url"
               :title="event.title"
-              :info1="event.location || 'Brak lokalizacji'"
-              :info2="formatDate(event.start)"
-              :note="event.age_category || 'Brak'"
+              :info-items="[
+                event.location ?? 'Brak lokalizacji',
+                formatDate(event.start),
+                event.age_category ?? 'Brak'
+              ]"
             />
             <p v-if="events.length === 0"
                class="text-center text-gray-500 italic"

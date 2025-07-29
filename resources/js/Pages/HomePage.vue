@@ -115,7 +115,7 @@ const { isLoggedIn } = useAuth()
             Dodawaj własne wydarzenia
           </inertia-link>
           <inertia-link
-            href="/EventList"
+            href="/events"
             class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]"
           >
             Bierz udział w wydarzeniach

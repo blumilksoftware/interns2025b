@@ -63,7 +63,7 @@ onMounted(async () => {
       })
     }
   } catch (error) {
-    console.error('Nie udało się pobrać wydarzeń:', error)
+    alert('Nie udało się pobrać wydarzeń:')
   }
 })
 </script>

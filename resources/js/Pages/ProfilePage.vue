@@ -29,7 +29,7 @@ async function fetchProfile() {
     }
     user.value = response.data.data
   } catch (error) {
-    console.error('Błąd pobierania profilu:', error)
+    alert('Błąd pobierania profilu')
   }
 }
 onMounted(fetchProfile)
@@ -90,9 +90,11 @@ function onFollow() {
                   :key="event.id"
                   :image-url="event.image_url"
                   :title="event.title"
-                  :line1="event.location || 'Brak lokalizacji'"
-                  :line2="formatDate(event.start)"
-                  :line3="event.age_category || 'Brak'"
+                  :info-items="[
+                    event.location ?? 'Brak lokalizacji',
+                    formatDate(event.start),
+                    event.age_category ?? 'Brak'
+                  ]"
                 />
                 <p v-if="events.length === 0" class="col-span-full text-center text-gray-500">
                   Brak wydarzeń do wyświetlenia.
@@ -114,7 +116,7 @@ function onFollow() {
 
           <div class="pt-4 border-t border-gray-200 text-left text-sm space-y-1">
             <p><span class="font-semibold">ID:</span> {{ user?.id ?? '' }}</p>
-            <p><span class="font-semibold">E-mail:</span> {{ user?.email || '' }}</p>
+            <p><span class="font-semibold">E-mail:</span> {{ user?.email ?? '' }}</p>
           </div>
         </div>
       </div>

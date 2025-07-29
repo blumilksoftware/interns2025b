@@ -9,7 +9,7 @@ export function useInteractions() {
       await api.post(`/follow/user/${userId}`)
       isFollowing.value = true
     } catch (error) {
-      console.error('Błąd podczas obserwowania użytkownika:', error)
+      alert('Błąd podczas obserwowania użytkownika')
     }
   }
 

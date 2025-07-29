@@ -25,10 +25,10 @@ const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const response = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
-    event.value = response.data.data
+    const { data } = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
+    event.value = data.data
   } catch (error) {
-    console.error('Błąd pobierania wydarzenia:', error)
+    alert('Błąd pobierania wydarzenia')
   } finally {
     loading.value = false
   }
@@ -131,18 +131,18 @@ onMounted(async () => {
               <InfoBlock
                 :icon="CalendarIcon"
                 :title="formatDate(event.start)"
-                :info1="`${formatDay(event.start)} ${formatTime(event.start)}`"
+                :info-items="[`${formatDay(event.start)}${formatTime(event.start)}`]"
               />
               <InfoBlock
                 :title="event.location"
-                :info1="event.address"
+                :info-items="[event.address]"
               />
 
               <div class="w-full flex justify-between gap-4">
                 <InfoBlock
                   :image-url="event.owner?.avatar_url || event.owner?.group_url || ''"
                   :title="`${event.owner?.first_name?? ''} ${event.owner?.last_name?? ''} ${event.owner?.name ?? ''}`.trim() ?? 'Nieznany'"
-                  :info1="event.owner_type"
+                  :info-items="[event.owner_type]"
                 />
                 <div class="flex items-center justify-end">
                   <button class="bg-brand/10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl">Obserwuj</button>
@@ -155,7 +155,7 @@ onMounted(async () => {
           </div>
 
           <div class="flex flex-col space-y-6 lg:w-2/6 justify-start">
-            <div v-if="event.is_paid" class="sm:hidden fixed bottom-0 left-0 w-full z-[1001] bg-white p-4 shadow-t">
+            <div v-if="event.is_paid" class="sm:hidden fixed bottom-0 left-0 w-full z-40 bg-white p-4 shadow-t">
               <base-button class="w-full text-base h-16 p-[15px] bg-brand-dark text-white rounded-2xl">
                 <span class="inline-flex font-semibold items-center justify-center space-x-2">
                   <span>KUP BILET</span>
