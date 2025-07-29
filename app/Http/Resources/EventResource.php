@@ -29,7 +29,7 @@ class EventResource extends JsonResource
             "owner_type" => $this->owner_type,
             "owner_id" => $this->owner_id,
             "owner" => $this->whenLoaded("owner", fn(): OwnerResource => new OwnerResource($this->owner)),
-            "participation_count" =>  $this->participants()->count(),
+            "participation_count" => $this->participants()->count(),
             "created_at" => $this->created_at?->toIso8601String(),
             "updated_at" => $this->updated_at?->toIso8601String(),
         ];
