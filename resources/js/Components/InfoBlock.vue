@@ -5,17 +5,17 @@ const props = withDefaults(
     icon?: object | null
     imageUrl?: string | null
     title?: string | null
-    line1?: string | null
-    line2?: string | null
-    line3?: string | null
+    info1?: string | null
+    info2?: string | null
+    note?: string | null
   }>(),
   {
     icon: DefaultIcon,
     imageUrl: undefined,
     title: '',
-    line1: '',
-    line2: '',
-    line3: '',
+    info1: '',
+    info2: '',
+    note: '',
   },
 )
 </script>
@@ -39,9 +39,9 @@ const props = withDefaults(
     </div>
     <div class="flex flex-col">
       <h2 class="sm:text-3xl text-left text-sm font-bold">{{ props.title }}</h2>
-      <p v-if="props.line1" class="sm:text-sm text-xs text-left text-gray-500">{{ props.line1 }}</p>
-      <p v-if="props.line2" class="sm:text-sm text-xs text-left text-gray-500">{{ props.line2 }}</p>
-      <p v-if="props.line3" class="sm:text-sm text-xs text-left text-gray-500">{{ props.line3 }}</p>
+      <p v-if="props.info1" class="sm:text-sm text-xs text-left text-gray-500">{{ props.info1 }}</p>
+      <p v-if="props.info2" class="sm:text-sm text-xs text-left text-gray-500">{{ props.info2 }}</p>
+      <p v-if="props.note" class="sm:text-sm text-xs text-left text-gray-500">{{ props.note }}</p>
     </div>
   </div>
 </template>
