@@ -114,7 +114,7 @@ async function onFollow() {
               :line2="formatDate(event.start)"
               :line3="event.age_category || 'Brak'"
             />
-            <div v-if="eventsByOwner.length === 0 " class="flex flex-col size-full space-y-20 mt-10 align-bottom place-content-center ">
+            <div v-if="!eventsByOwner.length" class="flex flex-col size-full space-y-20 mt-10 align-bottom place-content-center ">
               <magnifying-glass-icon class="h-64 " />
               <p class="col-span-full  text-center text-gray-500">
                 Ten użytkownik nie utworzył jeszcze żadnego wydarzenia.
