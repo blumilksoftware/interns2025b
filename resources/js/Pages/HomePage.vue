@@ -102,7 +102,7 @@ const { isLoggedIn } = useAuth()
         class="flex flex-col items-center justify-center text-center text-white space-y-16 max-sm:space-y-8"
       >
         <h1 class="text-6xl font-bold pt-6">
-          Bądź na bieżaco<br>
+          Bądź na bieżąco<br>
           <span class="text-gradient-teal-light">dołącz do LetsEvent</span>
         </h1>
         <div

@@ -79,9 +79,9 @@ const { events, search, page, meta } = useEvents()
               :key="event.id"
               :image-url="event.image_url"
               :title="event.title"
-              :line1="event.location || 'Brak lokalizacji'"
-              :line2="formatDate(event.start)"
-              :line3="event.age_category || 'Brak'"
+              :info1="event.location || 'Brak lokalizacji'"
+              :info2="formatDate(event.start)"
+              :note="event.age_category || 'Brak'"
             />
             <p v-if="events.length === 0"
                class="text-center text-gray-500 italic"

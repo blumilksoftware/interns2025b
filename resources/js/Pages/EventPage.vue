@@ -131,18 +131,18 @@ onMounted(async () => {
               <InfoBlock
                 :icon="CalendarIcon"
                 :title="formatDate(event.start)"
-                :line2="`${formatDay(event.start)} ${formatTime(event.start)}`"
+                :info1="`${formatDay(event.start)} ${formatTime(event.start)}`"
               />
               <InfoBlock
                 :title="event.location"
-                :line2="event.address"
+                :info1="event.address"
               />
 
               <div class="w-full flex justify-between gap-4">
                 <InfoBlock
                   :image-url="event.owner?.avatar_url || event.owner?.group_url || ''"
                   :title="`${event.owner?.first_name?? ''} ${event.owner?.last_name?? ''} ${event.owner?.name ?? ''}`.trim() ?? 'Nieznany'"
-                  :line2="event.owner_type"
+                  :info1="event.owner_type"
                 />
                 <div class="flex items-center justify-end">
                   <button class="bg-brand/10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl">Obserwuj</button>
