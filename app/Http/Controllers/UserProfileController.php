@@ -18,6 +18,12 @@ class UserProfileController extends Controller
     {
         $user = $request->user();
 
+        $user->loadCount([
+            "ownedEvents",
+            "followers",
+            "followingUsers",
+        ])->load(["organizations", "ownedEvents"]);
+
         return response()->json([
             "message" => __("profile.retrieved"),
             "data" => new UserResource($user),
@@ -28,6 +34,14 @@ class UserProfileController extends Controller
     {
         $user = $request->user();
         $user->update($request->validated());
+
+        $user->loadCount([
+            "ownedEvents",
+            "followers",
+            "followingUsers",
+        ])->load([
+            "organizations", "ownedEvents",
+        ]);
 
         return response()->json([
             "message" => __("profile.updated"),

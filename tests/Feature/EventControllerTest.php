@@ -72,8 +72,8 @@ class EventControllerTest extends TestCase
             "title" => "Updated Title",
             "description" => "Updated Description",
             "location" => "Updated Location",
-            "start_time" => now()->addDay()->toISOString(),
-            "end_time" => now()->addDays(2)->toISOString(),
+            "start" => now()->addDay()->toISOString(),
+            "end" => now()->addDays(2)->toISOString(),
             "is_paid" => false,
             "status" => "draft",
         ];
@@ -103,8 +103,8 @@ class EventControllerTest extends TestCase
             "title" => "Admin Updated",
             "description" => "Changed",
             "location" => "New Loc",
-            "start_time" => now()->addDay()->toISOString(),
-            "end_time" => now()->addDays(2)->toISOString(),
+            "start" => now()->addDay()->toISOString(),
+            "end" => now()->addDays(2)->toISOString(),
             "is_paid" => false,
             "status" => "draft",
         ];
@@ -125,8 +125,8 @@ class EventControllerTest extends TestCase
             "title" => "Unauthorized Event",
             "description" => "Guest try",
             "location" => "Somewhere",
-            "start_time" => now()->addDay()->toISOString(),
-            "end_time" => now()->addDays(2)->toISOString(),
+            "start" => now()->addDay()->toISOString(),
+            "end" => now()->addDays(2)->toISOString(),
             "is_paid" => true,
             "status" => "published",
         ];
@@ -144,7 +144,7 @@ class EventControllerTest extends TestCase
         $response = $this->actingAs($this->user)->postJson("/api/events", $payload);
 
         $response->assertStatus(Http::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors(["title", "location", "start_time", "end_time", "is_paid", "status"]);
+        $response->assertJsonValidationErrors(["title", "location", "start", "end", "is_paid", "status"]);
     }
 
     public function testStartTimeMustBeBeforeEndTime(): void
@@ -153,8 +153,8 @@ class EventControllerTest extends TestCase
             "title" => "Invalid Time",
             "description" => "Invalid time order",
             "location" => "Here",
-            "start_time" => now()->addDays(3)->toISOString(),
-            "end_time" => now()->addDay()->toISOString(),
+            "start" => now()->addDays(3)->toISOString(),
+            "end" => now()->addDay()->toISOString(),
             "is_paid" => false,
             "status" => "draft",
         ];
@@ -162,7 +162,7 @@ class EventControllerTest extends TestCase
         $response = $this->actingAs($this->user)->postJson("/api/events", $payload);
 
         $response->assertStatus(Http::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonValidationErrors(["start_time"]);
+        $response->assertJsonValidationErrors(["start"]);
     }
 
     public function testUserCannotCreateSecondPublishedOrOngoingEvent(): void
@@ -172,12 +172,12 @@ class EventControllerTest extends TestCase
 
         $payload = Event::factory()->make([
             "status" => "ongoing",
-            "start_time" => now()->addHour(),
-            "end_time" => now()->addHours(2),
+            "start" => now()->addHour(),
+            "end" => now()->addHours(2),
         ])->toArray();
 
-        $payload["start_time"] = now()->addHour()->toISOString();
-        $payload["end_time"] = now()->addHours(2)->toISOString();
+        $payload["start"] = now()->addHour()->toISOString();
+        $payload["end"] = now()->addHours(2)->toISOString();
 
         $response = $this->postJson("/api/events", $payload);
 
@@ -193,12 +193,12 @@ class EventControllerTest extends TestCase
         foreach (["draft", "ended"] as $status) {
             $payload = Event::factory()->make([
                 "status" => $status,
-                "start_time" => now()->addDay(),
-                "end_time" => now()->addDays(2),
+                "start" => now()->addDay(),
+                "end" => now()->addDays(2),
             ])->toArray();
 
-            $payload["start_time"] = now()->addDay()->toISOString();
-            $payload["end_time"] = now()->addDays(2)->toISOString();
+            $payload["start"] = now()->addDay()->toISOString();
+            $payload["end"] = now()->addDays(2)->toISOString();
 
             $this->postJson("/api/events", $payload)->assertStatus(Http::HTTP_CREATED);
         }

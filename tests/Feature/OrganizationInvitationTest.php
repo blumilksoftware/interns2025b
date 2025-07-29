@@ -48,7 +48,7 @@ class OrganizationInvitationTest extends TestCase
             "email" => $this->invitee->email,
         ])->assertOk();
 
-        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($this->invitee->email));
+        Mail::assertSent(OrganizationInvitationMail::class, fn($mail): bool => $mail->hasTo($this->invitee->email));
     }
 
     public function testOrganizationMemberCannotInviteUser(): void
@@ -68,7 +68,7 @@ class OrganizationInvitationTest extends TestCase
             "email" => $this->invitee->email,
         ])->assertOk();
 
-        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($this->invitee->email));
+        Mail::assertSent(OrganizationInvitationMail::class, fn($mail): bool => $mail->hasTo($this->invitee->email));
     }
 
     public function testAdminCanInviteUser(): void
@@ -79,7 +79,7 @@ class OrganizationInvitationTest extends TestCase
             "email" => $this->invitee->email,
         ])->assertOk();
 
-        Mail::assertSent(OrganizationInvitationMail::class, fn($mail) => $mail->hasTo($this->invitee->email));
+        Mail::assertSent(OrganizationInvitationMail::class, fn($mail): bool => $mail->hasTo($this->invitee->email));
     }
 
     public function testNonOwnerNonMemberNonSuperAdminCannotInvite(): void
