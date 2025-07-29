@@ -26,7 +26,7 @@ class AdminSeeder extends Seeder
             ],
         );
         $admin->assignRole("administrator");
-        $admin->badge()->associate(Badge::where("type", BadgeType::CityExplorer)->first());
+        $admin->badge()->associate(Badge::query()->where("type", BadgeType::CityExplorer)->first());
         $admin->save();
 
         $superAdmin = User::firstOrCreate(
@@ -40,7 +40,7 @@ class AdminSeeder extends Seeder
             ],
         );
         $superAdmin->assignRole("superAdministrator");
-        $superAdmin->badge()->associate(Badge::where("type", BadgeType::UrbanLegend)->first());
+        $superAdmin->badge()->associate(Badge::query()->where("type", BadgeType::UrbanLegend)->first());
         $superAdmin->save();
     }
 }

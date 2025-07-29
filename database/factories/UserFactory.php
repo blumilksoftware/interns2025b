@@ -62,7 +62,7 @@ class UserFactory extends Factory
     public function cityExplorer(): static
     {
         return $this->afterCreating(function (User $user): void {
-            $badge = Badge::where("type", BadgeType::CityExplorer)->first();
+            $badge = Badge::query()->where("type", BadgeType::CityExplorer)->first();
             $user->badge()->associate($badge)->save();
         });
     }
@@ -70,7 +70,7 @@ class UserFactory extends Factory
     public function urbanLegend(): static
     {
         return $this->afterCreating(function (User $user): void {
-            $badge = Badge::where("type", BadgeType::UrbanLegend)->first();
+            $badge = Badge::query()->where("type", BadgeType::UrbanLegend)->first();
             $user->badge()->associate($badge)->save();
         });
     }
