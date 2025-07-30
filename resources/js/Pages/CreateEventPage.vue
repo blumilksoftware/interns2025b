@@ -5,7 +5,7 @@ import Navbar from '@/Components/Navbar.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseSelect from '@/Components/BaseSelect.vue'
 import BaseButton from '@/Components/BaseButton.vue'
-import Socials from '@/Components/Socials.vue'
+import Footer from '@/Components/Footer.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { EventForm, SelectOption } from '@/types/types'
 import { computed } from 'vue'
@@ -48,16 +48,6 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
   },
 )
 
-const latitudeString = computed({
-  get: () => (form.latitude !== null ? String(form.latitude) : ''),
-  set: (value: string) => { form.latitude = value === '' ? null : Number(value) },
-})
-
-const longitudeString = computed({
-  get: () => (form.longitude !== null ? String(form.longitude) : ''),
-  set: (value: string) => { form.longitude = value === '' ? null : Number(value) },
-})
-
 const priceString = computed({
   get: () => (form.price !== null ? String(form.price) : ''),
   set: (value: string) => { form.price = value === '' ? null : Number(value) },
@@ -80,8 +70,6 @@ const priceString = computed({
       <BaseInput id="end" v-model="form.end" name="end" label="Data zakończenia" type="datetime-local" :error="errors.end" />
       <BaseInput id="location" v-model="form.location" name="location" label="Lokalizacja" :error="errors.location" />
       <BaseInput id="address" v-model="form.address" name="address" label="Adres (opcjonalnie)" :error="errors.address" />
-      <BaseInput id="latitude" v-model="latitudeString" name="latitude" label="Szerokość geograficzna" type="number" :error="errors.latitude" />
-      <BaseInput id="longitude" v-model="longitudeString" name="longitude" label="Długość geograficzna" type="number" :error="errors.longitude" />
       <BaseInput id="image_url" v-model="form.image_url" name="image_url" label="URL zdjęcia" :error="errors.image_url" />
       <BaseInput id="age_category" v-model="form.age_category" name="age_category" label="Kategoria wiekowa" :error="errors.age_category" />
 
@@ -115,24 +103,6 @@ const priceString = computed({
         Utwórz wydarzenie
       </BaseButton>
     </form>
-
-    <div class="w-full bg-gradient-to-tr from-brand to-brand-light py-12 mt-16">
-      <div class="text-center text-white space-y-6">
-        <h2 class="text-3xl font-bold">Bądź na bieżąco z wydarzeniami</h2>
-        <p>Dołącz do społeczności LetsEvent</p>
-        <InertiaLink href="/register" class="bg-white text-black px-6 py-2 rounded-full font-semibold shadow-sm hover:scale-105 transition">
-          Zarejestruj się
-        </InertiaLink>
-        <div class="flex flex-col items-center text-gray-200 mt-8 space-y-2">
-          <div class="flex space-x-4">
-            <InertiaLink href="#" class="hover:underline">Regulamin</InertiaLink>
-            <span>•</span>
-            <InertiaLink href="#" class="hover:underline">Polityka prywatności</InertiaLink>
-          </div>
-          <Socials />
-          <p class="text-sm">&copy; 2025 Interns2025b</p>
-        </div>
-      </div>
-    </div>
+    <Footer class="mt-16" />
   </div>
 </template>

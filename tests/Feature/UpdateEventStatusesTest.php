@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Enums\EventStatus;
 use Interns2025b\Models\Event;
 use Tests\TestCase;
