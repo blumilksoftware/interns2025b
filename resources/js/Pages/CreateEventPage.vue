@@ -65,13 +65,13 @@ const priceString = computed({
 
     <form class="w-full md:w-3/4 space-y-6 p-6 bg-white rounded-xl shadow-md" @submit.prevent="submitForm">
       <BaseInput id="title" v-model="form.title" name="title" label="Tytuł wydarzenia" :error="errors.title" />
-      <BaseInput id="description" v-model="form.description" name="description" label="Opis" :error="errors.description" textarea />
+      <BaseInput id="description" v-model="form.description" name="description" label="Opis (Opcjonalne)" :error="errors.description" textarea />
       <BaseInput id="start" v-model="form.start" name="start" label="Data rozpoczęcia" type="datetime-local" :error="errors.start" />
       <BaseInput id="end" v-model="form.end" name="end" label="Data zakończenia" type="datetime-local" :error="errors.end" />
       <BaseInput id="location" v-model="form.location" name="location" label="Lokalizacja" :error="errors.location" />
-      <BaseInput id="address" v-model="form.address" name="address" label="Adres (opcjonalnie)" :error="errors.address" />
-      <BaseInput id="image_url" v-model="form.image_url" name="image_url" label="URL zdjęcia" :error="errors.image_url" />
-      <BaseInput id="age_category" v-model="form.age_category" name="age_category" label="Kategoria wiekowa" :error="errors.age_category" />
+      <BaseInput id="address" v-model="form.address" name="address" label="Adres (Opcjonalne)" :error="errors.address" />
+      <BaseInput id="image_url" v-model="form.image_url" name="image_url" label="URL zdjęcia (Opcjonalne)" :error="errors.image_url" />
+      <BaseInput id="age_category" v-model="form.age_category" name="age_category" label="Kategoria wiekowa (Opcjonalne)" :error="errors.age_category" />
 
       <div class="flex space-x-4 items-center">
         <label class="flex items-center space-x-2">
@@ -83,7 +83,7 @@ const priceString = computed({
           id="price"
           v-model="priceString"
           name="price"
-          label="Cena"
+          label="Cena (Opcjonalne)"
           type="number"
           min="0"
           :error="errors.price"
