@@ -35,7 +35,7 @@ class ReportController
 
         if ($alreadyReported) {
             return response()->json([
-                "message" => __("You have already reported this today."),
+                "message" => __("report.already_reported"),
             ], Status::HTTP_TOO_MANY_REQUESTS);
         }
 
@@ -47,7 +47,7 @@ class ReportController
         ]);
 
         return response()->json([
-            "message" => __("Reported successfully."),
+            "message" => __("report.success"),
         ], Status::HTTP_OK);
     }
 
