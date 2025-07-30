@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, useSlots, onBeforeMount } from 'vue'
 
-type InputType = 'text' | 'email' | 'password' | 'number' | 'search' | 'date' | 'datetime-local'
+type InputType = 'text' | 'email' | 'password' | 'number' | 'search' | 'date' | 'datetime-local' | 'textarea'
 
 const props = defineProps<{
   id: string
@@ -54,7 +54,18 @@ const theme = computed(() => {
   </label>
 
   <div class="relative">
+    <textarea
+      v-if="props.type === 'textarea'"
+      :id="props.id"
+      v-model="model"
+      :name="props.name"
+      :placeholder="placeholderText"
+      :class="[ 'w-full font-medium rounded-lg transition duration-100 ease-in-out focus:outline-none border resize-y min-h-24', padding, theme, props.error ? 'border-red-500' : '' ]"
+      @focus="isFocused = true"
+      @blur="isFocused = false"
+    />
     <input
+      v-else
       :id="props.id"
       v-model="model"
       :name="props.name"

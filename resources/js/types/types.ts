@@ -38,6 +38,7 @@ export interface UserDetail {
 }
 
 export interface EventForm {
+  id?: number
   title: string
   description?: string
   start: string
