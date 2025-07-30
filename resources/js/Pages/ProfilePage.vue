@@ -48,7 +48,7 @@ function onFollow() {
     <div class="relative max-w-md w-full">
       <div class="absolute left-1/2 -translate-x-1/2">
         <img
-          :src="user?.avatar_url || 'https://via.placeholder.com/150'"
+          :src="user?.avatar_url ?? 'https://via.placeholder.com/150'"
           alt="Avatar"
           class="size-32 rounded-3xl border border-white object-cover shadow-lg"
         >
@@ -57,7 +57,7 @@ function onFollow() {
       <div class="mt-16 bg-white rounded-[50px] shadow-lg p-6 space-y-6">
         <div class="space-y-4 mt-16 text-center">
           <h2 class="text-2xl font-bold">
-            {{ user?.first_name || '' }} {{ user?.last_name || '' }}
+            {{ user?.first_name ?? '' }} {{ user?.last_name ?? '' }}
           </h2>
 
           <div class="flex justify-around text-sm">
