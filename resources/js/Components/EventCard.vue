@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     id: number | string
     imageUrl?: string | undefined
@@ -20,35 +20,35 @@ const props = withDefaults(
 
 <template>
   <InertiaLink
-    :href="`/event/${props.id}`"
+    :href="`/event/${id}`"
     class="block max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition delay-100 duration-300 hover:scale-105"
   >
     <img
-      :src="props.imageUrl"
+      :src="imageUrl"
       alt="Event Banner"
       class="w-full h-48 object-cover"
     >
 
     <div class="p-4 space-y-2">
       <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-500">{{ props.start }}</div>
+        <div class="text-sm text-gray-500">{{ start }}</div>
         <span
           class="text-xs font-semibold px-2 py-1 rounded-full"
-          :class="props.isPaid ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'"
+          :class="[isPaid ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600']"
         >
-          {{ props.isPaid ? 'Płatny' : 'Darmowy' }}
+          {{ isPaid ? 'Płatny' : 'Darmowy' }}
         </span>
       </div>
 
-      <h3 class="text-lg font-bold text-gray-900">{{ props.title }}</h3>
+      <h3 class="text-lg font-bold text-gray-900">{{ title }}</h3>
 
       <p class="text-sm text-gray-600 flex items-center">
-        {{ props.location }}
+        {{ location }}
       </p>
 
       <p class="text-sm text-gray-600">
         Ograniczenie wiekowe:
-        <span class="font-medium">{{ props.ageCategory }}</span>
+        <span class="font-medium">{{ ageCategory }}</span>
       </p>
     </div>
   </InertiaLink>

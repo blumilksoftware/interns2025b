@@ -67,10 +67,9 @@ onMounted(async () => {
           })
         }
       })
-    } catch (e) {
     }
   }
-})
+
 </script>
 
 <template>

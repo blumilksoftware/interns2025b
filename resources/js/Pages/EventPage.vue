@@ -29,7 +29,6 @@ const {
   fetchFollowings,
 } = useInteractions()
 
-// stan eventu
 const event = ref<RawEvent | null>(null)
 const loading = ref(true)
 
@@ -37,8 +36,8 @@ onMounted(async () => {
   try {
     const res = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
     event.value = res.data.data
-  } catch (e) {
-    console.error('Błąd pobierania wydarzenia:', e)
+  } catch (error) {
+    alert('Błąd pobierania wydarzenia')
   } finally {
     loading.value = false
   }
@@ -63,10 +62,23 @@ async function handleParticipate() {
     await participateEvent(eventIdRef.value)
   }
 }
+
+const ownerInfo = computed(() => ({
+  imageUrl: event.value?.owner?.avatar_url ?? event.value?.owner?.group_url ?? '',
+  title: [
+    event.value?.owner?.first_name,
+    event.value?.owner?.last_name,
+    (event.value?.owner as any)?.name,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .trim() || 'Nieznany',
+  ownerType: event.value?.owner_type ?? '',
+}))
 </script>
 
 <template>
-  <AppHead :title="event?.title || 'Wydarzenie'" />
+  <AppHead :title="event?.title ?? 'Wydarzenie'" />
   <div v-if="!loading && event" class="w-full mb-16 sm:mb-12 flex-col">
     <Navbar class="mb-[72px]" />
 
@@ -77,10 +89,10 @@ async function handleParticipate() {
         class="sm:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] flex justify-between items-center bg-white rounded-full shadow px-6 py-3 w-fit max-w-full"
       >
         <p class="text-brand-dark font-medium whitespace-nowrap">
-          {{ event.participants?.length || 0 }} osób weźmie udział
+          {{ event.participants?.length || 0 }} Weźmie udział
         </p>
         <BaseButton v-if="authUserId"
-                    class="ml-4 h-[28px] bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap"
+                    class="ml-4 h-7 bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap"
                     @click="handleParticipate"
         >
           {{ isParticipating ? 'Rezygnuj' : 'Wezmę udział' }}
@@ -136,23 +148,23 @@ async function handleParticipate() {
             <div class="flex flex-col sm:gap-y-8 gap-y-3 w-full">
               <InfoBlock
                 :icon="UsersIcon"
-                :title="`${event.participants ?? 0}  osób weźmie udział`" class="max-sm:hidden"
+                :title="`${event.participants ?? 0} Weźmie udział`" class="max-sm:hidden"
               />
               <InfoBlock
                 :icon="CalendarIcon"
                 :title="formatDate(event.start)"
-                :line2="`${formatDay(event.start)} ${formatTime(event.start)}`"
+                :info-items="[`${formatDay(event.start)}${formatTime(event.start)}`]"
               />
               <InfoBlock
                 :title="event.location"
-                :line2="event.address"
+                :info-items="[event.address]"
               />
 
               <div class="w-full flex justify-between gap-4">
                 <InfoBlock
-                  :image-url="event.owner?.avatar_url || event.owner?.group_url || ''"
-                  :title="`${event.owner?.first_name?? ''} ${event.owner?.last_name?? ''} ${event.owner?.name ?? ''}`.trim() ?? 'Nieznany'"
-                  :line2="event.owner_type"
+                  :image-url="ownerInfo.imageUrl"
+                  :title="ownerInfo.title"
+                  :info-items="[ownerInfo.ownerType]"
                 />
                 <div v-if="authUserId" class="flex items-center justify-end">
                   <BaseButton

@@ -73,8 +73,8 @@ class EventControllerTest extends TestCase
             "title" => "Updated Title",
             "description" => "Updated Description",
             "location" => "Updated Location",
-            "start_time" => now()->addDay()->toISOString(),
-            "end_time" => now()->addDays(2)->toISOString(),
+            "start" => now()->addDay()->toISOString(),
+            "end" => now()->addDays(2)->toISOString(),
             "is_paid" => false,
             "status" => "draft",
         ];
@@ -114,8 +114,8 @@ class EventControllerTest extends TestCase
             "title" => "Admin Updated",
             "description" => "Changed",
             "location" => "New Loc",
-            "start_time" => now()->addDay()->toISOString(),
-            "end_time" => now()->addDays(2)->toISOString(),
+            "start" => now()->addDay()->toISOString(),
+            "end" => now()->addDays(2)->toISOString(),
             "is_paid" => false,
             "status" => "draft",
         ];
@@ -141,8 +141,8 @@ class EventControllerTest extends TestCase
             "title" => "Unauthorized Event",
             "description" => "Guest try",
             "location" => "Somewhere",
-            "start_time" => now()->addDay()->toISOString(),
-            "end_time" => now()->addDays(2)->toISOString(),
+            "start" => now()->addDay()->toISOString(),
+            "end" => now()->addDays(2)->toISOString(),
             "is_paid" => true,
             "status" => "published",
         ];
@@ -160,7 +160,7 @@ class EventControllerTest extends TestCase
         $response = $this->actingAs($this->user)->postJson("/api/events", $payload);
 
         $response->assertUnprocessable();
-        $response->assertJsonValidationErrors(["title", "location", "start_time", "end_time", "is_paid", "status"]);
+        $response->assertJsonValidationErrors(["title", "location", "start", "end", "is_paid", "status"]);
     }
 
     public function testStartTimeMustBeBeforeEndTime(): void
@@ -169,8 +169,8 @@ class EventControllerTest extends TestCase
             "title" => "Invalid Time",
             "description" => "Invalid time order",
             "location" => "Here",
-            "start_time" => now()->addDays(3)->toISOString(),
-            "end_time" => now()->addDay()->toISOString(),
+            "start" => now()->addDays(3)->toISOString(),
+            "end" => now()->addDay()->toISOString(),
             "is_paid" => false,
             "status" => "draft",
         ];
@@ -178,6 +178,6 @@ class EventControllerTest extends TestCase
         $response = $this->actingAs($this->user)->postJson("/api/events", $payload);
 
         $response->assertUnprocessable();
-        $response->assertJsonValidationErrors(["start_time"]);
+        $response->assertJsonValidationErrors(["start"]);
     }
 }

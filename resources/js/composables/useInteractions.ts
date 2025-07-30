@@ -43,7 +43,7 @@ export function useInteractions() {
 
       return data.message
     } catch (e: any) {
-      console.error('Toggle follow error:', e)
+      alert('Toggle follow error')
       throw e
     }
   }
@@ -64,7 +64,7 @@ export function useInteractions() {
       isParticipating.value = !isParticipating.value
       return data.message
     } catch (e: any) {
-      console.error('Participation error:', e)
+      alert('Participation error:')
       throw e
     }
   }
