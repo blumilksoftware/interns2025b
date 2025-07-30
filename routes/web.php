@@ -23,3 +23,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/profile/{userId}', fn(int $userId) => Inertia::render('ProfilePage', ['userId' => $userId]))->name('profile.show');
     Route::get('/settings', function (): Response {return Inertia::render('SettingsPage'); })->name('settings');
 });
+
+Route::middleware(['auth:sanctum', 'role:administrator|superAdministrator'])
+    ->get('/admin', fn () => Inertia::render('AdminPage'))
+    ->name('admin.index');
