@@ -68,5 +68,5 @@ function addMarker(evt: RawEvent) {
 </script>
 
 <template>
-  <div ref="mapElement" class="size-full rounded-[inherit]" />
+  <div ref="mapEl" class="size-full rounded-[inherit]" />
 </template>
