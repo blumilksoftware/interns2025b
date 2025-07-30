@@ -54,6 +54,14 @@ export interface EventForm {
   age_category?: string
 }
 
+
+export interface OrganizationForm {
+  name: string
+  owner_id?: number | null
+  group_url?: string
+  avatar_url?: string
+}
+
 export interface SelectOption {
   label: string
   value: string

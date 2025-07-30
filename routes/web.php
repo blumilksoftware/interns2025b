@@ -17,7 +17,8 @@ Route::get('/event', fn(): Response => Inertia::render('EventPage'));
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/profile', fn(): Response => Inertia::render('ProfilePage'))->name('profile');
-    Route::get('/create-event', fn(): Response => Inertia::render('CreateEventPage'));
+    Route::get('/event/create', fn(): Response => Inertia::render('CreateEventPage'));
+    Route::get('/organizations/create', fn(): Response => Inertia::render('CreateOrganizationPage'));
 
     Route::get('/event/{event}/edit', function (Event $event): Response {
         $user = Auth::user();

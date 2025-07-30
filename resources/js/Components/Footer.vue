@@ -20,11 +20,14 @@ const isHome = computed(() => page.url === '/')
         </h1>
 
         <div class="flex max-[475px]:flex-col font-normal justify-center gap-x-8 max-sm:gap-4">
-          <InertiaLink href="/create-event" class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]">
+          <InertiaLink href="/event/create" class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]">
             Dodawaj własne wydarzenia
           </InertiaLink>
           <InertiaLink href="/event" class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]">
             Bierz udział w wydarzeniach
+          </InertiaLink>
+          <InertiaLink href="/organizations/create" class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]">
+            Twórz organizacje
           </InertiaLink>
         </div>
 
