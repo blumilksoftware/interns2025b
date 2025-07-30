@@ -8,7 +8,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreReportRequest extends FormRequest
 {
-
     public function rules(): array
     {
         return [

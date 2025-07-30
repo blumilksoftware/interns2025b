@@ -50,8 +50,6 @@ Route::middleware("auth:sanctum")->group(function (): void {
         Route::delete("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
     });
 });
-Route::get("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"]);
-
 Route::get("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
     ->middleware("signed")
     ->name("api.confirmDelete");
