@@ -73,7 +73,6 @@ class ReportTest extends TestCase
             "reporter_id" => $this->reporter->id,
             "reportable_type" => User::class,
             "reportable_id" => $this->targetUser->id,
-            "created_at" => now(),
         ]);
 
         $response = $this->actingAs($this->reporter)->postJson("/api/reports", [
@@ -185,7 +184,7 @@ class ReportTest extends TestCase
 
         $response->assertStatus(Status::HTTP_OK)
             ->assertJsonStructure([
-                "data" => [["id", "created_at", "reason", "reportable_type", "reportable_id"]],
+                "data" => [["id", "reason", "reportable_type", "reportable_id"]],
             ])
             ->assertJsonFragment(["reportable_type" => "User"]);
     }
@@ -202,7 +201,7 @@ class ReportTest extends TestCase
 
         $response->assertStatus(Status::HTTP_OK)
             ->assertJsonStructure([
-                "data" => [["id", "created_at", "reason", "reportable_type", "reportable_id"]],
+                "data" => [["id", "reason", "reportable_type", "reportable_id"]],
             ])
             ->assertJsonFragment(["reportable_type" => "Organization"]);
     }
@@ -219,7 +218,7 @@ class ReportTest extends TestCase
 
         $response->assertStatus(Status::HTTP_OK)
             ->assertJsonStructure([
-                "data" => [["id", "created_at", "reason", "reportable_type", "reportable_id"]],
+                "data" => [["id", "reason", "reportable_type", "reportable_id"]],
             ])
             ->assertJsonFragment(["reportable_type" => "Event"]);
     }

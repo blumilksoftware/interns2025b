@@ -17,7 +17,6 @@ class ReportResource extends JsonResource
             "reportable_type" => class_basename($this->reportable_type),
             "reportable_id" => $this->reportable_id,
             "reason" => $this->reason,
-            "created_at" => $this->created_at->toISOString(),
         ];
     }
 }

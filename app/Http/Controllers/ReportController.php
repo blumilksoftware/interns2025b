@@ -6,7 +6,6 @@ namespace Interns2025b\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Interns2025b\Http\Requests\StoreReportRequest;
 use Interns2025b\Http\Resources\ReportResource;
 use Interns2025b\Models\Event;
@@ -27,11 +26,11 @@ class ReportController
             "event" => Event::class,
         };
 
-        $alreadyReported = Report::query()->where("reporter_id", $user->id)
-            ->where("reportable_type", $type)
-            ->where("reportable_id", $request->input("id"))
-            ->whereDate("created_at", Carbon::today())
-            ->exists();
+        $alreadyReported = Report::alreadyReportedToday(
+            $user->id,
+            $type,
+            (int) $request->input("id")
+        );
 
         if ($alreadyReported) {
             return response()->json([
@@ -51,24 +50,30 @@ class ReportController
         ], Status::HTTP_OK);
     }
 
-    public function userReports(): AnonymousResourceCollection
+    public function userReports(): JsonResponse
     {
-        return ReportResource::collection(
-            Report::query()->where("reportable_type", User::class)->latest()->get(),
-        );
+        return response()->json([
+            "data" => ReportResource::collection(
+                Report::query()->where("reportable_type", User::class)->latest()->get(),
+            ),
+        ], Status::HTTP_OK);
     }
 
-    public function organizationReports(): AnonymousResourceCollection
+    public function organizationReports(): JsonResponse
     {
-        return ReportResource::collection(
-            Report::query()->where("reportable_type", Organization::class)->latest()->get(),
-        );
+        return response()->json([
+            "data" => ReportResource::collection(
+                Report::query()->where("reportable_type", Organization::class)->latest()->get(),
+            ),
+        ], Status::HTTP_OK);
     }
 
-    public function eventReports(): AnonymousResourceCollection
+    public function eventReports(): JsonResponse
     {
-        return ReportResource::collection(
-            Report::query()->where("reportable_type", Event::class)->latest()->get(),
-        );
+        return response()->json([
+            "data" => ReportResource::collection(
+                Report::query()->where("reportable_type", Event::class)->latest()->get(),
+            ),
+        ], Status::HTTP_OK);
     }
 }
