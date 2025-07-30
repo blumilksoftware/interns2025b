@@ -9,6 +9,8 @@ interface Meta {
 
 interface UseEventsOptions {
   all?: boolean
+  userOnly?: boolean
+  userId?: number
 }
 
 export function useEvents(options?: UseEventsOptions) {
@@ -17,12 +19,17 @@ export function useEvents(options?: UseEventsOptions) {
   const page   = ref<number>(1)
   const meta   = ref<Meta>({ current_page: 1, last_page: 1 })
 
+  function buildParams(p: number) {
+    return {
+      search: search.value,
+      page:   p,
+      user_id: options?.userOnly ? options.userId : undefined,
+    }
+  }
+
   async function fetchEventsPage() {
-    const res = await api.get<{
-      data: RawEvent[]
-      meta: Meta
-    }>('/events', {
-      params: { search: search.value, page: page.value },
+    const res = await api.get<{ data: RawEvent[], meta: Meta }>('/events', {
+      params: buildParams(page.value),
     })
     return res.data
   }
@@ -30,27 +37,25 @@ export function useEvents(options?: UseEventsOptions) {
   async function fetchAll() {
     let allData: RawEvent[] = []
     let nextPage = 1
-    let lastPage = 1
 
     do {
-      const res = await api.get<{
-        data: RawEvent[]
-        meta: Meta
-      }>('/events', {
-        params: { search: search.value, page: nextPage },
+      const res = await api.get<{ data: RawEvent[], meta: Meta }>('/events', {
+        params: buildParams(nextPage),
       })
       allData = allData.concat(res.data.data)
       nextPage = res.data.meta.current_page + 1
-      lastPage = res.data.meta.last_page
-    } while (nextPage <= lastPage)
+      meta.value.last_page = res.data.meta.last_page
+    } while (nextPage <= meta.value.last_page)
 
     events.value = allData
+    page.value = 1
     meta.value = { current_page: 1, last_page: 1 }
   }
 
   if (options?.all) {
-    fetchAll().catch(err => {
-      console.error('useEvents fetchAll error:', err)
+    fetchAll().catch(err => console.error('useEvents fetchAll error:', err))
+    watch(search, () => {
+      fetchAll().catch(err => console.error('useEvents fetchAll error:', err))
     })
   } else {
     watch(

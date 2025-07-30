@@ -23,13 +23,12 @@ const {
 } = useSearch(events, ['id', 'title', 'location'])
 </script>
 
-
-
 <template>
-  <app-head title="Home Page" />
+  <AppHead title="Home Page" />
+
   <div class="w-full flex flex-col md:items-center justify-center">
     <div class="flex w-full md:mb-32 mb-8">
-      <navbar />
+      <Navbar />
     </div>
     <div class="md:w-5/6 flex flex-col">
       <div class="md:mb-36 mb-16">
@@ -37,20 +36,18 @@ const {
           <img
             src="/images/Fade.svg"
             alt=""
-            class="flex-1 absolute w-full h-[1000px] inset-0 top-[-430px] pointer-events-none"
-          >
+            class="absolute w-full h-[1000px] top-[-430px] pointer-events-none"
+          />
         </div>
-        <div
-          class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl"
-        >
+        <div class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl">
           <div
-            class="flex items-center border-none justify-center mb-6 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 h-1/6 [&>*]:mb-1 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
+            class="flex items-center justify-center mb-6 text-sm gap-x-2 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
           >
             <div class="lg:w-6/12 col-span-2">
               <BaseInput
                 id="search"
                 v-model="query"
-                label="Data"
+                label="Szukaj"
                 type="text"
                 append-position="left"
                 variant="event"
@@ -76,11 +73,12 @@ const {
               >
                 <template #append>
                   <CalendarIcon
-                    class="absolute inset-0 -z-10 w-full pointer-events-none object-cover"
+                    class="absolute inset-0 -z-10 w-full pointer-events-none"
                   />
                 </template>
               </BaseInput>
             </div>
+
             <div class="lg:w-3/12">
               <DropdownFilters
                 v-model="activeFields"
@@ -122,16 +120,16 @@ const {
       >
         <h1 class="text-6xl font-bold pt-6">
           Nic Cię nie interesuje?<br>
-          <span class="text-gradient-teal-light">Stwórz własne wydarzenie w LetsEvent</span>
+          <span class="text-gradient-teal-light">
+            Stwórz własne wydarzenie w LetsEvent
+          </span>
         </h1>
-        <div
-          class="flex max-[475px]:flex-col font-normal justify-center gap-x-8 max-sm:gap-4"
-        >
+        <div class="flex gap-x-8">
           <inertia-link
             href="/event"
             class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]"
           >
-            Dodawaj własne wydarzenia
+            Dodaj własne wydarzenie
           </inertia-link>
         </div>
         <div class="lg:w-5/6 lg:flex lg:justify-between text-gray-500">
