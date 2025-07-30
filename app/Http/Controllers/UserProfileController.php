@@ -22,7 +22,7 @@ class UserProfileController extends Controller
             "ownedEvents",
             "followers",
             "followingUsers",
-        ])->load(["organizations", "ownedEvents"]);
+        ])->load(["organizations", "ownedEvents", "badge"]);
 
         return response()->json([
             "message" => __("profile.retrieved"),
@@ -40,7 +40,7 @@ class UserProfileController extends Controller
             "followers",
             "followingUsers",
         ])->load([
-            "organizations", "ownedEvents",
+            "organizations", "ownedEvents", "badge",
         ]);
 
         return response()->json([
@@ -58,7 +58,7 @@ class UserProfileController extends Controller
             ], 302);
         }
 
-        $user->load(["ownedEvents"])->loadCount(["ownedEvents", "followers", "followingUsers"]);
+        $user->load(["ownedEvents", "badge"])->loadCount(["ownedEvents", "followers", "followingUsers"]);
 
         return response()->json([
             "message" => __("profile.retrieved"),
