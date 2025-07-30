@@ -7,6 +7,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Interns2025b\Enums\BadgeType;
+use Interns2025b\Models\Badge;
 use Interns2025b\Models\User;
 
 class AdminSeeder extends Seeder
@@ -24,6 +26,8 @@ class AdminSeeder extends Seeder
             ],
         );
         $admin->assignRole("administrator");
+        $admin->badge()->associate(Badge::query()->where("type", BadgeType::CityExplorer)->first());
+        $admin->save();
 
         $superAdmin = User::firstOrCreate(
             ["email" => "superadmin@example.com"],
@@ -36,5 +40,7 @@ class AdminSeeder extends Seeder
             ],
         );
         $superAdmin->assignRole("superAdministrator");
+        $superAdmin->badge()->associate(Badge::query()->where("type", BadgeType::UrbanLegend)->first());
+        $superAdmin->save();
     }
 }

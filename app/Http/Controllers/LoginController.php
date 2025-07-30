@@ -23,6 +23,7 @@ class LoginController extends Controller
         }
 
         $user = $auth->user();
+        $user->load("badge");
         $token = $user->createToken("token")->plainTextToken;
 
         return response()->json([

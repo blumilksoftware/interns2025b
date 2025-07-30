@@ -14,9 +14,11 @@ class EventControllerTest extends TestCase
     protected User $user;
     protected User $owner;
     protected User $otherUser;
+    protected User $urbanLegend;
     protected User $admin;
     protected User $superadmin;
     protected Event $event;
+    protected array $events;
 
     protected function setUp(): void
     {
@@ -25,6 +27,7 @@ class EventControllerTest extends TestCase
         $this->user = User::factory()->create();
         $this->owner = User::factory()->create();
         $this->otherUser = User::factory()->create();
+        $this->urbanLegend = User::factory()->urbanLegend()->create();
         $this->admin = User::factory()->admin()->create();
         $this->superadmin = User::factory()->superAdmin()->create();
 
@@ -32,12 +35,12 @@ class EventControllerTest extends TestCase
             "owner_type" => get_class($this->owner),
             "owner_id" => $this->owner->id,
         ]);
+
+        $this->events = Event::factory()->count(20)->create()->all();
     }
 
     public function testIndexReturnsPaginatedEvents(): void
     {
-        Event::factory()->count(20)->create();
-
         $response = $this->getJson("/api/events");
 
         $response->assertStatus(Http::HTTP_OK)->assertJsonStructure([
@@ -51,13 +54,11 @@ class EventControllerTest extends TestCase
 
     public function testIndexRespectsPerPageParameter(): void
     {
-        Event::factory()->count(12)->create();
-
         $response = $this->getJson("/api/events?per_page=5");
 
         $response->assertStatus(Http::HTTP_OK);
         $this->assertCount(5, $response->json("data"));
-        $this->assertEquals(3, $response->json("meta.last_page"));
+        $this->assertEquals(5, $response->json("meta.last_page"));
     }
 
     public function testShowReturnsEvent(): void
@@ -261,6 +262,120 @@ class EventControllerTest extends TestCase
             $response->assertStatus(Http::HTTP_UNPROCESSABLE_ENTITY);
             $response->assertJsonValidationErrors(["status"]);
         }
+    }
+
+    public function testUserWithBadgeCanCreateMultiplePublishedEvents(): void
+    {
+        $this->actingAs($this->urbanLegend);
+
+        Event::factory()->create([
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
+            "status" => "published",
+        ]);
+
+        $payload = Event::factory()->make([
+            "status" => "published",
+            "start_time" => now()->addHours(2),
+            "end_time" => now()->addHours(5),
+        ])->toArray();
+
+        $payload["start_time"] = now()->addHours(2)->toISOString();
+        $payload["end_time"] = now()->addHours(5)->toISOString();
+
+        $this->postJson("/api/events", $payload)->assertCreated();
+    }
+
+    public function testUserWithBadgeCanCreateMultipleOngoingEvents(): void
+    {
+        $this->actingAs($this->urbanLegend);
+
+        Event::factory()->create([
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
+            "status" => "ongoing",
+        ]);
+
+        $payload = Event::factory()->make([
+            "status" => "ongoing",
+            "start_time" => now()->addMinutes(10),
+            "end_time" => now()->addHours(1),
+        ])->toArray();
+
+        $payload["start_time"] = now()->addMinutes(10)->toISOString();
+        $payload["end_time"] = now()->addHours(1)->toISOString();
+
+        $this->postJson("/api/events", $payload)->assertCreated();
+    }
+
+    public function testUserWithoutBadgeCannotCreateMultiplePublishedEvents(): void
+    {
+        $this->actingAs($this->user);
+
+        Event::factory()->create([
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
+            "status" => "published",
+        ]);
+
+        $payload = Event::factory()->make([
+            "status" => "published",
+            "start_time" => now()->addDay(),
+            "end_time" => now()->addDays(2),
+        ])->toArray();
+
+        $payload["start_time"] = now()->addDay()->toISOString();
+        $payload["end_time"] = now()->addDays(2)->toISOString();
+
+        $this->postJson("/api/events", $payload)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(["status"]);
+    }
+
+    public function testUserWithBadgeCanUpdateEventToPublishedDespiteOtherActive(): void
+    {
+        $this->actingAs($this->urbanLegend);
+
+        Event::factory()->create([
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
+            "status" => "ongoing",
+        ]);
+
+        $event = Event::factory()->create([
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
+            "status" => "draft",
+        ]);
+
+        $response = $this->putJson("/api/events/{$event->id}", [
+            "status" => "published",
+        ]);
+
+        $response->assertOk();
+    }
+
+    public function testUserWithBadgeCanUpdateEventToOngoingDespiteOtherActive(): void
+    {
+        $this->actingAs($this->urbanLegend);
+
+        Event::factory()->create([
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
+            "status" => "published",
+        ]);
+
+        $event = Event::factory()->create([
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
+            "status" => "draft",
+        ]);
+
+        $response = $this->putJson("/api/events/{$event->id}", [
+            "status" => "ongoing",
+        ]);
+
+        $response->assertOk();
     }
 
     private function createPublishedEventForUser(User $user): Event
