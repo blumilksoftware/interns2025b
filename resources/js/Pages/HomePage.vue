@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { Link as InertiaLink, usePage } from '@inertiajs/vue3'
 import Navbar from '@/Components/Navbar.vue'
 import Map from '@/Components/Map.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
 import Socials from '@/Components/Socials.vue'
 import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
-import type { AuthProps } from '@/types/types'
-import { computed } from 'vue'
+import AppHead from '@/Components/AppHead.vue'
+import { useAuth } from '@/composables/useAuth'
 
-const page = usePage()
-const authProps = computed(() => (page.props as unknown) as AuthProps)
-const isLoggedIn = computed(() => !!authProps.value.auth.user)
+const { isLoggedIn } = useAuth()
+
 </script>
 
 <template>
@@ -103,7 +101,7 @@ const isLoggedIn = computed(() => !!authProps.value.auth.user)
         class="flex flex-col items-center justify-center text-center text-white space-y-16 max-sm:space-y-8"
       >
         <h1 class="text-6xl font-bold pt-6">
-          Bądź na bieżaco<br>
+          Bądź na bieżąco<br>
           <span class="text-gradient-teal-light">dołącz do LetsEvent</span>
         </h1>
         <div
@@ -116,7 +114,7 @@ const isLoggedIn = computed(() => !!authProps.value.auth.user)
             Dodawaj własne wydarzenia
           </inertia-link>
           <inertia-link
-            href="/event"
+            href="/events"
             class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]"
           >
             Bierz udział w wydarzeniach

@@ -1,28 +1,35 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import api from '@/services/api'
+import { ref, onMounted, createApp, h } from 'vue'
 import L from 'leaflet'
+import EventPopUp from '@/Components/EventPopUp.vue'
+import type { EventMarker } from '@/types/events'
 
-const CENTER: [number, number] = [51.21006, 16.1619]
 const INITIAL_ZOOM = 14
-const MIN_ZOOM = 13
+const MIN_ZOOM = 1
 const MAX_ZOOM = 17
-const BOUNDS: [[number, number], [number, number]] = [
-  [51.2597694104174, 16.03829270690674],
-  [51.153081195098444, 16.30093461210093],
-]
 const MAX_BOUNDS_VISCOSITY = 1
 
+const props = defineProps<{
+  center?: [number, number]
+  zoom?: number
+  disableFetch?: boolean
+}>()
+
+const DEFAULT_CENTER: [number, number] = [51.21006, 16.1619]
 const mapElement = ref<HTMLDivElement | null>(null)
 
-onMounted(() => {
+onMounted(async () => {
   if (!mapElement.value) return
 
+  const mapCenter = props.center ?? DEFAULT_CENTER
+  const mapZoom   = props.zoom   ?? INITIAL_ZOOM
+
   const map = L.map(mapElement.value, {
-    center: CENTER,
-    zoom: INITIAL_ZOOM,
+    center: mapCenter,
+    zoom: mapZoom,
     minZoom: MIN_ZOOM,
     maxZoom: MAX_ZOOM,
-    maxBounds: BOUNDS,
     maxBoundsViscosity: MAX_BOUNDS_VISCOSITY,
   })
 
@@ -36,7 +43,28 @@ onMounted(() => {
     },
   ).addTo(map)
 
-  L.marker(CENTER).addTo(map).bindPopup('You are here.')
+  L.marker(mapCenter).addTo(map).bindPopup('You are here.')
+
+  try {
+    if (!props.disableFetch) {
+      const res = await api.get<{ data: EventMarker[] }>('/events')
+      res.data.data.forEach(event => {
+        if (event.latitude != null && event.longitude != null) {
+          const marker = L.marker([event.latitude, event.longitude]).addTo(map)
+          const container = document.createElement('div')
+          createApp({ render: () => h(EventPopUp, { event }) }).mount(container)
+          marker.bindPopup(container, {
+            minWidth: 250,
+            maxWidth: 250,
+            autoPanPadding: [0, 0],
+            className: 'leaflet-popup--custom',
+          })
+        }
+      })
+    }
+  } catch (error) {
+    alert('Nie udało się pobrać wydarzeń:')
+  }
 })
 </script>
 
