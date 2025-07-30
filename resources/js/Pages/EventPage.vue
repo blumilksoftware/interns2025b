@@ -43,7 +43,7 @@ const ownerInfo = computed(() => ({
   ]
     .filter(Boolean)
     .join(' ')
-    .trim() || 'Nieznany',
+    .trim() ?? 'Nieznany',
   ownerType: event.value?.owner_type ?? '',
 }))
 </script>
