@@ -3,15 +3,36 @@ import { Link as InertiaLink } from '@inertiajs/vue3'
 import Navbar from '@/Components/Navbar.vue'
 import Map from '@/Components/Map.vue'
 import BaseInput from '@/Components/BaseInput.vue'
-import BaseButton from '@/Components/BaseButton.vue'
 import Socials from '@/Components/Socials.vue'
 import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
 import AppHead from '@/Components/AppHead.vue'
 import { useAuth } from '@/composables/useAuth'
+import { useEvents } from '@/composables/useEvents'
+import { useSearch } from '@/composables/useSearch'
+import ActiveFilters from '@/Components/ActiveFilters.vue'
+import { onMounted } from 'vue'
+import DropdownFilters from '@/Components/DropdownFilters.vue'
 
 const { isLoggedIn } = useAuth()
 
+const { activeEvents, fetchAll } = useEvents({ all: true, activeOnly: true })
+
+const {
+  query,
+  dateFilter,
+  activeFields,
+  availableFields,
+  filtered,
+} = useSearch(activeEvents, ['title','location','age_category','id'])
+
+
+onMounted(() => {
+  fetchAll().catch(err => {
+    alert('Nie udało się pobrać eventów')
+  })
+})
 </script>
+
 
 <template>
   <app-head title="Home Page" />
@@ -38,11 +59,12 @@ const { isLoggedIn } = useAuth()
           class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl"
         >
           <div
-            class="flex items-center border-none justify-center mb-6 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 h-1/6 [&>*]:mb-1 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
+            class="flex items-center border-none justify-center mb-8 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 gap-y-8 h-1/6 [&>*]:mb-1 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
           >
             <div class="lg:w-6/12 col-span-2">
               <BaseInput
                 id="city"
+                v-model="query"
                 name="city"
                 label="Miasto"
                 type="text"
@@ -56,10 +78,12 @@ const { isLoggedIn } = useAuth()
                   />
                 </template>
               </BaseInput>
+              <ActiveFilters v-model="activeFields" :options="availableFields" />
             </div>
             <div class="lg:w-4/12">
               <BaseInput
                 id="date"
+                v-model="dateFilter"
                 name="date"
                 label="Data"
                 type="date"
@@ -74,23 +98,18 @@ const { isLoggedIn } = useAuth()
               </BaseInput>
             </div>
             <div class="lg:w-3/12">
-              <BaseInput
-                id="xDD"
-                name="email"
-                label="Rodzaj wydarzenia"
-                type="text"
-                placeholder="koncert"
-                variant="event"
+              <DropdownFilters
+                v-model="activeFields"
+                :fields="availableFields"
               />
             </div>
-            <BaseButton
-              class="!bg-zinc-800 !text-white justify-center font-bold px-10 mt-6 col-span-2"
-            >
-              Szukaj
-            </BaseButton>
           </div>
           <div class="w-full h-5/6 bg-white rounded-b-xl">
-            <Map class="min-h-96 aspect-[2/1] max-md:aspect-square" />
+            <Map
+              :events="filtered"
+              :center="[51.21,16.16]"
+              class="min-h-96 aspect-[2/1] max-md:aspect-square"
+            />
           </div>
         </div>
       </div>

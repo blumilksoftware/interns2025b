@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, useSlots, onBeforeMount } from 'vue'
-
-onBeforeMount(() => {
-  if (props.type === 'date' && !model.value) {
-    model.value = new Date().toISOString().slice(0,10)
-  }
-})
+import { ref, computed, useSlots } from 'vue'
 
 type InputType = 'text' | 'email' | 'password' | 'number' | 'search' | 'date';
 const model = defineModel<string>()

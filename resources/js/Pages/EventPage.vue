@@ -206,8 +206,10 @@ const ownerInfo = computed(() => ({
             <div class="rounded-lg shadow-lg bg-white space-y-6 lg:py-11 lg:px-16 p-8">
               <div class="lg:-mx-16 lg:-mt-11 -mt-8 -mx-8 bg-red-200 h-96 rounded-2xl">
                 <Map
+                  :events="[event]"
                   :center="[event.latitude ?? 0, event.longitude ?? 0]"
                   disable-fetch
+                  class="min-h-96"
                 />
               </div>
               <div class="content-center">

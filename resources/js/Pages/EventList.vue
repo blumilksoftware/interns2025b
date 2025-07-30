@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import AppHead from '@/Components/AppHead.vue'
 import Navbar from '@/Components/Navbar.vue'
 import EventCard from '@/Components/EventCard.vue'
-import PaginationComponent from '@/Components/PaginationComponent.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import DropdownFilters from '@/Components/DropdownFilters.vue'
 import { formatDate, formatTime } from '@/utilities/formatDate'
@@ -13,11 +13,20 @@ import Socials from '@/Components/Socials.vue'
 import ActiveFilters from '@/Components/ActiveFilters.vue'
 import InfoBlock from '@/Components/InfoBlock.vue'
 import { Link as InertiaLink } from '@inertiajs/vue3'
+import { useAuth } from '@/composables/useAuth'
+
+const { authUserId } = useAuth()
 
 const { events } = useEvents({ all: true })
 
+const { activeEvents } = useEvents({ all: true, activeOnly: true })
+
+const myEvents = computed(() =>
+  events.value.filter(e => e.owner_id === authUserId.value),
+)
+
 const { query, filtered, activeFields, availableFields, dateFilter } =
-  useSearch(events, ['id', 'title', 'location'])
+  useSearch(activeEvents, ['id', 'title', 'location'])
 </script>
 
 <template>
@@ -87,7 +96,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
           </div>
 
           <div
-            v-if="filtered.length === 0"
+            v-if="!myEvents.length"
             class="flex w-full h-5/6 items-center justify-center"
           >
             <h3 class="w-5/6 text-left font-medium size-4 text-gray-800 my-3">
@@ -95,7 +104,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
             </h3>
             <div class="flex gap-8">
               <EventCard
-                v-for="e in filtered"
+                v-for="e in myEvents"
                 :id="e.id"
                 :key="e.id"
                 :image-url="e.image_url"

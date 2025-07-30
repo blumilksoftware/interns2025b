@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import api from '@/services/api'
 import type { RawEvent } from '@/types/events'
 
@@ -7,78 +7,86 @@ interface Meta {
   last_page:    number
 }
 
-interface UseEventsOptions {
+export interface UseEventsOptions {
   all?: boolean
-  userOnly?: boolean
-  userId?: number
+  activeOnly?: boolean
 }
 
 export function useEvents(options?: UseEventsOptions) {
   const events = ref<RawEvent[]>([])
-  const search = ref<string>('')
-  const page   = ref<number>(1)
-  const meta   = ref<Meta>({ current_page: 1, last_page: 1 })
+  const search = ref('')
+  const page  = ref(1)
+  const meta  = ref<Meta>({ current_page: 1, last_page: 1 })
 
-  function buildParams(p: number) {
-    return {
-      search: search.value,
-      page:   p,
-      user_id: options?.userOnly ? options.userId : undefined,
-    }
-  }
-
-  async function fetchEventsPage() {
-    const res = await api.get<{ data: RawEvent[], meta: Meta }>('/events', {
-      params: buildParams(page.value),
+  async function fetchPage() {
+    const res = await api.get<{
+      data: RawEvent[]
+      meta: Meta
+    }>('/events', {
+      params: { search: search.value, page: page.value },
     })
     return res.data
   }
 
   async function fetchAll() {
     let allData: RawEvent[] = []
-    let nextPage = 1
+    let next = 1
+    let last = 1
 
     do {
-      const res = await api.get<{ data: RawEvent[], meta: Meta }>('/events', {
-        params: buildParams(nextPage),
+      const res = await api.get<{
+        data: RawEvent[]
+        meta: Meta
+      }>('/events', {
+        params: { search: search.value, page: next },
       })
       allData = allData.concat(res.data.data)
-      nextPage = res.data.meta.current_page + 1
-      meta.value.last_page = res.data.meta.last_page
-    } while (nextPage <= meta.value.last_page)
+      next = res.data.meta.current_page + 1
+      last = res.data.meta.last_page
+    } while (next <= last)
 
     events.value = allData
-    page.value = 1
-    meta.value = { current_page: 1, last_page: 1 }
+    meta.value   = { current_page: 1, last_page: 1 }
   }
 
   if (options?.all) {
-    fetchAll().catch(err => console.error('useEvents fetchAll error:', err))
-    watch(search, () => {
-      fetchAll().catch(err => console.error('useEvents fetchAll error:', err))
-    })
+    fetchAll().catch(console.error)
   } else {
     watch(
       [search, page],
       async () => {
         try {
-          const { data, meta: m } = await fetchEventsPage()
+          const { data, meta: m } = await fetchPage()
           events.value = data
           meta.value   = m
         } catch (err) {
-          console.error('useEvents fetchEventsPage error:', err)
+          console.error(err)
         }
       },
       { immediate: true },
     )
   }
 
-  function prevPage() {
-    if (page.value > 1) page.value--
-  }
-  function nextPage() {
-    if (page.value < meta.value.last_page) page.value++
-  }
+  const activeEvents = computed(() => {
+    if (!options?.activeOnly) {
+      return events.value
+    }
+    return events.value.filter(e =>
+      e.status === 'published' || e.status === 'ongoing',
+    )
+  })
 
-  return { events, search, page, meta, prevPage, nextPage, fetchAll }
+  function prevPage() { if (page.value > 1) page.value-- }
+  function nextPage() { if (page.value < meta.value.last_page) page.value++ }
+
+  return {
+    events,
+    activeEvents,
+    search,
+    page,
+    meta,
+    prevPage,
+    nextPage,
+    fetchAll,
+  }
 }

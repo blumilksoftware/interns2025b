@@ -1,77 +1,70 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import L from 'leaflet'
-import { useEvents } from '@/composables/useEvents'
-import EventPopUp from '@/Components/EventPopUp.vue'
+import { onMounted, watch, ref, toRef } from 'vue'
+import L, { type LatLngExpression, type Map as LeafletMap } from 'leaflet'
 import { createApp, h } from 'vue'
-import type { EventMarker } from '@/types/events'
-
-const INITIAL_ZOOM = 14
-const MIN_ZOOM = 1
-const MAX_ZOOM = 17
-const MAX_BOUNDS_VISCOSITY = 1
+import EventPopUp from '@/Components/EventPopUp.vue'
+import type { RawEvent } from '@/types/events'
 
 const props = defineProps<{
+  events: RawEvent[]
   center?: [number, number]
   zoom?: number
-  disableFetch?: boolean
+  minZoom?: number
+  maxZoom?: number
+  maxBounds?: [[number, number], [number, number]]
+  maxBoundsViscosity?: number
 }>()
 
-const DEFAULT_CENTER: [number, number] = [51.21006, 16.1619]
-const mapElement = ref<HTMLDivElement | null>(null)
-const { events, fetchAll } = useEvents({ all: true })
 
-onMounted(async () => {
-  if (!mapElement.value) return
+const mapEl = ref<HTMLElement|null>(null)
+let map: LeafletMap
 
-  const mapCenter = props.center ?? DEFAULT_CENTER
-  const mapZoom   = props.zoom   ?? INITIAL_ZOOM
+onMounted(() => {
+  if (!mapEl.value) return
 
-  const map = L.map(mapElement.value, {
-    center: mapCenter,
-    zoom: mapZoom,
-    minZoom: MIN_ZOOM,
-    maxZoom: MAX_ZOOM,
-    maxBoundsViscosity: MAX_BOUNDS_VISCOSITY,
+  map = L.map(mapEl.value, {
+    center: (props.center as LatLngExpression) ?? [51.21,16.16],
+    zoom:   props.zoom   ?? 14,
+    minZoom: props.minZoom ?? 3,
+    maxZoom: props.maxZoom ?? 18,
+    maxBounds: props.maxBounds,
+    maxBoundsViscosity: props.maxBoundsViscosity ?? 0.5,
   })
 
   L.tileLayer(
     'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19,
-    },
+    { attribution: '&copy; OpenStreetMap contributors' },
   ).addTo(map)
 
-  L.marker(mapCenter)
-    .addTo(map)
-    .bindPopup('You are here.')
+  props.events.forEach(addMarker)
 
-  if (!props.disableFetch) {
-    try {
-      await fetchAll()
+  watch(() => props.events, (newList) => {
+    map.eachLayer(layer => {
+      if ((layer as any).getLatLng) map.removeLayer(layer)
+    })
+    newList.forEach(addMarker)
+  })
 
-      events.value.forEach((evt: EventMarker) => {
-        if (evt.latitude != null && evt.longitude != null) {
-          const marker = L.marker([evt.latitude, evt.longitude]).addTo(map)
-          const container = document.createElement('div')
-          createApp({ render: () => h(EventPopUp, { event: evt }) }).mount(container)
-          marker.bindPopup(container, {
-            minWidth: 250,
-            maxWidth: 250,
-            autoPanPadding: [0, 0],
-            className: 'leaflet-popup--custom',
-          })
-        }
-      })
-    } catch (error) {
-      alert('Nie udało się pobrać wydarzeń. Spróbuj ponownie później.')
-      console.error(error)
+  const centerRef = toRef(props, 'center')
+  watch(centerRef, (newCenter) => {
+    if (newCenter && map) {
+      map.setView(newCenter as LatLngExpression, props.zoom)
     }
-  }
+  })
 })
+
+function addMarker(evt: RawEvent) {
+  if (evt.latitude != null && evt.longitude != null) {
+    const m = L.marker([evt.latitude, evt.longitude]).addTo(map)
+    const c = document.createElement('div')
+    createApp({ render: () => h(EventPopUp, { event: evt }) }).mount(c)
+    m.bindPopup(c, {
+      minWidth:  250,
+      maxWidth:  250,
+      className: 'leaflet-popup--custom',
+    })
+  }
+}
 </script>
 
 <template>

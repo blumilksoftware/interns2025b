@@ -28,14 +28,14 @@ onClickOutside(dropdownEl, () => (isOpen.value = false))
 </script>
 
 <template>
-  <div ref="dropdownEl" class="relative inline-block">
+  <div ref="dropdownEl" class="relative w-full inline-block">
     <button class="w-full h-12 px-3 mt-6 font-medium rounded-lg transition duration-100 ease-in-out focus:outline-none border bg-white text-gray-400 hover:bg-gray-50 border-none focus:ring-2 focus:ring-brand-light focus:border-indigo-500" @click="toggleDropdown">
       Filtry
     </button>
 
     <ul
       v-if="isOpen"
-      class="absolute mt-2 bg-white border rounded shadow w-40 z-10 max-h-60 overflow-auto"
+      class="absolute mt-2 bg-white border rounded shadow w-40 z-[500] max-h-60 overflow-auto"
     >
       <li
         v-for="f in props.fields"

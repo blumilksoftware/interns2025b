@@ -2,9 +2,9 @@
 import { Link as InertiaLink } from '@inertiajs/vue3'
 import { formatDate, formatTime } from '@/utilities/formatDate'
 import BaseButton from '@/Components/BaseButton.vue'
-import type { EventMarker } from '@/types/events'
+import type { RawEvent } from '@/types/events'
 
-defineProps<{ event: EventMarker }>()
+defineProps<{ event: RawEvent }>()
 </script>
 
 <template>
