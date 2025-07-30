@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Link as InertiaLink } from '@inertiajs/vue3'
 import { useAuth } from '@/composables/useAuth'
 
 const { isLoggedIn, logout } = useAuth()

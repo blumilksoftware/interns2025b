@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Link as InertiaLink } from '@inertiajs/vue3'
 import Navbar from '@/Components/Navbar.vue'
 import Map from '@/Components/Map.vue'
 import BaseInput from '@/Components/BaseInput.vue'
