@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Interns2025b\Http\Controllers;
 
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Interns2025b\Http\Requests\StoreReportRequest;
 use Interns2025b\Http\Resources\ReportResource;
@@ -29,7 +28,7 @@ class ReportController
         $alreadyReported = Report::alreadyReportedToday(
             $user->id,
             $type,
-            (int) $request->input("id")
+            (int)$request->input("id"),
         );
 
         if ($alreadyReported) {
