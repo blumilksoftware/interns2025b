@@ -1,0 +1,33 @@
+<script setup lang="ts">
+const props = withDefaults(defineProps<{
+
+  modelValue?: string[]
+}>(), {
+  modelValue: () => [],
+})
+
+const emit = defineEmits<(e: 'update:modelValue', newList: string[]) => void>()
+
+function remove(field: string) {
+  emit('update:modelValue', props.modelValue.filter(f => f !== field))
+}
+</script>
+
+<template>
+  <div v-if="modelValue.length" class="w-full absolute flex flex-wrap gap-2 mt-2">
+    <span
+      v-for="f in modelValue"
+      :key="f"
+      class="bg-gray-200 px-2 py-1 rounded-full flex items-center text-xs"
+    >
+      {{ f }}
+      <button
+        class="ml-1 text-gray-600 hover:text-gray-800"
+        aria-label="Usuń filtr"
+        @click="remove(f)"
+      >
+        ×
+      </button>
+    </span>
+  </div>
+</template>
