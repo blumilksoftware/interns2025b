@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3'
 import Navbar from '@/Components/Navbar.vue'
 import Map from '@/Components/Map.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
 import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
-import type { AuthProps } from '@/types/types'
-import { computed } from 'vue'
 import Footer from '@/Components/Footer.vue'
-
-const page = usePage()
-const authProps = computed(() => (page.props as unknown) as AuthProps)
-computed(() => !!authProps.value.auth.user)
 </script>
 
 <template>
