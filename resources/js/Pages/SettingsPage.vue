@@ -23,9 +23,9 @@ const profileForm = useApiForm<ProfilePayload, { message: string }>(
 )
 
 interface PasswordPayload {
-  current_password:        string
-  new_password:            string
-  confirm_password:        string
+  current_password: string
+  new_password: string
+  confirm_password: string
 }
 const passwordForm = useApiForm<PasswordPayload, { message: string }>(
   { current_password: '', new_password: '', confirm_password: '' },
@@ -33,8 +33,8 @@ const passwordForm = useApiForm<PasswordPayload, { message: string }>(
     endpoint: 'api/auth/change-password',
     method: 'put',
     transform: (d) => ({
-      current_password:          d.current_password,
-      new_password:              d.new_password,
+      current_password: d.current_password,
+      new_password: d.new_password,
       new_password_confirmation: d.confirm_password,
     }),
     onSuccess: (res) => {

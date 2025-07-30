@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import api from '@/services/api'
-import { router } from '@inertiajs/vue3'
+import { Link as InertiaLink, router } from '@inertiajs/vue3'
 import BaseButton from '@/Components/BaseButton.vue'
 import InfoBlock from '@/Components/InfoBlock.vue'
 import type { UserDetail } from '@/types/types'
 import { useAuth } from '@/composables/useAuth'
 import { useInteractions } from '@/composables/useInteractions'
 import { useEvents } from '@/composables/useEvents'
-import { formatDate } from '@/utilities/formatDate'
+import { formatDate, formatTime } from '@/utilities/formatDate'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps<{ userId?: number }>()
@@ -82,15 +82,13 @@ async function onFollow() {
                 <span class="font-medium text-[#777777]">Wydarzenia</span>
               </p>
             </div>
-
-            <BaseButton
-              v-if="isMyProfile"
-              as="a"
-              href="/settings"
-              class="w-3/4 bg-black text-white"
-            >
-              Edytuj profil
-            </BaseButton>
+            <InertiaLink v-if="isMyProfile" href="/settings">
+              <BaseButton
+                class="w-3/4 bg-black text-white"
+              >
+                Edytuj profil
+              </BaseButton>
+            </InertiaLink>
             <BaseButton
               v-else
               class="w-3/4 bg-black text-white"
@@ -108,11 +106,13 @@ async function onFollow() {
             <InfoBlock
               v-for="event in eventsByOwner"
               :key="event.id"
-              :image-url="event.image_url"
+              :header="`${formatDate(event.start)} - ${formatTime(event.start)}`"
               :title="event.title"
-              :line1="event.location || 'Brak lokalizacji'"
-              :line2="formatDate(event.start)"
-              :line3="event.age_category || 'Brak'"
+              :image-url="event.image_url"
+              :info-items="[
+                event.location ?? 'Brak lokalizacji',
+                event.age_category ?? 'Brak kategorii',
+              ]"
             />
             <div v-if="!eventsByOwner.length" class="flex flex-col size-full space-y-20 mt-10 align-bottom place-content-center ">
               <magnifying-glass-icon class="h-64 " />
@@ -124,16 +124,13 @@ async function onFollow() {
         </div>
         <BaseButton
           v-if="!props.userId && user"
-          class="w-full bg-red-600 text-white"
+          class="max-sm:w-full px-4 bg-red-600 text-white"
           @click="logout"
         >
           Wyloguj się
         </BaseButton>
 
-        <div class="pt-4 border-t border-gray-200 text-left text-sm space-y-1">
-          <p><span class="font-semibold">ID:</span> {{ user?.id ?? '' }}</p>
-          <p><span class="font-semibold">E-mail:</span> {{ user?.email || '' }}</p>
-        </div>
+        <div class="pt-4 border-t border-gray-200 text-left text-sm space-y-1"></div>
       </div>
     </div>
   </div>

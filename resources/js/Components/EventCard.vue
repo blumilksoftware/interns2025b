@@ -20,7 +20,7 @@ withDefaults(
 
 <template>
   <InertiaLink
-    :href="`/event/${id}`"
+    :href="`/events/${id}`"
     class="block max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition delay-100 duration-300 hover:scale-105"
   >
     <img

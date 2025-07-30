@@ -2,7 +2,8 @@
 import Navbar from '@/Components/Navbar.vue'
 import Map from '@/Components/Map.vue'
 import BaseInput from '@/Components/BaseInput.vue'
-import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
+import { CalendarIcon } from '@heroicons/vue/24/outline'
+import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import Footer from '@/Components/Footer.vue'
 import AppHead from '@/Components/AppHead.vue'
 import { useEvents } from '@/composables/useEvents'
@@ -61,14 +62,13 @@ onMounted(() => {
                 id="city"
                 v-model="query"
                 name="city"
-                label="Miasto"
+                label="Wyszukaj wydarzenia"
                 type="text"
-                placeholder="Legnica"
                 append-position="left"
                 variant="event"
               >
                 <template #append>
-                  <MapPinIcon
+                  <MagnifyingGlassIcon
                     class="size-5 text-brand-light absolute left-3 top-3.5 pointer-events-none"
                   />
                 </template>

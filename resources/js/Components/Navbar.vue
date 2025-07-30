@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { Link as InertiaLink } from '@inertiajs/vue3'
+import { Link as InertiaLink, usePage } from '@inertiajs/vue3'
 import { useAuth } from '@/composables/useAuth'
+import { computed } from 'vue'
+
+const page = usePage()
 
 const { isLoggedIn, logout } = useAuth()
 

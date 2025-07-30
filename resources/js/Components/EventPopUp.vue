@@ -40,7 +40,7 @@ defineProps<{ event: RawEvent }>()
           </p>
         </div>
         <div>
-          <InertiaLink :href="`/event/${event.id}`">
+          <InertiaLink :href="`/events/${event.id}`">
             <BaseButton
               type="button"
               class="w-full bg-zinc-800 text-white justify-center font-bold px-10 "

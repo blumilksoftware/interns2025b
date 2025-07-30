@@ -14,7 +14,7 @@ function remove(field: string) {
 </script>
 
 <template>
-  <div v-if="modelValue.length" class="w-full absolute flex flex-wrap gap-2 mt-2">
+  <div v-if="modelValue.length" class=" absolute flex flex-wrap gap-2 mt-2">
     <span
       v-for="f in modelValue"
       :key="f"

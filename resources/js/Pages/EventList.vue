@@ -8,7 +8,8 @@ import DropdownFilters from '@/Components/DropdownFilters.vue'
 import { formatDate, formatTime } from '@/utilities/formatDate'
 import { useEvents } from '@/composables/useEvents'
 import { useSearch } from '@/composables/useSearch'
-import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
+import { CalendarIcon } from '@heroicons/vue/24/outline'
+import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import Socials from '@/Components/Socials.vue'
 import ActiveFilters from '@/Components/ActiveFilters.vue'
 import InfoBlock from '@/Components/InfoBlock.vue'
@@ -46,10 +47,10 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
           >
         </div>
         <div
-          class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl"
+          class="w-full relative flex flex-col items-center lg:pt-6 pb-6 bg-[#F2F2F2] min-h-[40rem] overflow-visible md:rounded-xl"
         >
           <div
-            class="flex items-center justify-center mb-6 text-sm gap-x-2 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
+            class="flex items-center justify-center mb-8 text-sm gap-x-2 gap-y-8 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
           >
             <div class="lg:w-6/12 col-span-2">
               <BaseInput
@@ -61,7 +62,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
                 variant="event"
               >
                 <template #append>
-                  <MapPinIcon
+                  <MagnifyingGlassIcon
                     class="size-5 text-brand-light absolute left-3 top-3.5 pointer-events-none"
                   />
                 </template>
@@ -96,7 +97,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
           </div>
 
           <div
-            v-if="!myEvents.length"
+            v-if="myEvents.length > 0"
             class="flex w-full h-5/6 items-center justify-center"
           >
             <h3 class="w-5/6 text-left font-medium size-4 text-gray-800 my-3">
@@ -125,7 +126,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
                 <InertiaLink
                   v-for="e in filtered"
                   :key="e.id"
-                  :href="`/event/${e.id}`"
+                  :href="`/events/${e.id}`"
                   class="block hover:shadow-lg transition-shadow rounded-lg overflow-hidden"
                 >
                   <InfoBlock
@@ -138,17 +139,18 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
                       e.location ?? 'Brak lokalizacji',
                       e.age_category ?? 'Brak kategorii',
                     ]"
+                    class="bg-white p-4"
                   />
                 </InertiaLink>
               </div>
             </div>
-            <p
-              v-if="filtered.length === 0"
-              class="mt-8 text-center text-gray-500"
-            >
-              Brak wyników.
-            </p>
           </div>
+          <p
+            v-if="filtered.length === 0"
+            class="mt-8 text-center text-gray-500"
+          >
+            Brak wyników.
+          </p>
         </div>
       </div>
     </div>
@@ -166,13 +168,13 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
         </h1>
         <div class="flex gap-x-8">
           <inertia-link
-            href="/event"
+            href="/event/create"
             class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]"
           >
             Dodaj własne wydarzenie
           </inertia-link>
         </div>
-        <div class="lg:w-5/6 lg:flex lg:justify-between text-gray-500">
+        <div class="w-11/12 lg:flex lg:justify-between text-gray-500">
           <div class="order-1 lg:order-2 max-lg:mb-1">
             <div class="flex max-sm:flex-col order-2 gap-x-4">
               <ul class="flex justify-center order-1 max-sm:order-2 gap-x-4">
