@@ -18,6 +18,12 @@ class UserProfileController extends Controller
     {
         $user = $request->user();
 
+        $user->loadCount([
+            "ownedEvents",
+            "followers",
+            "followingUsers",
+        ])->load(["organizations", "ownedEvents", "badge"]);
+
         return response()->json([
             "message" => __("profile.retrieved"),
             "data" => new UserResource($user),
@@ -28,6 +34,14 @@ class UserProfileController extends Controller
     {
         $user = $request->user();
         $user->update($request->validated());
+
+        $user->loadCount([
+            "ownedEvents",
+            "followers",
+            "followingUsers",
+        ])->load([
+            "organizations", "ownedEvents", "badge",
+        ]);
 
         return response()->json([
             "message" => __("profile.updated"),
@@ -44,7 +58,7 @@ class UserProfileController extends Controller
             ], 302);
         }
 
-        $user->load(["ownedEvents"])->loadCount(["ownedEvents", "followers", "followingUsers"]);
+        $user->load(["ownedEvents", "badge"])->loadCount(["ownedEvents", "followers", "followingUsers"]);
 
         return response()->json([
             "message" => __("profile.retrieved"),

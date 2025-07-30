@@ -20,7 +20,7 @@ class UserManagementController extends Controller
         $this->authorize("viewAny", User::class);
 
         $users = User::query()
-            ->with("organizations")
+            ->with("organizations", "badge")
             ->role(Role::User->value)
             ->orderBy("id")
             ->get();
@@ -32,7 +32,7 @@ class UserManagementController extends Controller
     {
         $this->authorize("view", $user);
 
-        $user->load("organizations");
+        $user->load("organizations", "badge");
 
         return response()->json(new UserResource($user), Status::HTTP_OK);
     }

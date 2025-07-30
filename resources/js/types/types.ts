@@ -36,3 +36,35 @@ export interface UserDetail {
   following_count: number
   events: Array<{ id: number, title: string, date: string }>
 }
+
+export interface EventForm {
+  id?: number
+  title: string
+  description?: string
+  start: string
+  end: string
+  location: string
+  address?: string
+  latitude?: number | null
+  longitude?: number | null
+  is_paid: boolean
+  price?: number | null
+  status: 'draft' | 'published' | 'cancelled'
+  image_url?: string
+  age_category?: string
+}
+
+
+export interface OrganizationForm {
+  name: string
+  owner_id?: number | null
+  group_url?: string
+  avatar_url?: string
+}
+
+export interface SelectOption {
+  label: string
+  value: string
+}
+
+

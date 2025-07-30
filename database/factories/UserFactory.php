@@ -7,7 +7,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Interns2025b\Enums\BadgeType;
 use Interns2025b\Enums\Role;
+use Interns2025b\Models\Badge;
 use Interns2025b\Models\User;
 
 /**
@@ -54,6 +56,22 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user): void {
             $user->syncRoles(Role::SuperAdministrator);
+        });
+    }
+
+    public function cityExplorer(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $badge = Badge::query()->where("type", BadgeType::CityExplorer)->first();
+            $user->badge()->associate($badge)->save();
+        });
+    }
+
+    public function urbanLegend(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $badge = Badge::query()->where("type", BadgeType::UrbanLegend)->first();
+            $user->badge()->associate($badge)->save();
         });
     }
 }

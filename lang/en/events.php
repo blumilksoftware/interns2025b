@@ -22,4 +22,5 @@ return [
     "unauthorized" => "You are not authorized to perform this action on the event.",
     "deleted_from_organization" => "Event deleted from organization.",
     "not_member" => "You are not a member of this organization.",
+    "limit_reached" => "You have reached the maximum published or ongoing events.",
 ];

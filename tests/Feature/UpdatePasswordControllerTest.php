@@ -83,6 +83,29 @@ class UpdatePasswordControllerTest extends TestCase
         $response->assertUnauthorized();
     }
 
+    public function testPasswordChangeIsThrottledAfterLimit(): void
+    {
+        $user = User::factory()->create([
+            "password" => Hash::make("OldPassword123"),
+        ]);
+
+        $this->actingAs($user, "sanctum");
+
+        $this->putJson("/api/auth/change-password", [
+            "current_password" => "OldPassword123",
+            "new_password" => "NewPassword456",
+            "new_password_confirmation" => "NewPassword456",
+        ])->assertStatus(200)
+            ->assertJson(["message" => __("passwords.updated_successfully")]);
+
+        $this->putJson("/api/auth/change-password", [
+            "current_password" => "NewPassword456",
+            "new_password" => "NewPassword789",
+            "new_password_confirmation" => "NewPassword789",
+        ])->assertStatus(429)
+            ->assertJson(["message" => __("passwords.throttled")]);
+    }
+
     protected function authenticatedUser(): User
     {
         $user = User::factory()->create([

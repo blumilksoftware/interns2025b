@@ -59,7 +59,8 @@ class UserManagementControllerTest extends TestCase
                         ->where("events_count", $this->userWithRole->owned_events_count)
                         ->where("followers_count", $this->userWithRole->followers_count)
                         ->where("following_count", $this->userWithRole->following_users_count)
-                        ->has("organizations", 1),
+                        ->has("organizations", 1)
+                        ->where("badge", optional($this->userWithRole->badge)?->only("name")),
                 ),
         );
     }

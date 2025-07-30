@@ -3,6 +3,8 @@ import { Link as InertiaLink } from '@inertiajs/vue3'
 import { useAuth } from '@/composables/useAuth'
 
 const { isLoggedIn, logout } = useAuth()
+
+const isHomePage = computed(() => page.url === '/')
 </script>
 
 <template>
@@ -27,8 +29,18 @@ const { isLoggedIn, logout } = useAuth()
       </template>
     </div>
 
-    <div class="flex flex-col space-y-6 items-center justify-center text-center mb-6">
-      <img src="/images/LogoBrand.png" alt="LetsEvent">
+    <div
+      class="flex flex-col space-y-6 items-center justify-center text-center mb-6"
+    >
+      <template v-if="isHomePage">
+        <img src="/images/LogoBrand.png" alt="LetsEvent">
+      </template>
+      <template v-else>
+        <InertiaLink href="/">
+          <img src="/images/LogoBrand.png" alt="LetsEvent" class="hover:opacity-80 transition-opacity">
+        </InertiaLink>
+      </template>
+
       <slot />
     </div>
   </div>
