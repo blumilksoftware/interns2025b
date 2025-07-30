@@ -120,6 +120,11 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         return 1 + $bonus;
     }
 
+    public function reports(): HasMany
+    {
+        return $this->hasMany(Report::class, "reporter_id");
+    }
+
     protected function casts(): array
     {
         return [

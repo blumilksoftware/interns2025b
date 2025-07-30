@@ -17,6 +17,7 @@ use Interns2025b\Http\Controllers\OrganizationController;
 use Interns2025b\Http\Controllers\OrganizationEventController;
 use Interns2025b\Http\Controllers\OrganizationInvitationController;
 use Interns2025b\Http\Controllers\RegisterController;
+use Interns2025b\Http\Controllers\ReportController;
 use Interns2025b\Http\Controllers\ResetPasswordController;
 use Interns2025b\Http\Controllers\UpdatePasswordController;
 use Interns2025b\Http\Controllers\UserDeletionController;
@@ -40,6 +41,7 @@ Route::middleware("auth:sanctum")->group(function (): void {
     Route::post("/events", [EventController::class, "store"]);
     Route::put("/events/{event}", [EventController::class, "update"]);
     Route::delete("/events/{event}", [EventController::class, "destroy"]);
+    Route::post("/reports", [ReportController::class, "store"]);
 
     Route::scopeBindings()->group(function (): void {
         Route::get("/organizations/{organization}/events", [OrganizationEventController::class, "index"]);
@@ -48,7 +50,6 @@ Route::middleware("auth:sanctum")->group(function (): void {
         Route::delete("/organizations/{organization}/events/{event}", [OrganizationEventController::class, "destroy"]);
     });
 });
-
 Route::get("/confirm-delete/{user}", [UserDeletionController::class, "confirmDelete"])
     ->middleware("signed")
     ->name("api.confirmDelete");
@@ -81,6 +82,9 @@ Route::group(["prefix" => "admin", "middleware" => ["auth:sanctum", "role:admini
     Route::put("/users/{user}", [UserManagementController::class, "update"])->name("users.update");
     Route::delete("/users/{user}", [UserManagementController::class, "destroy"])->name("users.destroy");
     Route::resource("organizations", OrganizationController::class);
+    Route::get("/reports/users", [ReportController::class, "userReports"]);
+    Route::get("/reports/organizations", [ReportController::class, "organizationReports"]);
+    Route::get("/reports/events", [ReportController::class, "eventReports"]);
 });
 
 Route::group(["middleware" => ["auth:sanctum", "role:superAdministrator"]], function (): void {
