@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Interns2025b\Models\Event;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\Report;
@@ -15,10 +14,9 @@ use Tests\TestCase;
 
 class ReportTest extends TestCase
 {
-    use RefreshDatabase;
-
     private User $reporter;
     private User $targetUser;
+    private User $anotherUser;
     private Organization $organization;
     private Event $event;
 
@@ -26,8 +24,9 @@ class ReportTest extends TestCase
     {
         parent::setUp();
 
-        $this->reporter = User::factory()->create();
+        $this->reporter = User::factory()->admin()->create();
         $this->targetUser = User::factory()->create();
+        $this->anotherUser = User::factory()->create();
         $this->organization = Organization::factory()->create();
         $this->event = Event::factory()->create();
     }
@@ -40,6 +39,7 @@ class ReportTest extends TestCase
         ]);
 
         $response->assertStatus(Status::HTTP_OK);
+
         $this->assertDatabaseHas("reports", [
             "reportable_type" => User::class,
             "reportable_id" => $this->targetUser->id,
@@ -115,7 +115,7 @@ class ReportTest extends TestCase
     {
         $response = $this->actingAs($this->reporter)->postJson("/api/reports", [
             "type" => "invalid_type",
-            "id" => 999,
+            "id" => 123,
         ]);
 
         $response->assertStatus(Status::HTTP_UNPROCESSABLE_ENTITY);
@@ -142,7 +142,7 @@ class ReportTest extends TestCase
 
     public function testReasonFieldIsStored(): void
     {
-        $reason = "Inappropriate content";
+        $reason = "Violation";
 
         $response = $this->actingAs($this->reporter)->postJson("/api/reports", [
             "type" => "organization",
@@ -151,6 +151,7 @@ class ReportTest extends TestCase
         ]);
 
         $response->assertStatus(Status::HTTP_OK);
+
         $this->assertDatabaseHas("reports", [
             "reportable_type" => Organization::class,
             "reportable_id" => $this->organization->id,
@@ -161,16 +162,65 @@ class ReportTest extends TestCase
 
     public function testDifferentUsersCanReportSameTarget(): void
     {
-        $anotherUser = User::factory()->create();
-
         $this->actingAs($this->reporter)->postJson("/api/reports", [
             "type" => "user",
             "id" => $this->targetUser->id,
         ])->assertStatus(Status::HTTP_OK);
 
-        $this->actingAs($anotherUser)->postJson("/api/reports", [
+        $this->actingAs($this->anotherUser)->postJson("/api/reports", [
             "type" => "user",
             "id" => $this->targetUser->id,
         ])->assertStatus(Status::HTTP_OK);
+    }
+
+    public function testUserCanViewUserReports(): void
+    {
+        Report::factory()->create([
+            "reportable_type" => User::class,
+            "reportable_id" => $this->targetUser->id,
+            "reporter_id" => $this->reporter->id,
+        ]);
+
+        $response = $this->actingAs($this->reporter)->getJson("/api/admin/reports/users");
+
+        $response->assertStatus(Status::HTTP_OK)
+            ->assertJsonStructure([
+                "data" => [["id", "created_at", "reason", "reportable_type", "reportable_id"]],
+            ])
+            ->assertJsonFragment(["reportable_type" => "User"]);
+    }
+
+    public function testUserCanViewOrganizationReports(): void
+    {
+        Report::factory()->create([
+            "reportable_type" => Organization::class,
+            "reportable_id" => $this->organization->id,
+            "reporter_id" => $this->reporter->id,
+        ]);
+
+        $response = $this->actingAs($this->reporter)->getJson("/api/admin/reports/organizations");
+
+        $response->assertStatus(Status::HTTP_OK)
+            ->assertJsonStructure([
+                "data" => [["id", "created_at", "reason", "reportable_type", "reportable_id"]],
+            ])
+            ->assertJsonFragment(["reportable_type" => "Organization"]);
+    }
+
+    public function testUserCanViewEventReports(): void
+    {
+        Report::factory()->create([
+            "reportable_type" => Event::class,
+            "reportable_id" => $this->event->id,
+            "reporter_id" => $this->reporter->id,
+        ]);
+
+        $response = $this->actingAs($this->reporter)->getJson("/api/admin/reports/events");
+
+        $response->assertStatus(Status::HTTP_OK)
+            ->assertJsonStructure([
+                "data" => [["id", "created_at", "reason", "reportable_type", "reportable_id"]],
+            ])
+            ->assertJsonFragment(["reportable_type" => "Event"]);
     }
 }
