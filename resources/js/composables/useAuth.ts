@@ -17,7 +17,7 @@ export function useAuth() {
       await api.post('/auth/logout')
       sessionStorage.removeItem('token')
     } catch (error) {
-      alert('Wystąpił propblem podczas wylogowania')
+      alert('Wystąpił problem podczas wylogowania')
     } finally {
       router.visit('/login', { method: 'get' })
     }
