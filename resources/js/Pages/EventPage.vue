@@ -36,7 +36,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <AppHead :title="event?.title || 'Wydarzenie'" />
+  <AppHead :title="event?.title ?? 'Wydarzenie'" />
   <div v-if="!loading && event" class="w-full mb-16 sm:mb-12 flex-col">
     <Navbar class="mb-[72px]" />
 
@@ -47,7 +47,7 @@ onMounted(async () => {
         class="sm:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] flex justify-between items-center bg-white rounded-full shadow px-6 py-3 w-fit max-w-full"
       >
         <p class="text-brand-dark font-medium whitespace-nowrap">
-          {{ event.participants?.length || 0 }} osób weźmie udział
+          {{ event.participants?.length ?? 0 }} osób weźmie udział
         </p>
         <BaseButton class="ml-4 h-7 bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap">
           Invite
