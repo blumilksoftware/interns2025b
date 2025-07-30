@@ -27,7 +27,7 @@ class ReportController
             "event" => Event::class,
         };
 
-        $alreadyReported = Report::where("reporter_id", $user->id)
+        $alreadyReported = Report::query()->where("reporter_id", $user->id)
             ->where("reportable_type", $type)
             ->where("reportable_id", $request->input("id"))
             ->whereDate("created_at", Carbon::today())
@@ -54,7 +54,7 @@ class ReportController
     public function userReports(): AnonymousResourceCollection
     {
         return ReportResource::collection(
-            Report::where("reportable_type", User::class)->latest()->get(),
+            Report::query()->where("reportable_type", User::class)->latest()->get(),
         );
     }
 
