@@ -5,12 +5,14 @@ withDefaults(
     icon?: object | null
     imageUrl?: string | null
     title?: string | null
+    header?: string | null
     infoItems?: string[] | null
   }>(),
   {
     icon: DefaultIcon,
     imageUrl: undefined,
     title: '',
+    header: '',
     infoItems: () => [],
   },
 )
@@ -34,6 +36,7 @@ withDefaults(
       />
     </div>
     <div class="flex flex-col">
+      <p class="sm:text-sm text-xs text-left text-gray-500">{{ header }}</p>
       <h2 class="sm:text-3xl text-left text-sm font-bold">{{ title }}</h2>
       <p
         v-for="(info, index) in infoItems"

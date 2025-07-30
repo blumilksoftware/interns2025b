@@ -5,23 +5,19 @@ import EventCard from '@/Components/EventCard.vue'
 import PaginationComponent from '@/Components/PaginationComponent.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import DropdownFilters from '@/Components/DropdownFilters.vue'
-import { formatDate, formatDay, formatTime } from '@/utilities/formatDate'
+import { formatDate, formatTime } from '@/utilities/formatDate'
 import { useEvents } from '@/composables/useEvents'
 import { useSearch } from '@/composables/useSearch'
 import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
 import Socials from '@/Components/Socials.vue'
 import ActiveFilters from '@/Components/ActiveFilters.vue'
 import InfoBlock from '@/Components/InfoBlock.vue'
+import { Link as InertiaLink } from '@inertiajs/vue3'
 
-const { events, page, meta, prevPage, nextPage } = useEvents({ all: true })
+const { events } = useEvents({ all: true })
 
-const {
-  query,
-  filtered,
-  activeFields,
-  availableFields,
-  dateFilter,
-} = useSearch(events, ['id', 'title', 'location'])
+const { query, filtered, activeFields, availableFields, dateFilter } =
+  useSearch(events, ['id', 'title', 'location'])
 </script>
 
 <template>
@@ -40,7 +36,9 @@ const {
             class="absolute w-full h-[1000px] top-[-430px] pointer-events-none"
           >
         </div>
-        <div class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl">
+        <div
+          class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl"
+        >
           <div
             class="flex items-center justify-center mb-6 text-sm gap-x-2 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
           >
@@ -59,7 +57,7 @@ const {
                   />
                 </template>
               </BaseInput>
-              <ActiveFilters v-model="activeFields" />
+              <ActiveFilters v-model="activeFields" class="" />
             </div>
 
             <div class="lg:w-4/12">
@@ -88,8 +86,13 @@ const {
             </div>
           </div>
 
-          <h3 class="w-5/6 text-left font-medium size-4 text-gray-800 my-3">Twoje Wydarzenia</h3>
-          <div class="flex w-full h-5/6 items-center justify-center ">
+          <div
+            v-if="filtered.length === 0"
+            class="flex w-full h-5/6 items-center justify-center"
+          >
+            <h3 class="w-5/6 text-left font-medium size-4 text-gray-800 my-3">
+              Twoje Wydarzenia
+            </h3>
             <div class="flex gap-8">
               <EventCard
                 v-for="e in filtered"
@@ -103,23 +106,32 @@ const {
                 :age-category="e.age_category"
               />
             </div>
-            <p
-              v-if="filtered.length === 0"
-              class="mt-8 text-center text-gray-500"
-            >
-              Brak wyników.
-            </p>
           </div>
-          <div class="flex w-full h-5/6 items-center justify-center ">
-            <div class="flex gap-8">
-              <InfoBlock
-                v-for="e in filtered"
-                :id="e.id"
-                :key="e.id"
-                :image-url="e.image_url"
-                :info-items="[`${formatDay(e.start)}${formatTime(e.start)}`]"
-              />
-              />
+          <h3 class="w-5/6 text-left font-medium size-4 text-gray-800 my-3">
+            Przeglądaj wydarzenia
+          </h3>
+          <div class="flex w-full h-5/6 items-center justify-center">
+            <div class="w-full max-w-5xl mt-6 px-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <InertiaLink
+                  v-for="e in filtered"
+                  :key="e.id"
+                  :href="`/event/${e.id}`"
+                  class="block hover:shadow-lg transition-shadow rounded-lg overflow-hidden"
+                >
+                  <InfoBlock
+                    :id="e.id"
+                    :key="e.id"
+                    :header="`${formatDate(e.start)} - ${formatTime(e.start)}`"
+                    :title="e.title"
+                    :image-url="e.image_url"
+                    :info-items="[
+                      e.location ?? 'Brak lokalizacji',
+                      e.age_category ?? 'Brak kategorii',
+                    ]"
+                  />
+                </InertiaLink>
+              </div>
             </div>
             <p
               v-if="filtered.length === 0"
@@ -184,4 +196,3 @@ const {
     </div>
   </div>
 </template>
-

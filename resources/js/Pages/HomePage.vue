@@ -84,7 +84,7 @@ const { isLoggedIn } = useAuth()
               />
             </div>
             <BaseButton
-              class="!bg-zinc-800 !text-white justify-center font-bold px-10 mt-[24px] col-span-2"
+              class="!bg-zinc-800 !text-white justify-center font-bold px-10 mt-6 col-span-2"
             >
               Szukaj
             </BaseButton>

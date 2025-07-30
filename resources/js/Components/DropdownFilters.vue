@@ -29,11 +29,8 @@ onClickOutside(dropdownEl, () => (isOpen.value = false))
 
 <template>
   <div ref="dropdownEl" class="relative inline-block">
-    <button class="px-3 py-2 border rounded" @click="toggleDropdown">
+    <button class="w-full h-12 px-3 mt-6 font-medium rounded-lg transition duration-100 ease-in-out focus:outline-none border bg-white text-gray-400 hover:bg-gray-50 border-none focus:ring-2 focus:ring-brand-light focus:border-indigo-500" @click="toggleDropdown">
       Filtry
-      <svg class="inline-block size-4 ml-1" viewBox="0 0 20 20">
-        <path d="M5 8l5 5 5-5H5z" />
-      </svg>
     </button>
 
     <ul
