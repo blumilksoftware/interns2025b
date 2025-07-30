@@ -35,16 +35,21 @@ class StoreEventRequest extends FormRequest
     {
         $validator->after(function (Validator $validator): void {
             $user = $this->user();
+
+            if (!$user->relationLoaded("badge")) {
+                $user->load("badge");
+            }
+
             $status = $this->input("status");
 
             if ($user->hasRole(Role::User->value) &&
                 in_array($status, [EventStatus::Published->value, EventStatus::Ongoing->value], true)
             ) {
-                $hasActiveEvent = $user->ownedEvents()
+                $activeCount = $user->ownedEvents()
                     ->whereIn("status", [EventStatus::Published->value, EventStatus::Ongoing->value])
-                    ->exists();
+                    ->count();
 
-                if ($hasActiveEvent) {
+                if ($activeCount >= $user->eventLimit()) {
                     $validator->errors()->add("status", __("events.limit_reached"));
                 }
             }

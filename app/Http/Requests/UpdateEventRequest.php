@@ -37,6 +37,11 @@ class UpdateEventRequest extends FormRequest
     {
         $validator->after(function (Validator $validator): void {
             $user = $this->user();
+
+            if (!$user->relationLoaded("badge")) {
+                $user->load("badge");
+            }
+
             $status = $this->input("status");
 
             if (!$status) {
@@ -48,12 +53,12 @@ class UpdateEventRequest extends FormRequest
             ) {
                 $event = $this->route("event");
 
-                $hasActiveEvent = $user->ownedEvents()
+                $activeCount = $user->ownedEvents()
                     ->whereIn("status", [EventStatus::Published->value, EventStatus::Ongoing->value])
                     ->where("id", "!=", $event->id)
-                    ->exists();
+                    ->count();
 
-                if ($hasActiveEvent) {
+                if ($activeCount >= $user->eventLimit()) {
                     $validator->errors()->add("status", __("events.limit_reached"));
                 }
             }
