@@ -5,12 +5,13 @@ import EventCard from '@/Components/EventCard.vue'
 import PaginationComponent from '@/Components/PaginationComponent.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import DropdownFilters from '@/Components/DropdownFilters.vue'
-import { formatDate } from '@/utilities/formatDate'
+import { formatDate, formatDay, formatTime } from '@/utilities/formatDate'
 import { useEvents } from '@/composables/useEvents'
 import { useSearch } from '@/composables/useSearch'
 import { MapPinIcon, CalendarIcon } from '@heroicons/vue/24/outline'
 import Socials from '@/Components/Socials.vue'
 import ActiveFilters from '@/Components/ActiveFilters.vue'
+import InfoBlock from '@/Components/InfoBlock.vue'
 
 const { events, page, meta, prevPage, nextPage } = useEvents({ all: true })
 
@@ -37,7 +38,7 @@ const {
             src="/images/Fade.svg"
             alt=""
             class="absolute w-full h-[1000px] top-[-430px] pointer-events-none"
-          />
+          >
         </div>
         <div class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl">
           <div
@@ -100,6 +101,24 @@ const {
                 :title="e.title"
                 :location="e.location"
                 :age-category="e.age_category"
+              />
+            </div>
+            <p
+              v-if="filtered.length === 0"
+              class="mt-8 text-center text-gray-500"
+            >
+              Brak wyników.
+            </p>
+          </div>
+          <div class="flex w-full h-5/6 items-center justify-center ">
+            <div class="flex gap-8">
+              <InfoBlock
+                v-for="e in filtered"
+                :id="e.id"
+                :key="e.id"
+                :image-url="e.image_url"
+                :info-items="[`${formatDay(e.start)}${formatTime(e.start)}`]"
+              />
               />
             </div>
             <p

@@ -18,8 +18,7 @@ const props = defineProps<{
 }>()
 
 const DEFAULT_CENTER: [number, number] = [51.21006, 16.1619]
-const mapElement = ref<HTMLDivElement|null>(null)
-
+const mapElement = ref<HTMLDivElement | null>(null)
 const { events, fetchAll } = useEvents({ all: true })
 
 onMounted(async () => {
@@ -67,9 +66,12 @@ onMounted(async () => {
           })
         }
       })
+    } catch (error) {
+      alert('Nie udało się pobrać wydarzeń. Spróbuj ponownie później.')
+      console.error(error)
     }
   }
-
+})
 </script>
 
 <template>

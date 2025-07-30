@@ -77,13 +77,13 @@ onMounted(fetchProfile)
     <div v-else class="space-y-6">
       <div class="flex space-x-4 mb-6">
         <BaseButton
-          :class="activeTab==='profile' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'"
+          :class="activeTab==='profile' ? 'bg-blue-600 px-4 text-white' : 'bg-gray-200 px-4 text-gray-800'"
           @click="activeTab='profile'"
         >
           Profil
         </BaseButton>
         <BaseButton
-          :class="activeTab==='password' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'"
+          :class="activeTab==='password' ? ' bg-blue-600 px-4 text-white' : 'bg-gray-200 px-4 text-gray-800'"
           @click="activeTab='password'"
         >
           Zmień hasło

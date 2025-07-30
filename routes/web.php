@@ -21,5 +21,5 @@ Route::get("/event", fn(): Response => inertia("EventList"));
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/profile', fn(): Response => Inertia::render('ProfilePage'))->name('profile');
     Route::get('/profile/{userId}', fn(int $userId) => Inertia::render('ProfilePage', ['userId' => $userId]))->name('profile.show');
-    Route::get('/settings', fn(): Response => {return Inertia::render('SettingsPage');})->name('settings');
+    Route::get('/settings', function (): Response {return Inertia::render('SettingsPage'); })->name('settings');
 });
