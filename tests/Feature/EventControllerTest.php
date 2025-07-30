@@ -14,16 +14,20 @@ class EventControllerTest extends TestCase
     protected User $user;
     protected User $owner;
     protected User $otherUser;
+    protected User $urbanLegend;
     protected User $admin;
     protected User $superadmin;
     protected Event $event;
+    protected array $events;
 
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->user = User::factory()->create();
         $this->owner = User::factory()->create();
         $this->otherUser = User::factory()->create();
+        $this->urbanLegend = User::factory()->urbanLegend()->create();
         $this->admin = User::factory()->admin()->create();
         $this->superadmin = User::factory()->superAdmin()->create();
 
@@ -31,12 +35,12 @@ class EventControllerTest extends TestCase
             "owner_type" => get_class($this->owner),
             "owner_id" => $this->owner->id,
         ]);
+
+        $this->events = Event::factory()->count(20)->create()->all();
     }
 
     public function testIndexReturnsPaginatedEvents(): void
     {
-        Event::factory()->count(20)->create();
-
         $response = $this->getJson("/api/events");
 
         $response->assertStatus(Http::HTTP_OK)->assertJsonStructure([
@@ -50,13 +54,11 @@ class EventControllerTest extends TestCase
 
     public function testIndexRespectsPerPageParameter(): void
     {
-        Event::factory()->count(12)->create();
-
         $response = $this->getJson("/api/events?per_page=5");
 
         $response->assertStatus(Http::HTTP_OK);
         $this->assertCount(5, $response->json("data"));
-        $this->assertEquals(3, $response->json("meta.last_page"));
+        $this->assertEquals(5, $response->json("meta.last_page"));
     }
 
     public function testShowReturnsEvent(): void
@@ -264,12 +266,11 @@ class EventControllerTest extends TestCase
 
     public function testUserWithBadgeCanCreateMultiplePublishedEvents(): void
     {
-        $user = User::factory()->urbanLegend()->create();
-        $this->actingAs($user);
+        $this->actingAs($this->urbanLegend);
 
         Event::factory()->create([
-            "owner_id" => $user->id,
-            "owner_type" => get_class($user),
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
             "status" => "published",
         ]);
 
@@ -287,12 +288,11 @@ class EventControllerTest extends TestCase
 
     public function testUserWithBadgeCanCreateMultipleOngoingEvents(): void
     {
-        $user = User::factory()->urbanLegend()->create();
-        $this->actingAs($user);
+        $this->actingAs($this->urbanLegend);
 
         Event::factory()->create([
-            "owner_id" => $user->id,
-            "owner_type" => get_class($user),
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
             "status" => "ongoing",
         ]);
 
@@ -310,12 +310,11 @@ class EventControllerTest extends TestCase
 
     public function testUserWithoutBadgeCannotCreateMultiplePublishedEvents(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $this->actingAs($this->user);
 
         Event::factory()->create([
-            "owner_id" => $user->id,
-            "owner_type" => get_class($user),
+            "owner_id" => $this->user->id,
+            "owner_type" => get_class($this->user),
             "status" => "published",
         ]);
 
@@ -335,18 +334,17 @@ class EventControllerTest extends TestCase
 
     public function testUserWithBadgeCanUpdateEventToPublishedDespiteOtherActive(): void
     {
-        $user = User::factory()->urbanLegend()->create();
-        $this->actingAs($user);
+        $this->actingAs($this->urbanLegend);
 
         Event::factory()->create([
-            "owner_id" => $user->id,
-            "owner_type" => get_class($user),
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
             "status" => "ongoing",
         ]);
 
         $event = Event::factory()->create([
-            "owner_id" => $user->id,
-            "owner_type" => get_class($user),
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
             "status" => "draft",
         ]);
 
@@ -359,18 +357,17 @@ class EventControllerTest extends TestCase
 
     public function testUserWithBadgeCanUpdateEventToOngoingDespiteOtherActive(): void
     {
-        $user = User::factory()->urbanLegend()->create();
-        $this->actingAs($user);
+        $this->actingAs($this->urbanLegend);
 
         Event::factory()->create([
-            "owner_id" => $user->id,
-            "owner_type" => get_class($user),
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
             "status" => "published",
         ]);
 
         $event = Event::factory()->create([
-            "owner_id" => $user->id,
-            "owner_type" => get_class($user),
+            "owner_id" => $this->urbanLegend->id,
+            "owner_type" => get_class($this->urbanLegend),
             "status" => "draft",
         ]);
 

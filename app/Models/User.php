@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -103,7 +104,7 @@ class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
         );
     }
 
-    public function badge()
+    public function badge(): BelongsTo
     {
         return $this->belongsTo(Badge::class);
     }
