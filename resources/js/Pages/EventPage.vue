@@ -49,7 +49,7 @@ onMounted(async () => {
         <p class="text-brand-dark font-medium whitespace-nowrap">
           {{ event.participants?.length || 0 }} osób weźmie udział
         </p>
-        <BaseButton class="ml-4 h-[28px] bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap">
+        <BaseButton class="ml-4 h-7 bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap">
           Invite
         </BaseButton>
       </div>
