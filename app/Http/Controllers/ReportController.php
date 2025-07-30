@@ -61,14 +61,14 @@ class ReportController
     public function organizationReports(): AnonymousResourceCollection
     {
         return ReportResource::collection(
-            Report::where("reportable_type", Organization::class)->latest()->get(),
+            Report::query()->where("reportable_type", Organization::class)->latest()->get(),
         );
     }
 
     public function eventReports(): AnonymousResourceCollection
     {
         return ReportResource::collection(
-            Report::where("reportable_type", Event::class)->latest()->get(),
+            Report::query()->where("reportable_type", Event::class)->latest()->get(),
         );
     }
 }
