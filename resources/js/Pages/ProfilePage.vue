@@ -61,24 +61,24 @@ async function onFollow() {
           <div class="max-md:relative">
             <div class="max-md:absolute max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2">
               <img
-                :src="user?.avatar_url || 'https://via.placeholder.com/150'"
+                :src="user?.avatar_url ?? 'https://via.placeholder.com/150'"
                 alt="Avatar"
-                class="size-32 max-md:-mt-36 rounded-3xl border border-white object-cover shadow-lg"
+                class="size-32 aspect-square max-md:-mt-36 rounded-3xl border border-white object-cover shadow-lg"
               >
             </div>
           </div>
-          <div class="md:space-y-4 space-y-2 max-md:mt-14 text-center">
+          <div class="md:space-y-4 space-y-2 content-center max-md:mt-14 text-center">
             <h2 class="text-2xl font-bold">
               {{ user?.first_name }} {{ user?.last_name }}
             </h2>
 
-            <div class="flex justify-around text-sm">
-              <p class="font-bold">
-                {{ user?.followers_count ?? 0 }}
+            <div class="flex w-full justify-center gap-x-4 text-sm">
+              <p class="font-bold mb-2">
+                {{ user?.followers_count ?? 0 }}<br>
                 <span class="font-medium text-[#777777]">Obserwujący</span>
               </p>
               <p class="font-bold">
-                {{ user?.events_count ?? 0 }}
+                {{ user?.events_count ?? 0 }}<br>
                 <span class="font-medium text-[#777777]">Wydarzenia</span>
               </p>
             </div>
@@ -130,7 +130,6 @@ async function onFollow() {
           Wyloguj się
         </BaseButton>
 
-        <div class="pt-4 border-t border-gray-200 text-left text-sm space-y-1"></div>
       </div>
     </div>
   </div>

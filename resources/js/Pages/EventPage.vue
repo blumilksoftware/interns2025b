@@ -57,10 +57,15 @@ async function handleToggleFollow() {
     await toggleFollow('user', ownerIdRef.value)
   }
 }
+
 async function handleParticipate() {
-  if (eventIdRef.value) {
-    await participateEvent(eventIdRef.value)
-  }
+  if (!event.value) return
+  await participateEvent(event.value.id)
+
+  const wasParticipating = isParticipating.value
+  event.value.participation_count = wasParticipating
+    ? Math.max((event.value.participation_count ?? 1) - 1, 0)
+    : (event.value.participation_count ?? 0) + 1
 }
 
 const ownerInfo = computed(() => ({
@@ -77,7 +82,7 @@ const ownerInfo = computed(() => ({
 }))
 
 const participantsMessage = computed(() => {
-  const count = event.value?.participants?.length ?? 0
+  const count = event.value?.participation_count ?? 0
   return count > 0
     ? `Liczba uczestników: ${count}`
     : 'Nikt nie weźmie udziału.'

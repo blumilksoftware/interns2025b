@@ -13,7 +13,6 @@ export interface RawEvent {
   price: number
   status: string
   age_category: string | null
-  participants: unknown[]
 
   owner_type: string
   owner_id: number
@@ -26,7 +25,7 @@ export interface RawEvent {
     group_url?: string
     users?: any[]
   } | null
-
+  participation_count: number
   created_at: string
   updated_at: string
 }
