@@ -174,11 +174,13 @@ const participantsMessage = computed(() => {
               />
 
               <div class="w-full flex justify-between gap-4">
-                <InfoBlock
-                  :image-url="ownerInfo.imageUrl"
-                  :title="ownerInfo.title"
-                  :info-items="[ownerInfo.ownerType]"
-                />
+                <InertiaLink :href="`/profile/${ownerIdRef}`" class="hover:scale-105 transition-transform">
+                  <InfoBlock
+                    :image-url="ownerInfo.imageUrl"
+                    :title="ownerInfo.title"
+                    :info-items="[ownerInfo.ownerType]"
+                  />
+                </InertiaLink>
                 <div v-if="authUserId" class="flex items-center justify-end">
                   <BaseButton
                     class="bg-brand/10 h-10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl"

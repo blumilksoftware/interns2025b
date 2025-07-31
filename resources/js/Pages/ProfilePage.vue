@@ -107,7 +107,6 @@ async function onFollow() {
               v-for="event in eventsByOwner"
               :key="event.id"
               :href="`/events/${event.id}`"
-              class="block hover:shadow-lg transition-shadow rounded-lg overflow-hidden"
             >
               <InfoBlock
                 :id="event.id"
@@ -119,7 +118,7 @@ async function onFollow() {
                   event.location ?? 'Brak lokalizacji',
                   event.age_category ?? 'Brak kategorii',
                 ]"
-                class="bg-white p-4"
+                class="bg-white w-1/3 p-4 hover:scale-105 transition-transform"
               />
             </InertiaLink>
             <div v-if="!eventsByOwner.length" class="flex flex-col size-full space-y-20 mt-10 align-bottom place-content-center ">
