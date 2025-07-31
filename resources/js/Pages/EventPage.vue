@@ -72,9 +72,17 @@ const ownerInfo = computed(() => ({
   ]
     .filter(Boolean)
     .join(' ')
-    .trim() || 'Nieznany',
+    .trim() ?? 'Nieznany',
   ownerType: event.value?.owner_type ?? '',
 }))
+
+const participantsMessage = computed(() => {
+  const count = event.value?.participants?.length ?? 0
+  return count > 0
+    ? `Liczba uczestników: ${count}`
+    : 'Nikt nie weźmie udziału.'
+})
+
 </script>
 
 <template>
@@ -89,7 +97,7 @@ const ownerInfo = computed(() => ({
         class="sm:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] flex justify-between items-center bg-white rounded-full shadow px-6 py-3 w-fit max-w-full"
       >
         <p class="text-brand-dark font-medium whitespace-nowrap">
-          {{ event.participants?.length || 0 }} Weźmie udział
+          {{ participantsMessage }}
         </p>
         <BaseButton v-if="authUserId"
                     class="ml-4 h-7 bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap"
@@ -148,12 +156,12 @@ const ownerInfo = computed(() => ({
             <div class="flex flex-col sm:gap-y-8 gap-y-3 w-full">
               <InfoBlock
                 :icon="UsersIcon"
-                :title="`${event.participants ?? 0} Weźmie udział`" class="max-sm:hidden"
+                :title="`${ participantsMessage }`" class="max-sm:hidden"
               />
               <InfoBlock
                 :icon="CalendarIcon"
                 :title="formatDate(event.start)"
-                :info-items="[`${formatDay(event.start)}${formatTime(event.start)}`]"
+                :info-items="[`${formatDay(event.start)} ${formatTime(event.start)}`]"
               />
               <InfoBlock
                 :title="event.location"
@@ -171,7 +179,7 @@ const ownerInfo = computed(() => ({
                     class="bg-brand/10 h-10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl"
                     @click="handleToggleFollow"
                   >
-                    <span>{{ isOwnerFollowed ? 'Odobserwuj' : 'Obserwuj' }}</span>
+                    <span>{{ isOwnerFollowed ? 'Przestań Obserwować' : 'Obserwuj' }}</span>
                   </basebutton>
                 </div>
               </div>
