@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, useSlots, onBeforeMount } from 'vue'
+import { ref, computed, useSlots } from 'vue'
 
 type InputType = 'text' | 'email' | 'password' | 'number' | 'search' | 'date' | 'datetime-local' | 'textarea'
 
@@ -16,16 +16,6 @@ const props = defineProps<{
 }>()
 
 const model = defineModel<string>()
-
-onBeforeMount(() => {
-  if ((props.type === 'date' || props.type === 'datetime-local') && !model.value) {
-    if (props.type === 'date') {
-      model.value = new Date().toISOString().slice(0, 10)
-    } else {
-      model.value = new Date().toISOString().slice(0, 16)
-    }
-  }
-})
 
 const isFocused = ref(false)
 const slots = useSlots()
