@@ -54,9 +54,9 @@ async function onFollow() {
 </script>
 
 <template>
-  <div class="bg-gradient-to-tr from-brand-light to-brand-dark min-h-screen w-full flex items-start justify-center py-10">
+  <div class="bg-gradient-to-tr from-brand-light to-brand-dark min-h-screen w-full flex items-start justify-center">
     <div class="w-11/12 max-md:w-full">
-      <div class="mt-16 bg-white rounded-[50px] shadow-lg p-6 md:p-12 space-y-6">
+      <div class="mt-16 sm:8 bg-white rounded-[2.5rem] min-h-[50rem] shadow-lg p-6 md:p-12 space-y-6">
         <div class="md:flex md:space-x-4">
           <div class="max-md:relative">
             <div class="max-md:absolute max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2">
@@ -67,7 +67,7 @@ async function onFollow() {
               >
             </div>
           </div>
-          <div class="md:space-y-4 space-y-2 content-center max-md:mt-14 text-center">
+          <div class="md:space-y-4 space-y-2 content-center min-w-80 max-md:mt-14 text-center">
             <h2 class="text-2xl font-bold">
               {{ user?.first_name }} {{ user?.last_name }}
             </h2>
@@ -103,17 +103,25 @@ async function onFollow() {
             Wydarzenia
           </h3>
           <div class="space-y-4 ">
-            <InfoBlock
+            <InertiaLink
               v-for="event in eventsByOwner"
               :key="event.id"
-              :header="`${formatDate(event.start)} - ${formatTime(event.start)}`"
-              :title="event.title"
-              :image-url="event.image_url"
-              :info-items="[
-                event.location ?? 'Brak lokalizacji',
-                event.age_category ?? 'Brak kategorii',
-              ]"
-            />
+              :href="`/events/${event.id}`"
+              class="block hover:shadow-lg transition-shadow rounded-lg overflow-hidden"
+            >
+              <InfoBlock
+                :id="event.id"
+                :key="event.id"
+                :header="`${formatDate(event.start)} - ${formatTime(event.start)}`"
+                :title="event.title"
+                :image-url="event.image_url"
+                :info-items="[
+                  event.location ?? 'Brak lokalizacji',
+                  event.age_category ?? 'Brak kategorii',
+                ]"
+                class="bg-white p-4"
+              />
+            </InertiaLink>
             <div v-if="!eventsByOwner.length" class="flex flex-col size-full space-y-20 mt-10 align-bottom place-content-center ">
               <magnifying-glass-icon class="h-64 " />
               <p class="col-span-full  text-center text-gray-500">
@@ -129,7 +137,6 @@ async function onFollow() {
         >
           Wyloguj się
         </BaseButton>
-
       </div>
     </div>
   </div>
