@@ -93,7 +93,7 @@ const {
             :disabled="isSubmitting"
             type="submit"
           >
-            Zaloguj się
+            Wyślij
           </BaseButton>
         </form>
       </div>
