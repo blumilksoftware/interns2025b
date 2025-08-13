@@ -1,177 +1,112 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import api from '@/services/api'
-import { useApiForm } from '@/composables/useApiForm'
-import type { UserDetail } from '@/types/types'
+import { router } from '@inertiajs/vue3'
+import AppHead from '@/Components/AppHead.vue'
+import Navbar from '@/Components/Navbar.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import PasswordInput from '@/Components/PasswordInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
+import Footer from '@/Components/Footer.vue'
+import { useApiForm } from '@/composables/useApiForm'
+import api from '@/services/api'
+import type { UserDetail } from '@/types/types'
+import { ref, onMounted } from 'vue'
 
 const activeTab = ref<'profile' | 'password'>('profile')
 const loadError = ref<string | null>(null)
+const user = ref<UserDetail | null>(null)
 
-interface ProfilePayload { first_name: string, last_name: string }
-const profileForm = useApiForm<ProfilePayload, { message: string }>(
+const { formData: profileForm, fieldErrors: profileErrors, isSubmitting: isProfileSubmitting, isSuccess: isProfileSuccess, globalMessage: profileMessage, submitForm: submitProfile } = useApiForm<{ first_name: string; last_name: string }, { message: string }>(
   { first_name: '', last_name: '' },
   {
-    endpoint: 'api/profile',
+    endpoint: '/api/profile',
     method: 'put',
-    onSuccess: (res) => {
-      profileForm.globalMessage.value = res.data.message
-    },
-  },
+    onSuccess: (res) => { profileMessage.value = res.data.message },
+  }
 )
 
-interface PasswordPayload {
-  current_password: string
-  new_password: string
-  confirm_password: string
-}
-const passwordForm = useApiForm<PasswordPayload, { message: string }>(
+const { formData: passwordForm, fieldErrors: passwordErrors, isSubmitting: isPasswordSubmitting, isSuccess: isPasswordSuccess, globalMessage: passwordMessage, submitForm: submitPassword } = useApiForm<{ current_password: string; new_password: string; confirm_password: string }, { message: string }>(
   { current_password: '', new_password: '', confirm_password: '' },
   {
-    endpoint: 'api/auth/change-password',
+    endpoint: '/api/auth/change-password',
     method: 'put',
     transform: (d) => ({
       current_password: d.current_password,
       new_password: d.new_password,
       new_password_confirmation: d.confirm_password,
     }),
-    onSuccess: (res) => {
-      passwordForm.globalMessage.value = res.data.message
-    },
-  },
+    onSuccess: (res) => { passwordMessage.value = res.data.message },
+  }
 )
 
-const deleteForm = useApiForm<{}, { message: string }>(
-  {}, {
-    endpoint: 'api/profile/delete-request',
+const { isSubmitting: isDeleteSubmitting, isSuccess: isDeleteSuccess, globalMessage: deleteMessage, submitForm: submitDelete } = useApiForm<{}, { message: string }>(
+  {},
+  {
+    endpoint: '/api/profile/delete-request',
     method: 'post',
-    onSuccess: (res) => {
-      deleteForm.globalMessage.value = res.data.message
-    },
-  },
+    onSuccess: (res) => { deleteMessage.value = res.data.message },
+  }
 )
 
-const user = ref<UserDetail | null>(null)
 async function fetchProfile() {
   try {
     const { data } = await api.get<{ data: UserDetail }>('/profile')
     user.value = data.data
-    Object.assign(profileForm.formData, {
-      first_name: data.data.first_name,
-      last_name:  data.data.last_name,
-    })
+    profileForm.first_name = data.data.first_name
+    profileForm.last_name = data.data.last_name
   } catch (e: any) {
     loadError.value = e.message || 'Błąd ładowania profilu'
   }
 }
+
 onMounted(fetchProfile)
 </script>
 
 <template>
-  <div class="max-w-md mx-auto p-6 bg-white rounded-2xl shadow space-y-6">
-    <h1 class="text-3xl font-bold">Ustawienia profilu</h1>
+  <AppHead title="Ustawienia profilu" />
+  <div class="w-full flex flex-col min-h-screen md:items-center justify-between">
+    <div class="flex w-full mb-12">
+      <Navbar>
+        <h1 class="text-4xl font-bold">Ustawienia profilu</h1>
+      </Navbar>
+    </div>
 
-    <div v-if="loadError" class="text-red-600">{{ loadError }}</div>
-    <div v-else class="space-y-6">
-      <div class="flex space-x-4 mb-6">
-        <BaseButton
-          :class="activeTab==='profile' ? 'bg-blue-600 px-4 text-white' : 'bg-gray-200 px-4 text-gray-800'"
-          @click="activeTab='profile'"
-        >
-          Profil
-        </BaseButton>
-        <BaseButton
-          :class="activeTab==='password' ? ' bg-blue-600 px-4 text-white' : 'bg-gray-200 px-4 text-gray-800'"
-          @click="activeTab='password'"
-        >
-          Zmień hasło
-        </BaseButton>
-      </div>
-
-      <div v-if="activeTab==='profile'" class="space-y-4">
-        <BaseInput
-          id="first_name" v-model="profileForm.formData.first_name"
-          name="first_name"
-          label="Imię"
-          :error="profileForm.fieldErrors.first_name"
-        />
-        <BaseInput
-          id="last_name" v-model="profileForm.formData.last_name"
-          name="last_name"
-          label="Nazwisko"
-          :error="profileForm.fieldErrors.last_name"
-        />
-        <BaseInput
-          id="email" name="email"
-          label="E‑mail"
-          :model-value="user?.email || ''"
-          disabled
-        />
-
-        <p v-if="profileForm.isSuccess" class="text-green-600">{{ profileForm.globalMessage }}</p>
-        <p v-else-if="profileForm.globalMessage" class="text-red-600">{{ profileForm.globalMessage }}</p>
-
-        <BaseButton
-          class="mt-4 w-full bg-blue-600 text-white"
-          :disabled="profileForm.isSubmitting.value"
-          @click="profileForm.submitForm"
-        >
-          {{ profileForm.isSubmitting.value ? 'Proszę czekać…' : 'Zapisz dane' }}
-        </BaseButton>
-
-        <div class="mt-6 border-t pt-4">
-          <p class="text-sm text-gray-600 mb-2">
-            Chcesz usunąć konto? Otrzymasz maila z linkiem do potwierdzenia.
-          </p>
-          <BaseButton
-            class="w-full bg-red-600 text-white"
-            :disabled="deleteForm.isSubmitting.value"
-            @click="deleteForm.submitForm"
-          >
-            {{ deleteForm.isSubmitting.value ? 'Proszę czekać…' : 'Poproś o usunięcie konta' }}
-          </BaseButton>
-          <p v-if="deleteForm.isSuccess" class="text-green-600 mt-2">
-            {{ deleteForm.globalMessage }}
-          </p>
-          <p v-else-if="deleteForm.globalMessage" class="text-red-600 mt-2">
-            {{ deleteForm.globalMessage }}
-          </p>
+    <div class="flex-grow w-full md:w-3/4 space-y-6 p-6 bg-white rounded-xl shadow-md">
+      <div v-if="loadError" class="text-red-600">{{ loadError }}</div>
+      <div v-else class="space-y-6">
+        <div class="flex space-x-4 mb-6">
+          <BaseButton :class="activeTab==='profile' ? 'bg-brand-light text-white px-6 py-3 rounded-md' : 'bg-gray-100 text-gray-800 px-6 py-3 rounded-md'" @click="activeTab='profile'">Profil</BaseButton>
+          <BaseButton :class="activeTab==='password' ? 'bg-brand-light text-white px-6 py-3 rounded-md' : 'bg-gray-100 text-gray-800 px-6 py-3 rounded-md'" @click="activeTab='password'">Zmień hasło</BaseButton>
         </div>
-      </div>
 
-      <div v-else class="space-y-4">
-        <PasswordInput
-          id="current_password" v-model="passwordForm.formData.current_password"
-          name="current_password"
-          label="Aktualne hasło"
-          :error="passwordForm.fieldErrors.current_password"
-        />
-        <PasswordInput
-          id="new_password" v-model="passwordForm.formData.new_password"
-          name="new_password"
-          label="Nowe hasło"
-          :error="passwordForm.fieldErrors.new_password"
-        />
-        <PasswordInput
-          id="confirm_password" v-model="passwordForm.formData.confirm_password"
-          name="confirm_password"
-          label="Potwierdź nowe hasło"
-          :error="passwordForm.fieldErrors.confirm_password"
-        />
+        <form v-if="activeTab==='profile'" class="space-y-4" @submit.prevent="submitProfile">
+          <BaseInput id="first_name" v-model="profileForm.first_name" name="first_name" label="Imię" :error="profileErrors.first_name" />
+          <BaseInput id="last_name" v-model="profileForm.last_name" name="last_name" label="Nazwisko" :error="profileErrors.last_name" />
+          <BaseInput id="email" name="email" label="E-mail" :model-value="user?.email || ''" disabled />
+          <p v-if="isProfileSuccess" class="text-green-600">{{ profileMessage }}</p>
+          <p v-else-if="profileMessage" class="text-red-600">{{ profileMessage }}</p>
+          <BaseButton class="mt-4 w-full bg-brand-light text-white px-6 py-3 rounded-md" :disabled="isProfileSubmitting">{{ isProfileSubmitting ? 'Proszę czekać…' : 'Zapisz dane' }}</BaseButton>
+        </form>
 
-        <p v-if="passwordForm.isSuccess" class="text-green-600">{{ passwordForm.globalMessage }}</p>
-        <p v-else-if="passwordForm.globalMessage" class="text-red-600">{{ passwordForm.globalMessage }}</p>
+        <div v-if="activeTab==='profile'" class="mt-6 border-t pt-4">
+          <p class="text-sm text-gray-600 mb-2">Chcesz usunąć konto? Otrzymasz maila z linkiem do potwierdzenia.</p>
+          <form @submit.prevent="submitDelete">
+            <BaseButton class="w-full bg-red-500 text-white px-6 py-3 rounded-md" :disabled="isDeleteSubmitting">{{ isDeleteSubmitting ? 'Proszę czekać…' : 'Poproś o usunięcie konta' }}</BaseButton>
+          </form>
+          <p v-if="isDeleteSuccess" class="text-green-600 mt-2">{{ deleteMessage }}</p>
+          <p v-else-if="deleteMessage" class="text-red-600 mt-2">{{ deleteMessage }}</p>
+        </div>
 
-        <BaseButton
-          class="mt-4 w-full bg-blue-600 text-white"
-          :disabled="passwordForm.isSubmitting.value"
-          @click="passwordForm.submitForm"
-        >
-          {{ passwordForm.isSubmitting.value ? 'Proszę czekać…' : 'Zapisz nowe hasło' }}
-        </BaseButton>
+        <form v-else class="space-y-4" @submit.prevent="submitPassword">
+          <PasswordInput id="current_password" v-model="passwordForm.current_password" name="current_password" label="Aktualne hasło" :error="passwordErrors.current_password" />
+          <PasswordInput id="new_password" v-model="passwordForm.new_password" name="new_password" label="Nowe hasło" :error="passwordErrors.new_password" />
+          <PasswordInput id="confirm_password" v-model="passwordForm.confirm_password" name="confirm_password" label="Potwierdź nowe hasło" :error="passwordErrors.confirm_password" />
+          <p v-if="isPasswordSuccess" class="text-green-600">{{ passwordMessage }}</p>
+          <p v-else-if="passwordMessage" class="text-red-600">{{ passwordMessage }}</p>
+          <BaseButton class="mt-4 w-full bg-brand-light text-white px-6 py-3 rounded-md" :disabled="isPasswordSubmitting">{{ isPasswordSubmitting ? 'Proszę czekać…' : 'Zapisz nowe hasło' }}</BaseButton>
+        </form>
       </div>
     </div>
+
+    <Footer class="mt-16" />
   </div>
 </template>
