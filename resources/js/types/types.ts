@@ -54,7 +54,6 @@ export interface EventForm {
   age_category?: string
 }
 
-
 export interface OrganizationForm {
   name: string
   owner_id?: number | null
@@ -67,4 +66,11 @@ export interface SelectOption {
   value: string
 }
 
-
+export interface UserForm {
+  first_name: string
+  last_name: string
+  email: string
+  password: string
+  password_confirmation: string
+  role: string
+}
