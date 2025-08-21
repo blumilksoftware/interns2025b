@@ -22,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
                     "id" => Auth::id(),
                     "name" => Auth::user()->name,
                     "email" => Auth::user()->email,
+                    "roles" => Auth::user()->getRoleNames()->toArray(),
                 ]
                 : null,
         ]);

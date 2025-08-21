@@ -16,10 +16,14 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
     avatar_url: '',
   },
   {
-    endpoint: '/api/admin/organizations',
+    endpoint: '/organizations',
     method: 'post',
-    onSuccess: () => {
-      router.visit('/')
+    onSuccess: (response) => {
+      if (response?.data?.id) {
+        router.visit(`/organizations/${response.data.id}/edit`)
+      } else {
+        router.visit('/')
+      }
     },
   },
 )

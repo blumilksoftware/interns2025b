@@ -8,6 +8,8 @@ const page = usePage()
 const authProps = computed(() => (page.props as unknown) as AuthProps)
 const isLoggedIn = computed(() => !!authProps.value.auth.user)
 const isHome = computed(() => page.url === '/')
+const roles = computed<string[]>(() => (authProps.value.auth.user as any)?.roles ?? [])
+const isAdmin = computed(() => roles.value.includes('administrator') || roles.value.includes('superAdministrator'))
 </script>
 
 <template>
@@ -26,8 +28,19 @@ const isHome = computed(() => page.url === '/')
           <InertiaLink href="/event" class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]">
             Bierz udział w wydarzeniach
           </InertiaLink>
-          <InertiaLink href="/organizations/create" class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]">
+          <InertiaLink
+            v-if="isAdmin"
+            href="/organizations/create"
+            class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]"
+          >
             Twórz organizacje
+          </InertiaLink>
+          <InertiaLink
+            v-if="isAdmin"
+            href="/users/create"
+            class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]"
+          >
+            Twórz użytkowników
           </InertiaLink>
         </div>
 
