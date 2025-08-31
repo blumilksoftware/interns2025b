@@ -8,11 +8,12 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use Interns2025b\Enums\EventStatus;
+use Interns2025b\Http\Controllers\FacebookController;
 use Interns2025b\Models\Event;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
 
-Route::get("/", fn(): Response => Inertia::render("HomePage"));
+Route::get("/", fn(): Response => Inertia::render("HomePage"))->name("home");
 
 Route::middleware("guest")->group(function (): void {
     Route::get("/login", fn(): Response => Inertia::render("Auth/LoginPage"))->name("login");
@@ -60,6 +61,10 @@ Route::middleware(["auth:sanctum"])->group(function (): void {
             "event" => $event,
             "statusOptions" => EventStatus::cases(),
         ]);
+    });
+
+    Route::middleware(["auth:sanctum", "role:administrator|superAdministrator"])->group(function (): void {
+        Route::get("/admin", fn(): Response => Inertia::render("AdminPage"))->name("admin.page");
     });
 
     Route::get("/organizations/{organization}/edit", function (Organization $organization): Response {

@@ -25,36 +25,31 @@ class HandleFacebookLoginAction
 
         $user = User::query()->where("facebook_id", $facebookId)->first();
 
-        if ($user) {
-            return [
-                "message" => "success",
-                "token" => $user->createToken("token")->plainTextToken,
-                "user_id" => $user->id,
-            ];
+        if (!$user) {
+            if (!$email) {
+                return ["error" => "auth.email_required_from_facebook", "status" => 422];
+            }
+
+            if (User::query()->where("email", $email)->exists()) {
+                return ["error" => "auth.email_already_registered", "status" => 403];
+            }
+
+            $firstName = explode(" ", $name, 2)[0];
+
+            $user = User::query()->create([
+                "first_name" => $firstName,
+                "email" => $email,
+                "facebook_id" => $facebookId,
+                "password" => null,
+                "email_verified_at" => now(),
+            ]);
         }
-
-        if (!$email) {
-            return ["error" => "auth.email_required_from_facebook", "status" => 422];
-        }
-
-        if (User::query()->where("email", $email)->exists()) {
-            return ["error" => "auth.email_already_registered", "status" => 403];
-        }
-
-        $firstName = explode(" ", $name, 2)[0];
-
-        $newUser = User::query()->create([
-            "first_name" => $firstName,
-            "email" => $email,
-            "facebook_id" => $facebookId,
-            "password" => null,
-            "email_verified_at" => now(),
-        ]);
 
         return [
             "message" => "success",
-            "token" => $newUser->createToken("token")->plainTextToken,
-            "user_id" => $newUser->id,
+            "token" => $user->createToken("token")->plainTextToken,
+            "user_id" => $user->id,
+            "user" => $user,
         ];
     }
 }
