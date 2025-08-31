@@ -1,6 +1,22 @@
 ## @blumilksoftware/interns2025b
-### About application
-> placeholder
+
+### About Application
+`Interns2025b` is a web platform that allows users and organizations to **create, manage, and join events**. It provides an intuitive interface for discovering nearby events, participating in activities, and managing event-related content for both individual users and administrative accounts.
+
+Key features include:
+- **User Registration & Authentication**: Users can sign up, log in, and manage their profiles.
+- **Event Management**: Create, edit, and delete events, including details like location, date, and age category.
+- **Organization Management**: Organizations can be created, managed, and linked to events.
+- **Participation & Follow System**: Users can join events and follow other users or organizations to stay updated.
+- **Admin Panel**: Administrators can manage users, events, and organizations efficiently.
+- **Social Login**: Login via Facebook integration for quicker access.
+
+#### Screenshots
+**Home Page**
+![Home Page](./screenshots/home_page.png)
+
+**Event Page**
+![Event Page](./screenshots/event_page.png)
 
 ### Local development
 ```
