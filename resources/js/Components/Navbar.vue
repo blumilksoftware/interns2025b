@@ -2,33 +2,44 @@
 import { Link as InertiaLink, usePage } from '@inertiajs/vue3'
 import { useAuth } from '@/composables/useAuth'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const page = usePage()
 
 const { isLoggedIn, logout } = useAuth()
 
 const isHomePage = computed(() => page.url === '/')
+
+const { t, locale } = useI18n()
+
+function switchLanguage(lang: string) {
+  locale.value = lang
+}
 </script>
 
 <template>
   <div class="w-full">
     <div class="flex font-medium items-center md:justify-end justify-between gap-y-5 pt-10 sm:gap-x-10 mx-5 mb-10">
       <template v-if="!isLoggedIn">
-        <InertiaLink href="/login" class="hover:underline">Zaloguj się</InertiaLink>
+        <InertiaLink href="/login" class="hover:underline">{{ t('auth.login') }}</InertiaLink>
         <InertiaLink href="/register"
                      class="bg-black text-white rounded-full shadow-shadow-blue hover:scale-105 shadow-sm py-2 px-8"
         >
-          Zarejestruj się
+          {{ t('auth.register') }}
         </InertiaLink>
       </template>
 
       <template v-else>
-        <InertiaLink href="/profile" class="hover:underline">Profil</InertiaLink>
+        <InertiaLink href="/profile" class="hover:underline">{{ t('auth.profile') }}</InertiaLink>
         <button class="bg-black text-white rounded-full shadow-shadow-blue hover:scale-105 shadow-sm py-2 px-8"
                 @click.prevent="logout"
         >
-          Wyloguj się
+          {{ t('auth.logout') }}
         </button>
+        <div class="mr-8 pr-2 flex gap-3">
+          <button class="underline" @click="switchLanguage('pl')">PL</button>
+          <button class="underline" @click="switchLanguage('en')">EN</button>
+        </div>
       </template>
     </div>
 
