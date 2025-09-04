@@ -99,7 +99,8 @@
         "myEvents": "Moje wydarzenia",
         "browseEvents": "Przeglądaj wydarzenia",
         "noResults": "Brak wyników wyszukiwania",
-        "information": "Informacje"
+        "information": "Informacje",
+        "edit": "Edytuj"
     },
     "status": {
         "draft": "Szkic",

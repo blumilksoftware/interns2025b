@@ -17,11 +17,11 @@ import {
   UsersIcon,
 } from '@heroicons/vue/24/outline'
 import { useI18n } from 'vue-i18n'
+import { usePage, Link as InertiaLink } from '@inertiajs/vue3'
+import type { AuthProps } from '@/types/types'
 
 const { t } = useI18n()
-
 const props = defineProps<{ eventId: number }>()
-
 const { authUserId } = useAuth()
 
 const {
@@ -31,6 +31,11 @@ const {
   useIsParticipating,
   fetchFollowings,
 } = useInteractions()
+
+const page = usePage()
+const authProps = computed(() => (page.props as unknown) as AuthProps)
+const roles = computed<string[]>(() => (authProps.value.auth.user as any)?.roles ?? [])
+const isAdmin = computed(() => roles.value.includes('administrator') || roles.value.includes('superAdministrator'))
 
 const event = ref<RawEvent | null>(null)
 const loading = ref(true)
@@ -49,11 +54,18 @@ onMounted(async () => {
   }
 })
 
-const ownerIdRef   = computed(() => event.value?.owner_id ?? 0)
-const eventIdRef   = computed(() => props.eventId)
+const ownerIdRef = computed(() => event.value?.owner_id ?? 0)
+const eventIdRef = computed(() => props.eventId)
 
-const isOwnerFollowed  = useIsFollowing('user', ownerIdRef)
-const isParticipating  = useIsParticipating('event', eventIdRef)
+const isOwnerFollowed = useIsFollowing('user', ownerIdRef)
+const isParticipating = useIsParticipating('event', eventIdRef)
+
+const isOwner = computed(() => {
+  return event.value?.owner_id === authProps.value.auth.user?.id &&
+    event.value?.owner_type === 'Interns2025b\\Models\\User'
+})
+
+const canEdit = computed(() => isAdmin.value || isOwner.value)
 
 async function handleToggleFollow() {
   if (ownerIdRef.value) {
@@ -96,13 +108,9 @@ const participantsMessage = computed(() => {
   <AppHead :title="event?.title ?? t('event.title')" />
   <div v-if="!loading && event" class="w-full mb-16 sm:mb-12 flex-col">
     <Navbar class="mb-[72px]" />
-
     <div class="w-full h-[400px] relative bg-gray-200">
       <img :src="event.image_url ?? 'https://picsum.photos/640/480'" alt="Event Banner" class="size-full object-cover">
-
-      <div
-        class="sm:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] flex justify-between items-center bg-white rounded-full shadow px-6 py-3 w-fit max-w-full"
-      >
+      <div class="sm:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] flex justify-between items-center bg-white rounded-full shadow px-6 py-3 w-fit max-w-full">
         <p class="text-brand-dark font-medium whitespace-nowrap">
           {{ participantsMessage }}
         </p>
@@ -140,18 +148,24 @@ const participantsMessage = computed(() => {
               </h4>
             </div>
 
-            <div>
-              <div class="max-sm:flex-wrap justify-end font-semibold text-xl flex-wrap gap-3">
-                <BaseButton v-if="authUserId"
-                            class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
-                            @click="handleParticipate"
-                >
-                  <span class="inline-flex items-center space-x-2">
-                    <CheckCircleIcon class="size-6" />
-                    <span>{{ isParticipating ? t('event.cancel') : t('event.participate') }}</span>
-                  </span>
-                </BaseButton>
-              </div>
+            <div class="flex gap-3">
+              <BaseButton v-if="authUserId"
+                          class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                          @click="handleParticipate"
+              >
+                <span class="inline-flex items-center space-x-2">
+                  <CheckCircleIcon class="size-6" />
+                  <span>{{ isParticipating ? t('event.cancel') : t('event.participate') }}</span>
+                </span>
+              </BaseButton>
+
+              <InertiaLink
+                v-if="canEdit"
+                :href="`/event/${event.id}/edit`"
+                class="bg-brand-dark text-white px-3 py-1 rounded flex items-center hover:bg-brand"
+              >
+                <span>{{ t('event.edit') }}</span>
+              </InertiaLink>
             </div>
           </div>
         </div>

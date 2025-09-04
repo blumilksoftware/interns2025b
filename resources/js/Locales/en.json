@@ -99,7 +99,8 @@
         "myEvents": "My Events",
         "browseEvents": "Browse Events",
         "noResults": "No results found",
-        "information": "Informations"
+        "information": "Informations",
+        "edit": "Edit"
     },
     "status": {
         "draft": "Draft",
