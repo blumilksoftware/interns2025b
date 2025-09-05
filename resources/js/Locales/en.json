@@ -22,7 +22,8 @@
         "resetPasswordInstructions": "Enter your email and we will send you a link to reset your password.",
         "send": "Send",
         "rememberMe": "Remember me",
-        "noAccount": "Don't have an account?"
+        "noAccount": "Don't have an account?",
+        "invalidCredentials": "Invalid credentials"
     },
     "card": {
         "altImage": "Image",
@@ -54,7 +55,9 @@
         "createEvent": "Add Event",
         "joinEvents": "Join Events",
         "createOrganization": "Create Organization",
-        "createUser": "Create User"
+        "createUser": "Create User",
+        "register": "Register"
+
     },
     "event": {
         "paid": "Paid",
@@ -138,6 +141,12 @@
         "createHeader": "Add Organization",
         "editTitle": "Edit Organization",
         "editHeader": "Edit Organization",
+        "title": "Organization",
+        "fetchError": "Failed to fetch organization data.",
+        "owner": "Owner",
+        "members": "Members",
+        "follow": "Follow",
+        "unfollow": "Unfollow",
         "fields": {
             "name": "Organization Name",
             "ownerId": "Owner ID (Optional)",

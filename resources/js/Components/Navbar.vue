@@ -27,6 +27,10 @@ function switchLanguage(lang: string) {
         >
           {{ t('auth.register') }}
         </InertiaLink>
+        <div class="mr-8 pr-2 flex gap-3">
+          <button class="underline" @click="switchLanguage('pl')">PL</button>
+          <button class="underline" @click="switchLanguage('en')">EN</button>
+        </div>
       </template>
 
       <template v-else>

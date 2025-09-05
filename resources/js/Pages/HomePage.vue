@@ -25,11 +25,12 @@ const {
 } = useSearch(activeEvents, ['title','location','age_category','id'])
 
 onMounted(() => {
-  fetchAll().catch(err => {
+  fetchAll().catch(() => {
     alert(t('home.fetch_error'))
   })
 })
 </script>
+
 <template>
   <app-head :title="t('home.title')" />
   <div class="w-full flex flex-col md:items-center justify-center">

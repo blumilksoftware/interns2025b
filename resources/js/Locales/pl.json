@@ -22,7 +22,9 @@
         "resetPasswordInstructions": "Wprowadź swój adres e-mail, a wyślemy Ci link do zresetowania hasła.",
         "send": "Wyślij",
         "rememberMe": "Zapamiętaj mnie",
-        "noAccount": "Nie masz konta?"
+        "noAccount": "Nie masz konta?",
+        "invalidCredentials": "Nie poprawne dane"
+
     },
     "card": {
         "altImage": "Obrazek",
@@ -54,7 +56,8 @@
         "createEvent": "Dodaj wydarzenie",
         "joinEvents": "Bierz udział w wydarzeniach",
         "createOrganization": "Twórz organizacje",
-        "createUser": "Twórz użytkowników"
+        "createUser": "Twórz użytkowników",
+        "register": "Zarejestruj się"
     },
     "event": {
         "paid": "Płatny",
@@ -138,6 +141,12 @@
         "createHeader": "Dodaj organizację",
         "editTitle": "Edytuj organizację",
         "editHeader": "Edytuj organizację",
+        "title": "Organizacja",
+        "fetchError": "Nie udało się pobrać danych organizacji.",
+        "owner": "Właściciel",
+        "members": "Członkowie",
+        "follow": "Obserwuj",
+        "unfollow": "Przestań obserwować",
         "fields": {
             "name": "Nazwa organizacji",
             "ownerId": "ID właściciela (Opcjonalne)",
