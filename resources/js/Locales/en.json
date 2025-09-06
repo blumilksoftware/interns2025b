@@ -102,8 +102,15 @@
         "myEvents": "My Events",
         "browseEvents": "Browse Events",
         "noResults": "No results found",
-        "information": "Informations",
-        "edit": "Edit"
+        "unknown": "Unknown",
+        "participantCount": "{count} participants",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "information": "Information",
+        "ageKids": "Kids",
+        "ageTeens": "Teens",
+        "ageAdults": "Adults",
+        "ageEveryone": "Everyone"
     },
     "status": {
         "draft": "Draft",

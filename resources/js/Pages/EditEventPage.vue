@@ -24,6 +24,13 @@ const statusOptions = computed<SelectOption[]>(() => {
   ]
 })
 
+const ageCategoryOptions = computed<SelectOption[]>(() => [
+  { label: t('event.ageKids'), value: 'kids' },
+  { label: t('event.ageTeens'), value: 'teens' },
+  { label: t('event.ageAdults'), value: 'adults' },
+  { label: t('event.ageEveryone'), value: 'everyone' },
+])
+
 const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApiForm<EventForm>(
   { ...event },
   {
@@ -56,7 +63,15 @@ const priceString = computed({
       <BaseInput id="location" v-model="form.location" name="location" :label="t('event.location')" :error="errors.location" />
       <BaseInput id="address" v-model="form.address" name="address" :label="t('event.address')" :error="errors.address" />
       <BaseInput id="image_url" v-model="form.image_url" name="image_url" :label="t('event.imageUrl')" :error="errors.image_url" />
-      <BaseInput id="age_category" v-model="form.age_category" name="age_category" :label="t('event.ageCategory')" :error="errors.age_category" />
+
+      <BaseSelect
+        id="age_category"
+        v-model="form.age_category"
+        name="age_category"
+        :label="t('event.ageCategory')"
+        :options="ageCategoryOptions"
+        :error="errors.age_category"
+      />
 
       <div class="flex space-x-4 items-center">
         <label class="flex items-center space-x-2">

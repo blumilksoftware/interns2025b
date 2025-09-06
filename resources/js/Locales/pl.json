@@ -103,7 +103,14 @@
         "browseEvents": "Przeglądaj wydarzenia",
         "noResults": "Brak wyników wyszukiwania",
         "information": "Informacje",
-        "edit": "Edytuj"
+        "edit": "Edytuj",
+        "unknown": "Nieznany",
+        "participantCount": "{count} uczestników",
+        "cancel": "Anuluj",
+        "ageKids": "Dzieci",
+        "ageTeens": "Młodzież",
+        "ageAdults": "Dorośli",
+        "ageEveryone": "Wszyscy"
     },
     "status": {
         "draft": "Szkic",
