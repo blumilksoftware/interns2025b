@@ -107,3 +107,4 @@ const priceString = computed({
     <Footer class="mt-16" />
   </div>
 </template>
+
