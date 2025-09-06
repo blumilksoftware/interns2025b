@@ -141,7 +141,12 @@
         "unfollow": "Unfollow",
         "noEvents": "This user has not created any events yet.",
         "logout": "Logout",
-        "goHome": "Go to home page"
+        "goHome": "Go to home page",
+        "updateSuccess": "Profile updated successfully.",
+        "updateError": "Could not update profile. Please try again.",
+        "passwordSuccess": "Password changed successfully.",
+        "passwordError": "Could not change password. Please try again.",
+        "deleteError": "Could not send account deletion request."
     },
     "organization": {
         "createTitle": "Create Organization",

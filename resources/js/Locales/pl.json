@@ -141,7 +141,12 @@
         "unfollow": "Przestań obserwować",
         "noEvents": "Ten użytkownik nie utworzył jeszcze żadnego wydarzenia.",
         "logout": "Wyloguj się",
-        "goHome": "Wróć do strony głównej"
+        "goHome": "Wróć do strony głównej",
+        "updateSuccess": "Profil został zaktualizowany.",
+        "updateError": "Nie udało się zaktualizować profilu. Spróbuj ponownie.",
+        "passwordSuccess": "Hasło zostało zmienione.",
+        "passwordError": "Nie udało się zmienić hasła. Spróbuj ponownie.",
+        "deleteError": "Nie udało się wysłać wniosku o usunięcie konta."
     },
     "organization": {
         "createTitle": "Utwórz organizację",

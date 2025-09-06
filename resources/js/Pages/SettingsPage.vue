@@ -17,20 +17,17 @@ const activeTab = ref<'profile' | 'password'>('profile')
 const loadError = ref<string | null>(null)
 const user = ref<UserDetail | null>(null)
 
-const { formData: profileForm, fieldErrors: profileErrors, isSubmitting: isProfileSubmitting, isSuccess: isProfileSuccess, globalMessage: profileMessage, submitForm: submitProfile } =
-  useApiForm<{ first_name: string, last_name: string }, { message: string }>(
+const { formData: profileForm, fieldErrors: profileErrors, isSubmitting: isProfileSubmitting, isSuccess: isProfileSuccess, isError: isProfileError, submitForm: submitProfile } =
+  useApiForm<{ first_name: string, last_name: string }>(
     { first_name: '', last_name: '' },
     {
       endpoint: '/api/profile',
       method: 'put',
-      onSuccess: (res) => {
-        profileMessage.value = res.data.message
-      },
     },
   )
 
-const { formData: passwordForm, fieldErrors: passwordErrors, isSubmitting: isPasswordSubmitting, isSuccess: isPasswordSuccess, globalMessage: passwordMessage, submitForm: submitPassword } =
-  useApiForm<{ current_password: string, new_password: string, confirm_password: string }, { message: string }>(
+const { formData: passwordForm, fieldErrors: passwordErrors, isSubmitting: isPasswordSubmitting, isSuccess: isPasswordSuccess, isError: isPasswordError, submitForm: submitPassword } =
+  useApiForm<{ current_password: string, new_password: string, confirm_password: string }>(
     { current_password: '', new_password: '', confirm_password: '' },
     {
       endpoint: '/api/auth/change-password',
@@ -40,21 +37,15 @@ const { formData: passwordForm, fieldErrors: passwordErrors, isSubmitting: isPas
         new_password: d.new_password,
         new_password_confirmation: d.confirm_password,
       }),
-      onSuccess: (res) => {
-        passwordMessage.value = res.data.message
-      },
     },
   )
 
-const { isSubmitting: isDeleteSubmitting, isSuccess: isDeleteSuccess, globalMessage: deleteMessage, submitForm: submitDelete } =
-  useApiForm<Record<string, never>, { message: string }>(
+const { isSubmitting: isDeleteSubmitting, isSuccess: isDeleteSuccess, isError: isDeleteError, submitForm: submitDelete } =
+  useApiForm<Record<string, never>>(
     {},
     {
       endpoint: '/api/profile/delete-request',
       method: 'post',
-      onSuccess: (res) => {
-        deleteMessage.value = res.data.message
-      },
     },
   )
 
@@ -108,8 +99,8 @@ onMounted(fetchProfile)
             <div class="flex flex-col space-y-4">
               <BaseInput id="first_name" v-model="profileForm.first_name" name="first_name" :label="t('profile.firstName')" :error="profileErrors.first_name" />
               <BaseInput id="last_name" v-model="profileForm.last_name" name="last_name" :label="t('profile.lastName')" :error="profileErrors.last_name" />
-              <p v-if="isProfileSuccess" class="text-green-600">{{ profileMessage }}</p>
-              <p v-else-if="profileMessage" class="text-red-600">{{ profileMessage }}</p>
+              <p v-if="isProfileSuccess" class="text-green-600">{{ t('profile.updateSuccess') }}</p>
+              <p v-else-if="isProfileError" class="text-red-600">{{ t('profile.updateError') }}</p>
             </div>
             <BaseButton class="mt-4 w-full bg-brand-light text-white px-6 py-3 rounded-md" :disabled="isProfileSubmitting">
               {{ isProfileSubmitting ? t('profile.wait') : t('profile.saveData') }}
@@ -123,8 +114,8 @@ onMounted(fetchProfile)
                 {{ isDeleteSubmitting ? t('profile.deleteWait') : t('profile.deleteRequest') }}
               </BaseButton>
             </form>
-            <p v-if="isDeleteSuccess" class="text-green-600 mt-2">{{ deleteMessage || t('profile.deleteSuccess') }}</p>
-            <p v-else-if="deleteMessage" class="text-red-600 mt-2">{{ deleteMessage }}</p>
+            <p v-if="isDeleteSuccess" class="text-green-600 mt-2">{{ t('profile.deleteSuccess') }}</p>
+            <p v-else-if="isDeleteError" class="text-red-600 mt-2">{{ t('profile.deleteError') }}</p>
           </div>
 
           <form
@@ -136,8 +127,8 @@ onMounted(fetchProfile)
               <PasswordInput id="current_password" v-model="passwordForm.current_password" name="current_password" :label="t('profile.passwordCurrent')" :error="passwordErrors.current_password" />
               <PasswordInput id="new_password" v-model="passwordForm.new_password" name="new_password" :label="t('profile.passwordNew')" :error="passwordErrors.new_password" />
               <PasswordInput id="confirm_password" v-model="passwordForm.confirm_password" name="confirm_password" :label="t('profile.passwordConfirm')" :error="passwordErrors.confirm_password" />
-              <p v-if="isPasswordSuccess" class="text-green-600">{{ passwordMessage }}</p>
-              <p v-else-if="passwordMessage" class="text-red-600">{{ passwordMessage }}</p>
+              <p v-if="isPasswordSuccess" class="text-green-600">{{ t('profile.passwordSuccess') }}</p>
+              <p v-else-if="isPasswordError" class="text-red-600">{{ t('profile.passwordError') }}</p>
             </div>
             <BaseButton class="mt-4 w-full bg-brand-light text-white px-6 py-3 rounded-md" :disabled="isPasswordSubmitting">
               {{ isPasswordSubmitting ? t('profile.wait') : t('profile.savePassword') }}
