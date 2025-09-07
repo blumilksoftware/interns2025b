@@ -146,7 +146,8 @@
         "updateError": "Could not update profile. Please try again.",
         "passwordSuccess": "Password changed successfully.",
         "passwordError": "Could not change password. Please try again.",
-        "deleteError": "Could not send account deletion request."
+        "deleteError": "Could not send account deletion request.",
+        "avatarUrl": "Avatar URL"
     },
     "organization": {
         "createTitle": "Create Organization",

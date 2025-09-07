@@ -18,8 +18,8 @@ const loadError = ref<string | null>(null)
 const user = ref<UserDetail | null>(null)
 
 const { formData: profileForm, fieldErrors: profileErrors, isSubmitting: isProfileSubmitting, isSuccess: isProfileSuccess, isError: isProfileError, submitForm: submitProfile } =
-  useApiForm<{ first_name: string, last_name: string }>(
-    { first_name: '', last_name: '' },
+  useApiForm<{ first_name: string, last_name: string, avatar_url: string }>(
+    { first_name: '', last_name: '', avatar_url: '' },
     {
       endpoint: '/api/profile',
       method: 'put',
@@ -55,6 +55,7 @@ async function fetchProfile() {
     user.value = data.data
     profileForm.first_name = data.data.first_name
     profileForm.last_name = data.data.last_name
+    profileForm.avatar_url = data.data.avatar_url ?? ''
   } catch (e: any) {
     loadError.value = e.message || 'Error loading profile'
   }
@@ -99,6 +100,7 @@ onMounted(fetchProfile)
             <div class="flex flex-col space-y-4">
               <BaseInput id="first_name" v-model="profileForm.first_name" name="first_name" :label="t('profile.firstName')" :error="profileErrors.first_name" />
               <BaseInput id="last_name" v-model="profileForm.last_name" name="last_name" :label="t('profile.lastName')" :error="profileErrors.last_name" />
+              <BaseInput id="avatar_url" v-model="profileForm.avatar_url" name="avatar_url" :label="t('profile.avatarUrl')" :error="profileErrors.avatar_url" placeholder="https://example.com/avatar.jpg" />
               <p v-if="isProfileSuccess" class="text-green-600">{{ t('profile.updateSuccess') }}</p>
               <p v-else-if="isProfileError" class="text-red-600">{{ t('profile.updateError') }}</p>
             </div>

@@ -146,7 +146,8 @@
         "updateError": "Nie udało się zaktualizować profilu. Spróbuj ponownie.",
         "passwordSuccess": "Hasło zostało zmienione.",
         "passwordError": "Nie udało się zmienić hasła. Spróbuj ponownie.",
-        "deleteError": "Nie udało się wysłać wniosku o usunięcie konta."
+        "deleteError": "Nie udało się wysłać wniosku o usunięcie konta.",
+        "avatarUrl": "Link do avataru"
     },
     "organization": {
         "createTitle": "Utwórz organizację",
