@@ -134,19 +134,6 @@ async function onFollow() {
         </div>
 
         <div class="flex flex-col items-center gap-2 mt-6">
-          <InertiaLink v-if="isMyProfile" href="/settings">
-            <BaseButton class="px-6 py-2 bg-black text-white">
-              {{ t('profile.editProfile') }}
-            </BaseButton>
-          </InertiaLink>
-
-          <BaseButton
-            v-else
-            class="px-6 py-2 bg-black text-white"
-            @click="onFollow"
-          >
-            {{ isFollowingTarget ? t('profile.unfollow') : t('profile.follow') }}
-          </BaseButton>
 
           <InertiaLink href="/">
             <BaseButton class="px-6 py-2 bg-brand-light text-white">
