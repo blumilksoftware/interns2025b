@@ -16,7 +16,7 @@ const { t } = useI18n()
 
 const props = defineProps<{ userId?: number }>()
 
-const { authUserId, logout } = useAuth()
+const { authUserId } = useAuth()
 
 const user = ref<UserDetail | null>(null)
 async function fetchProfile() {

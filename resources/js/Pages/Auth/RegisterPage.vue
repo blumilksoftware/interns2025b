@@ -44,8 +44,8 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm, reset } =
 <template>
   <app-head :title="t('auth.register')" />
   <div class="fixed top-0 right-0 z-50 flex gap-3 p-4">
-    <button @click="switchLanguage('pl')" class="underline">PL</button>
-    <button @click="switchLanguage('en')" class="underline">EN</button>
+    <button class="underline" @click="switchLanguage('pl')">PL</button>
+    <button class="underline" @click="switchLanguage('en')">EN</button>
   </div>
   <AuthLayout>
     <template #header>
