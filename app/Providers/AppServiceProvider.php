@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Interns2025b\Providers;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
                     "roles" => Auth::user()->getRoleNames()->toArray(),
                 ]
                 : null,
+            "locale" => fn(): string => App::getLocale(),
         ]);
     }
 }

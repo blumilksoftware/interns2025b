@@ -8,14 +8,16 @@ import BaseButton from '@/Components/BaseButton.vue'
 import Footer from '@/Components/Footer.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { UserForm, SelectOption } from '@/types/types'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 
 const props = defineProps<{ user: UserForm & { id: number } }>()
 
 const roleOptions: SelectOption[] = [
-  { label: 'User', value: 'user' },
-  { label: 'Moderator', value: 'moderator' },
-  { label: 'Administrator', value: 'administrator' },
-  { label: 'Super Administrator', value: 'superAdministrator' },
+  { label: t('user.roles.user'), value: 'user' },
+  { label: t('user.roles.moderator'), value: 'moderator' },
+  { label: t('user.roles.administrator'), value: 'administrator' },
+  { label: t('user.roles.superAdministrator'), value: 'superAdministrator' },
 ]
 
 const showPopup = ref(false)
@@ -43,11 +45,11 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
 </script>
 
 <template>
-  <AppHead title="Edytuj użytkownika" />
+  <AppHead :title="t('user.editTitle')" />
   <div class="w-full flex flex-col md:items-center justify-center">
     <div class="flex w-full mb-12">
       <Navbar>
-        <h1 class="text-4xl font-bold">Edytuj użytkownika</h1>
+        <h1 class="text-4xl font-bold">{{ t('user.editHeader') }}</h1>
       </Navbar>
     </div>
 
@@ -59,38 +61,38 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
         id="first_name"
         v-model="form.first_name"
         name="first_name"
-        label="Imię"
+        :label="t('user.fields.firstName')"
         :error="errors.first_name"
       />
       <BaseInput
         id="last_name"
         v-model="form.last_name"
         name="last_name"
-        label="Nazwisko"
+        :label="t('user.fields.lastName')"
         :error="errors.last_name"
       />
       <BaseInput
         id="email"
         v-model="form.email"
         name="email"
-        label="Email"
         type="email"
+        :label="t('user.fields.email')"
         :error="errors.email"
       />
       <BaseInput
         id="password"
         v-model="form.password"
         name="password"
-        label="Hasło (pozostaw puste aby nie zmieniać)"
         type="password"
+        :label="t('user.fields.passwordEdit')"
         :error="errors.password"
       />
       <BaseInput
         id="password_confirmation"
         v-model="form.password_confirmation"
         name="password_confirmation"
-        label="Potwierdź hasło"
         type="password"
+        :label="t('user.fields.passwordConfirmation')"
         :error="errors.password_confirmation"
       />
 
@@ -98,7 +100,7 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
         id="role"
         v-model="form.role"
         name="role"
-        label="Rola"
+        :label="t('user.fields.role')"
         :options="roleOptions"
         :error="errors.role"
       />
@@ -107,7 +109,7 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
         class="bg-brand-light text-white px-6 py-3 rounded-md"
         :disabled="isSubmitting"
       >
-        Zapisz zmiany
+        {{ t('user.saveChanges') }}
       </BaseButton>
     </form>
 
@@ -118,7 +120,7 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
         v-if="showPopup"
         class="fixed top-6 right-6 z-50 bg-green-600 text-white font-medium text-base px-6 py-3 rounded-lg shadow-lg opacity-100"
       >
-        Zmiany zostały zapisane pomyślnie
+        {{ t('user.updateSuccess') }}
       </div>
     </transition>
   </div>

@@ -16,9 +16,12 @@ import {
   CalendarIcon,
   UsersIcon,
 } from '@heroicons/vue/24/outline'
+import { useI18n } from 'vue-i18n'
+import { usePage, Link as InertiaLink } from '@inertiajs/vue3'
+import type { AuthProps } from '@/types/types'
 
+const { t } = useI18n()
 const props = defineProps<{ eventId: number }>()
-
 const { authUserId } = useAuth()
 
 const {
@@ -29,6 +32,11 @@ const {
   fetchFollowings,
 } = useInteractions()
 
+const page = usePage()
+const authProps = computed(() => (page.props as unknown) as AuthProps)
+const roles = computed<string[]>(() => (authProps.value.auth.user as any)?.roles ?? [])
+const isAdmin = computed(() => roles.value.includes('administrator') || roles.value.includes('superAdministrator'))
+
 const event = ref<RawEvent | null>(null)
 const loading = ref(true)
 
@@ -37,7 +45,7 @@ onMounted(async () => {
     const res = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
     event.value = res.data.data
   } catch (error) {
-    alert('Błąd pobierania wydarzenia')
+    alert(t('event.fetchError'))
   } finally {
     loading.value = false
   }
@@ -46,11 +54,18 @@ onMounted(async () => {
   }
 })
 
-const ownerIdRef   = computed(() => event.value?.owner_id ?? 0)
-const eventIdRef   = computed(() => props.eventId)
+const ownerIdRef = computed(() => event.value?.owner_id ?? 0)
+const eventIdRef = computed(() => props.eventId)
 
-const isOwnerFollowed  = useIsFollowing('user', ownerIdRef)
-const isParticipating  = useIsParticipating('event', eventIdRef)
+const isOwnerFollowed = useIsFollowing('user', ownerIdRef)
+const isParticipating = useIsParticipating('event', eventIdRef)
+
+const isOwner = computed(() => {
+  return event.value?.owner_id === authProps.value.auth.user?.id &&
+    event.value?.owner_type === 'Interns2025b\\Models\\User'
+})
+
+const canEdit = computed(() => isAdmin.value || isOwner.value)
 
 async function handleToggleFollow() {
   if (ownerIdRef.value) {
@@ -77,30 +92,25 @@ const ownerInfo = computed(() => ({
   ]
     .filter(Boolean)
     .join(' ')
-    .trim() ?? 'Nieznany',
+    .trim() ?? t('event.unknown'),
   ownerType: event.value?.owner_type ?? '',
 }))
 
 const participantsMessage = computed(() => {
   const count = event.value?.participation_count ?? 0
   return count > 0
-    ? `Liczba uczestników: ${count}`
-    : 'Nikt nie weźmie udziału.'
+    ? t('event.participantCount', { count })
+    : t('event.noParticipants')
 })
-
 </script>
 
 <template>
-  <AppHead :title="event?.title ?? 'Wydarzenie'" />
+  <AppHead :title="event?.title ?? t('event.title')" />
   <div v-if="!loading && event" class="w-full mb-16 sm:mb-12 flex-col">
     <Navbar class="mb-[72px]" />
-
     <div class="w-full h-[400px] relative bg-gray-200">
       <img :src="event.image_url ?? 'https://picsum.photos/640/480'" alt="Event Banner" class="size-full object-cover">
-
-      <div
-        class="sm:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] flex justify-between items-center bg-white rounded-full shadow px-6 py-3 w-fit max-w-full"
-      >
+      <div class="sm:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] flex justify-between items-center bg-white rounded-full shadow px-6 py-3 w-fit max-w-full">
         <p class="text-brand-dark font-medium whitespace-nowrap">
           {{ participantsMessage }}
         </p>
@@ -108,7 +118,7 @@ const participantsMessage = computed(() => {
                     class="ml-4 h-7 bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap"
                     @click="handleParticipate"
         >
-          {{ isParticipating ? 'Rezygnuj' : 'Wezmę udział' }}
+          {{ isParticipating ? t('event.cancel') : t('event.participate') }}
         </BaseButton>
       </div>
     </div>
@@ -124,7 +134,7 @@ const participantsMessage = computed(() => {
               class="inline-block px-8 py-2 rounded-2xl font-semibold"
               :class="event.is_paid ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'"
             >
-              {{ event.is_paid ? 'Płatny' : 'Darmowy' }}
+              {{ event.is_paid ? t('event.paid') : t('event.free') }}
             </p>
           </div>
 
@@ -132,24 +142,30 @@ const participantsMessage = computed(() => {
 
           <div class="flex max-sm:hidden max-xl:flex-col sm:justify-between items-start w-full">
             <div>
-              <h3 class="text-2xl font-medium">{{ event.location || 'Brak lokalizacji' }}</h3>
+              <h3 class="text-2xl font-medium">{{ event.location || t('event.noLocation') }}</h3>
               <h4 class="text-lg text-gray-400 font-normal">
-                {{ event.age_category ?? 'Brak ograniczenia wiekowego' }}
+                {{ event.age_category ?? t('event.noAgeLimit') }}
               </h4>
             </div>
 
-            <div>
-              <div class="max-sm:flex-wrap justify-end font-semibold text-xl flex-wrap gap-3">
-                <BaseButton v-if="authUserId"
-                            class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
-                            @click="handleParticipate"
-                >
-                  <span class="inline-flex items-center space-x-2">
-                    <CheckCircleIcon class="size-6" />
-                    <span>{{ isParticipating ? 'Rezygnuj' : 'Wezmę udział' }}</span>
-                  </span>
-                </BaseButton>
-              </div>
+            <div class="flex gap-3">
+              <BaseButton v-if="authUserId"
+                          class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                          @click="handleParticipate"
+              >
+                <span class="inline-flex items-center space-x-2">
+                  <CheckCircleIcon class="size-6" />
+                  <span>{{ isParticipating ? t('event.cancel') : t('event.participate') }}</span>
+                </span>
+              </BaseButton>
+
+              <InertiaLink
+                v-if="canEdit"
+                :href="`/event/${event.id}/edit`"
+                class="bg-brand-dark text-white px-3 py-1 rounded flex items-center hover:bg-brand"
+              >
+                <span>{{ t('event.edit') }}</span>
+              </InertiaLink>
             </div>
           </div>
         </div>
@@ -161,7 +177,7 @@ const participantsMessage = computed(() => {
             <div class="flex flex-col sm:gap-y-8 gap-y-3 w-full">
               <InfoBlock
                 :icon="UsersIcon"
-                :title="`${ participantsMessage }`" class="max-sm:hidden"
+                :title="participantsMessage" class="max-sm:hidden"
               />
               <InfoBlock
                 :icon="CalendarIcon"
@@ -186,35 +202,35 @@ const participantsMessage = computed(() => {
                     class="bg-brand/10 h-10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl"
                     @click="handleToggleFollow"
                   >
-                    <span>{{ isOwnerFollowed ? 'Przestań Obserwować' : 'Obserwuj' }}</span>
-                  </basebutton>
+                    <span>{{ isOwnerFollowed ? t('event.unfollow') : t('event.follow') }}</span>
+                  </BaseButton>
                 </div>
               </div>
 
-              <h1 class="font-medium sm:text-3xl text-xl text-[#120D26]">Informacje</h1>
+              <h1 class="font-medium sm:text-3xl text-xl text-[#120D26]">{{ t('event.information') }}</h1>
               <p class="font-normal sm:text-xl text-sm text-[#120D26]">{{ event.description }}</p>
             </div>
           </div>
 
           <div class="flex flex-col space-y-6 lg:w-2/6 justify-start">
             <div v-if="event.is_paid" class="sm:hidden fixed bottom-0 left-0 w-full z-[1001] bg-white p-4 shadow-t">
-              <base-button class="w-full text-base h-16 p-[15px] bg-brand-dark text-white rounded-2xl">
+              <BaseButton class="w-full text-base h-16 p-[15px] bg-brand-dark text-white rounded-2xl">
                 <span class="inline-flex font-semibold items-center justify-center space-x-2">
-                  <span>KUP BILET</span>
+                  <span>{{ t('event.buyTicket') }}</span>
                   <ArrowRightCircleIcon class="size-6" />
                 </span>
-              </base-button>
+              </BaseButton>
             </div>
 
             <div v-if="event.is_paid" class="max-sm:hidden w-full rounded-lg shadow-lg !mt-0 bg-white lg:py-11 lg:px-16 p-8 lg:space-y-8 space-y-4">
-              <p class="text-2xl font-medium">Bilety</p>
+              <p class="text-2xl font-medium">{{ t('event.tickets') }}</p>
               <div class="text-center">
-                <base-button class="w-full mb-1 text-base p-[15px] bg-brand-dark text-white rounded-2xl">
+                <BaseButton class="w-full mb-1 text-base p-[15px] bg-brand-dark text-white rounded-2xl">
                   <span class="inline-flex font-semibold items-center justify-center space-x-2">
-                    <span>KUP BILET</span>
+                    <span>{{ t('event.buyTicket') }}</span>
                     <ArrowRightCircleIcon class="size-6" />
                   </span>
-                </base-button>
+                </BaseButton>
               </div>
             </div>
 

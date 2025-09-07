@@ -10,19 +10,27 @@ import MapPicker from '@/Components/MapPicker.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { EventForm, SelectOption } from '@/types/types'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const page = usePage()
+
 const statusOptions = computed<SelectOption[]>(() => {
   const options = page.props.statusOptions as SelectOption[] | undefined
-  if (options && Array.isArray(options) && options.length > 0) {
-    return options
-  }
+  if (options && Array.isArray(options) && options.length > 0) return options
   return [
-    { label: 'Draft', value: 'draft' },
-    { label: 'Published', value: 'published' },
-    { label: 'Ongoing', value: 'ongoing' },
+    { label: t('status.draft'), value: 'draft' },
+    { label: t('status.published'), value: 'published' },
+    { label: t('status.ongoing'), value: 'ongoing' },
   ]
 })
+
+const ageCategoryOptions = computed<SelectOption[]>(() => [
+  { label: t('event.ageKids'), value: 'kids' },
+  { label: t('event.ageTeens'), value: 'teens' },
+  { label: t('event.ageAdults'), value: 'adults' },
+  { label: t('event.ageEveryone'), value: 'everyone' },
+])
 
 const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApiForm<EventForm>(
   {
@@ -38,7 +46,7 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
     price: null,
     status: 'draft',
     image_url: '',
-    age_category: '',
+    age_category: 'everyone',
   },
   {
     endpoint: '/api/events',
@@ -70,11 +78,11 @@ function onMapAddressUpdate(address: string | null) {
 </script>
 
 <template>
-  <AppHead title="Utwórz wydarzenie" />
+  <AppHead :title="t('event.createTitle')" />
   <div class="w-full flex flex-col md:items-center justify-center">
     <div class="flex w-full mb-12">
       <Navbar>
-        <h1 class="text-4xl font-bold">Dodaj wydarzenie</h1>
+        <h1 class="text-4xl font-bold">{{ t('event.addEvent') }}</h1>
       </Navbar>
     </div>
 
@@ -102,21 +110,28 @@ function onMapAddressUpdate(address: string | null) {
         </div>
         <div v-else class="mt-3 text-sm text-gray-500">Kliknij na mapie, aby ustawić lokalizację.</div>
       </div>
-
       <BaseInput id="image_url" v-model="form.image_url" name="image_url" label="URL zdjęcia (Opcjonalne)" :error="errors.image_url" />
-      <BaseInput id="age_category" v-model="form.age_category" name="age_category" label="Kategoria wiekowa (Opcjonalne)" :error="errors.age_category" />
+
+      <BaseSelect
+        id="age_category"
+        v-model="form.age_category"
+        name="age_category"
+        :label="t('event.ageCategory')"
+        :options="ageCategoryOptions"
+        :error="errors.age_category"
+      />
 
       <div class="flex space-x-4 items-center">
         <label class="flex items-center space-x-2">
           <input v-model="form.is_paid" type="checkbox">
-          <span>Wydarzenie płatne?</span>
+          <span>{{ t('event.isPaid') }}</span>
         </label>
         <BaseInput
           v-if="form.is_paid"
           id="price"
           v-model="priceString"
           name="price"
-          label="Cena (Opcjonalne)"
+          :label="t('event.price')"
           type="number"
           min="0"
           :error="errors.price"
@@ -127,14 +142,13 @@ function onMapAddressUpdate(address: string | null) {
         id="status"
         v-model="form.status"
         name="status"
-        label="Status wydarzenia"
+        :label="t('event.status')"
         :options="statusOptions"
         :error="errors.status"
       />
 
       <BaseButton class="bg-brand-light text-white px-6 py-3 rounded-md" :disabled="isSubmitting">
-        <span v-if="isSubmitting">Wysyłanie…</span>
-        <span v-else>Utwórz wydarzenie</span>
+        {{ t('event.createButton') }}
       </BaseButton>
     </form>
     <Footer class="mt-16" />

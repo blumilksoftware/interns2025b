@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import AuthLayout from '@/Layouts/AuthLayout.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import BaseButton from '@/Components/BaseButton.vue'
@@ -9,13 +10,13 @@ import LoginFacebook from '@/Components/LoginFacebook.vue'
 import PasswordInput from '@/Components/PasswordInput.vue'
 import AppHead from '@/Components/AppHead.vue'
 
-const {
-  formData: form,
-  fieldErrors: errors,
-  isSubmitting,
-  submitForm,
-  reset,
-} = useApiForm<RegisterForm>(
+const { t, locale } = useI18n()
+
+function switchLanguage(lang: string) {
+  locale.value = lang
+}
+
+const { formData: form, fieldErrors: errors, isSubmitting, submitForm, reset } = useApiForm<RegisterForm>(
   {
     first_name: '',
     last_name: '',
@@ -32,8 +33,7 @@ const {
         preserveState: false,
         preserveScroll: false,
         data: {
-          notification:
-            'Registration successful! Please check your email for verification.',
+          notification: t('auth.registerSuccess'),
         },
       })
     },
@@ -42,17 +42,18 @@ const {
 </script>
 
 <template>
-  <app-head title="Rejestracja" />
+  <app-head :title="t('auth.register')" />
+  <div class="fixed top-0 right-0 z-50 flex gap-3 p-4">
+    <button @click="switchLanguage('pl')" class="underline">PL</button>
+    <button @click="switchLanguage('en')" class="underline">EN</button>
+  </div>
   <AuthLayout>
     <template #header>
-      <h2 class="font-bold text-3xl">Zarejestruj się</h2>
+      <h2 class="font-bold text-3xl">{{ t('auth.register') }}</h2>
       <p class="font-medium mt-3">
-        Posiadasz konto?
-        <InertiaLink
-          href="/login"
-          class="underline font-semibold hover:text-gray-200"
-        >
-          Zaloguj się
+        {{ t('auth.haveAccount') }}
+        <InertiaLink href="/login" class="underline font-semibold hover:text-gray-200">
+          {{ t('auth.login') }}
         </InertiaLink>
       </p>
     </template>
@@ -67,7 +68,7 @@ const {
             id="email"
             v-model="form.email"
             name="email"
-            label="E-mail"
+            :label="t('auth.email')"
             type="email"
             focus-placeholder="example@example.com"
             :error="errors.email"
@@ -78,7 +79,7 @@ const {
                 id="first_name"
                 v-model="form.first_name"
                 name="first_name"
-                label="Imię"
+                :label="t('auth.firstName')"
                 type="text"
                 :error="errors.first_name"
               />
@@ -89,7 +90,7 @@ const {
                 id="last_name"
                 v-model="form.last_name"
                 name="last_name"
-                label="Nazwisko (opcjonalnie)"
+                :label="t('auth.lastNameOptional')"
                 type="text"
                 :error="errors.last_name"
               />
@@ -100,7 +101,7 @@ const {
                 id="password"
                 v-model="form.password"
                 name="password"
-                label="Hasło"
+                :label="t('auth.password')"
                 :error="errors.password"
               />
             </div>
@@ -110,7 +111,7 @@ const {
                 id="password_confirmation"
                 v-model="form.password_confirmation"
                 name="password_confirmation"
-                label="Powtórz hasło"
+                :label="t('auth.passwordConfirmation')"
                 :error="errors.password_confirmation"
               />
             </div>
@@ -122,7 +123,7 @@ const {
           :disabled="isSubmitting"
           type="submit"
         >
-          Zarejestruj się
+          {{ t('auth.register') }}
         </BaseButton>
       </form>
     </template>
@@ -130,27 +131,14 @@ const {
     <template #footer>
       <div class="flex items-center w-5/6 mt-8 mb-4">
         <div class="grow h-px bg-gray-200" />
-        <span class="px-4 text-gray-500 text-sm">lub</span>
+        <span class="px-4 text-gray-500 text-sm">{{ t('auth.or') }}</span>
         <div class="grow h-px bg-gray-200" />
       </div>
       <login-facebook />
       <div class="w-5/6">
-        <div class="text-center">
-          <p class="text-base text-gray-500 mt-6">
-            Rejestrując się wyrażasz zgodę na
-            <InertiaLink
-              href="#"
-              class="text-brand-light hover:text-brand-dark font-semibold"
-            >
-              Warunki świadczenia usług
-            </InertiaLink>
-            oraz
-            <InertiaLink
-              href="#"
-              class="text-brand-light hover:text-brand-dark font-semibold"
-            >
-              Umowę o przetwarzaniu danych
-            </InertiaLink>
+        <div class="text-center mt-6">
+          <p class="text-base text-gray-500">
+            {{ t('auth.registerTerms') }}
           </p>
         </div>
       </div>

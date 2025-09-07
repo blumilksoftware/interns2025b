@@ -2,8 +2,7 @@
 import Navbar from '@/Components/Navbar.vue'
 import Map from '@/Components/Map.vue'
 import BaseInput from '@/Components/BaseInput.vue'
-import { CalendarIcon } from '@heroicons/vue/24/outline'
-import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
+import { CalendarIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import Footer from '@/Components/Footer.vue'
 import AppHead from '@/Components/AppHead.vue'
 import { useEvents } from '@/composables/useEvents'
@@ -11,6 +10,9 @@ import { useSearch } from '@/composables/useSearch'
 import ActiveFilters from '@/Components/ActiveFilters.vue'
 import { onMounted } from 'vue'
 import DropdownFilters from '@/Components/DropdownFilters.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const { activeEvents, fetchAll } = useEvents({ all: true, activeOnly: true })
 
@@ -22,23 +24,22 @@ const {
   filtered,
 } = useSearch(activeEvents, ['title','location','age_category','id'])
 
-
 onMounted(() => {
-  fetchAll().catch(err => {
-    alert('Nie udało się pobrać eventów')
+  fetchAll().catch(() => {
+    alert(t('home.fetch_error'))
   })
 })
 </script>
 
 <template>
-  <app-head title="Home Page" />
+  <app-head :title="t('home.title')" />
   <div class="w-full flex flex-col md:items-center justify-center">
     <div class="flex w-full md:mb-32 mb-8">
       <navbar>
         <h1 class="justify-center font-bold text-6xl">
-          Znajdź
-          <span class="text-gradient-teal"> wydarzenie </span><br>
-          w Twojej okolicy
+          {{ t('home.find') }}
+          <span class="text-gradient-teal">{{ t('home.event') }}</span><br>
+          {{ t('home.near_you') }}
         </h1>
       </navbar>
     </div>
@@ -51,9 +52,7 @@ onMounted(() => {
             class="flex-1 absolute w-full h-[1000px] inset-0 top-[-430px] pointer-events-none"
           >
         </div>
-        <div
-          class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl"
-        >
+        <div class="w-full relative flex flex-col items-center lg:pt-6 bg-[#F2F2F2] overflow-visible md:rounded-xl">
           <div
             class="flex items-center border-none justify-center mb-8 max-lg:mt-6 max-lg:mx-2 text-sm gap-x-2 gap-y-8 h-1/6 [&>*]:mb-1 [&>*]:flex-col max-lg:grid max-lg:grid-cols-2"
           >
@@ -62,7 +61,7 @@ onMounted(() => {
                 id="city"
                 v-model="query"
                 name="city"
-                label="Wyszukaj wydarzenia"
+                :label="t('home.search_events')"
                 type="text"
                 append-position="left"
                 variant="event"
@@ -80,7 +79,7 @@ onMounted(() => {
                 id="date"
                 v-model="dateFilter"
                 name="date"
-                label="Data"
+                :label="t('home.date')"
                 type="date"
                 append-position="left"
                 variant="event"

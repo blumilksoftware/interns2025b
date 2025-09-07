@@ -15,11 +15,12 @@ import ActiveFilters from '@/Components/ActiveFilters.vue'
 import InfoBlock from '@/Components/InfoBlock.vue'
 import { Link as InertiaLink } from '@inertiajs/vue3'
 import { useAuth } from '@/composables/useAuth'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n({ useScope: 'global' })
 const { authUserId } = useAuth()
 
 const { events } = useEvents({ all: true })
-
 const { activeEvents } = useEvents({ all: true, activeOnly: true })
 
 const myEvents = computed(() =>
@@ -31,7 +32,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
 </script>
 
 <template>
-  <AppHead title="Home Page" />
+  <AppHead :title="t('event.title')" />
 
   <div class="w-full flex flex-col md:items-center justify-center">
     <div class="flex w-full md:mb-32 mb-8">
@@ -56,10 +57,11 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
               <BaseInput
                 id="search"
                 v-model="query"
-                label="Szukaj"
+                :label="t('home.search_events')"
                 type="text"
                 append-position="left"
                 variant="event"
+                name="name"
               >
                 <template #append>
                   <MagnifyingGlassIcon
@@ -67,7 +69,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
                   />
                 </template>
               </BaseInput>
-              <ActiveFilters v-model="activeFields" class="" />
+              <ActiveFilters v-model="activeFields" />
             </div>
 
             <div class="lg:w-4/12">
@@ -75,7 +77,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
                 id="date"
                 v-model="dateFilter"
                 name="date"
-                label="Data"
+                :label="t('home.date')"
                 type="date"
                 append-position="left"
                 variant="event"
@@ -101,7 +103,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
             class="flex w-full h-5/6 items-center justify-center"
           >
             <h3 class="w-5/6 text-left font-medium size-4 text-gray-800 my-3">
-              Twoje Wydarzenia
+              {{ t('event.myEvents') }}
             </h3>
             <div class="flex gap-8">
               <EventCard
@@ -118,7 +120,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
             </div>
           </div>
           <h3 class="w-5/6 text-left font-medium size-4 text-gray-800 my-3">
-            Przeglądaj wydarzenia
+            {{ t('event.browseEvents') }}
           </h3>
           <div class="flex w-full h-5/6 items-center justify-center">
             <div class="w-full max-w-5xl mt-6 px-4">
@@ -136,8 +138,8 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
                     :title="e.title"
                     :image-url="e.image_url"
                     :info-items="[
-                      e.location ?? 'Brak lokalizacji',
-                      e.age_category ?? 'Brak kategorii',
+                      e.location ?? t('event.noLocation'),
+                      e.age_category ?? t('event.noAgeLimit'),
                     ]"
                     class="bg-white p-4"
                   />
@@ -149,7 +151,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
             v-if="filtered.length === 0"
             class="mt-8 text-center text-gray-500"
           >
-            Brak wyników.
+            {{ t('event.noResults') }}
           </p>
         </div>
       </div>
@@ -161,9 +163,9 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
         class="flex flex-col items-center justify-center text-center text-white space-y-16 max-sm:space-y-8"
       >
         <h1 class="text-6xl font-bold pt-6">
-          Nic Cię nie interesuje?<br>
+          {{ t('home.heroLine1') }}<br>
           <span class="text-gradient-teal-light">
-            Stwórz własne wydarzenie w LetsEvent
+            {{ t('home.heroLine2') }}
           </span>
         </h1>
         <div class="flex gap-x-8">
@@ -171,7 +173,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
             href="/event/create"
             class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]"
           >
-            Dodaj własne wydarzenie
+            {{ t('event.addEvent') }}
           </inertia-link>
         </div>
         <div class="w-11/12 lg:flex lg:justify-between text-gray-500">
@@ -183,7 +185,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
                     href="#"
                     class="hover:underline hover:text-gray-400"
                   >
-                    Regulamin
+                    {{ t('footer.terms') }}
                   </InertiaLink>
                 </li>
                 <li aria-hidden="true">•</li>
@@ -192,7 +194,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
                     href="#"
                     class="hover:underline hover:text-gray-400"
                   >
-                    Polityka prywatności
+                    {{ t('footer.privacy') }}
                   </InertiaLink>
                 </li>
               </ul>
@@ -200,7 +202,7 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
             </div>
           </div>
           <div class="order-2 lg:order-1 max-sm:mt-5">
-            <p>Wszystkie prawa zastrzeżone &copy; 2025 Interns2025b</p>
+            <p>{{ t('footer.rights', { year: 2025, company: 'Interns2025b' }) }}</p>
           </div>
         </div>
       </div>
