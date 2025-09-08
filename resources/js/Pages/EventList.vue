@@ -1,34 +1,31 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { onMounted } from 'vue'
 import AppHead from '@/Components/AppHead.vue'
 import Navbar from '@/Components/Navbar.vue'
-import EventCard from '@/Components/EventCard.vue'
 import BaseInput from '@/Components/BaseInput.vue'
 import DropdownFilters from '@/Components/DropdownFilters.vue'
 import { formatDate, formatTime } from '@/utilities/formatDate'
 import { useEvents } from '@/composables/useEvents'
 import { useSearch } from '@/composables/useSearch'
-import { CalendarIcon } from '@heroicons/vue/24/outline'
-import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
-import Socials from '@/Components/Socials.vue'
+import { CalendarIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import ActiveFilters from '@/Components/ActiveFilters.vue'
 import InfoBlock from '@/Components/InfoBlock.vue'
 import { Link as InertiaLink } from '@inertiajs/vue3'
-import { useAuth } from '@/composables/useAuth'
 import { useI18n } from 'vue-i18n'
+import Map from '@/Components/Map.vue'
+import Socials from '@/Components/Socials.vue'
 
 const { t } = useI18n({ useScope: 'global' })
-const { authUserId } = useAuth()
-
-const { events } = useEvents({ all: true })
-const { activeEvents } = useEvents({ all: true, activeOnly: true })
-
-const myEvents = computed(() =>
-  events.value.filter(e => e.owner_id === authUserId.value),
-)
+const { activeEvents, fetchAll } = useEvents({ all: true, activeOnly: true })
 
 const { query, filtered, activeFields, availableFields, dateFilter } =
   useSearch(activeEvents, ['id', 'title', 'location'])
+
+onMounted(() => {
+  fetchAll().catch(() => {
+    alert(t('home.fetch_error'))
+  })
+})
 </script>
 
 <template>
@@ -98,27 +95,14 @@ const { query, filtered, activeFields, availableFields, dateFilter } =
             </div>
           </div>
 
-          <div
-            v-if="myEvents.length > 0"
-            class="flex w-full h-5/6 items-center justify-center"
-          >
-            <h3 class="w-5/6 text-left font-medium size-4 text-gray-800 my-3">
-              {{ t('event.myEvents') }}
-            </h3>
-            <div class="flex gap-8">
-              <EventCard
-                v-for="e in myEvents"
-                :id="e.id"
-                :key="e.id"
-                :image-url="e.image_url"
-                :start="formatDate(e.start)"
-                :is-paid="e.is_paid"
-                :title="e.title"
-                :location="e.location"
-                :age-category="e.age_category"
-              />
-            </div>
+          <div class="w-full h-5/6 bg-white rounded-b-xl">
+            <Map
+              :events="filtered"
+              :center="[51.21,16.16]"
+              class="min-h-96 aspect-[2/1] max-md:aspect-square"
+            />
           </div>
+
           <h3 class="w-5/6 text-left font-medium size-4 text-gray-800 my-3">
             {{ t('event.browseEvents') }}
           </h3>
