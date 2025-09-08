@@ -24,7 +24,6 @@ async function handleFacebookLogin() {
     class="w-5/6 border border-gray-200 font-bold flex items-center justify-center gap-2"
     @click="handleFacebookLogin"
   >
-    <span class="inline-flex font-semibold items-center space-x-2"><img class="size-6 mr-2" src="/images/FacebookIcon.png" alt="">Zaloguj
-      za pomocą Facebook</span>
+    <span class="inline-flex font-semibold items-center space-x-2"><img class="size-6 mr-2" src="/images/FacebookIcon.png" alt="">{{ $t('auth.facebookLogin') }}</span>
   </BaseButton>
 </template>
