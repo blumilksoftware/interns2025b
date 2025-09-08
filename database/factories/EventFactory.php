@@ -17,6 +17,7 @@ class EventFactory extends Factory
 
         $ownerId = $ownerType::inRandomOrder()->value("id") ?? $ownerType::factory()->create()->id;
         $isPaid = fake()->boolean();
+        $seed = uniqid();
 
         return [
             "title" => fake()->jobTitle(),
@@ -30,7 +31,7 @@ class EventFactory extends Factory
             "is_paid" => $isPaid,
             "price" => $isPaid ? fake()->randomFloat(2, 1, 100) : 0,
             "status" => fake()->randomElement(EventStatus::cases()),
-            "image_url" => fake()->imageUrl(),
+            "image_url" => "https://picsum.photos/seed/{$seed}/640/480",
             "age_category" => fake()->randomElement(["kids", "teens", "adults"]),
             "owner_type" => $ownerType,
             "owner_id" => $ownerId,
