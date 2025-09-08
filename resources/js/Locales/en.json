@@ -205,5 +205,13 @@
             "Interns2025b\\Models\\User": "User",
             "Interns2025b\\Models\\Organization": "Organization"
         }
+    },
+    "filters": {
+        "button": "Filters",
+        "title": "Title",
+        "location": "Location",
+        "age_category": "Age category",
+        "id": "ID"
     }
 }
+

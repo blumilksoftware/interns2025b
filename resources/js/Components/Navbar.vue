@@ -17,7 +17,7 @@ const { t } = useI18n()
 
 <template>
   <div class="w-full">
-    <div class="flex font-medium items-center md:justify-end justify-between gap-y-5 pt-10 sm:gap-x-10 mx-5 mb-10">
+    <div class="flex font-medium items-center md:justify-end justify-between gap-y-5 pt-10 sm:gap-x-10 mr-10 mb-10">
       <template v-if="!isLoggedIn">
         <InertiaLink href="/login" class="hover:underline">{{ t('auth.login') }}</InertiaLink>
         <InertiaLink href="/register"

@@ -71,7 +71,7 @@ onBeforeUnmount(() => {
       {{ currentLanguage.name }}
     </button>
 
-    <div v-if="dropdownOpen" class="absolute z-50 mt-2 w-40 text-sm bg-white border rounded shadow" role="listbox">
+    <div v-if="dropdownOpen" class="absolute z-50 mt-2 w-36 text-sm bg-white border rounded shadow" role="listbox">
       <ul>
         <li
           v-for="opt in languageOptions"
