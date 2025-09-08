@@ -134,7 +134,6 @@ async function onFollow() {
         </div>
 
         <div class="flex flex-col items-center gap-2 mt-6">
-
           <InertiaLink href="/">
             <BaseButton class="px-6 py-2 bg-brand-light text-white">
               {{ t('profile.goHome') }}

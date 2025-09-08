@@ -9,12 +9,9 @@ import type { LoginForm, LoginResponse } from '@/types/types'
 import LoginFacebook from '@/Components/LoginFacebook.vue'
 import PasswordInput from '@/Components/PasswordInput.vue'
 import AppHead from '@/Components/AppHead.vue'
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 
-const { t, locale } = useI18n()
-
-function switchLanguage(lang: string) {
-  locale.value = lang
-}
+const { t } = useI18n()
 
 const { notification } = defineProps<{ notification?: string }>()
 
@@ -42,8 +39,7 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
 <template>
   <app-head :title="t('auth.login')" />
   <div class="fixed top-0 right-0 z-50 flex gap-3 p-4">
-    <button class="underline" @click="switchLanguage('pl')">PL</button>
-    <button class="underline" @click="switchLanguage('en')">EN</button>
+    <language-switcher />
   </div>
   <AuthLayout>
     <template #header>

@@ -194,7 +194,7 @@ const participantsMessage = computed(() => {
                   <InfoBlock
                     :image-url="ownerInfo.imageUrl"
                     :title="ownerInfo.title"
-                    :info-items="[ownerInfo.ownerType]"
+                    :info-items="[t(`owner.type.${ownerInfo.ownerType}`)]"
                   />
                 </InertiaLink>
                 <div v-if="authUserId" class="flex items-center justify-end">

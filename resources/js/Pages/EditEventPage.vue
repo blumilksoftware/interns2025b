@@ -71,12 +71,13 @@ function onMapAddressUpdate(address: string | null) {
     </div>
 
     <form class="w-full md:w-3/4 space-y-6 p-6 bg-white rounded-xl shadow-md" @submit.prevent="submitForm">
-      <BaseInput id="title" v-model="form.title" name="title" label="Tytuł wydarzenia" :error="errors.title" />
-      <BaseInput id="description" v-model="form.description" name="description" label="Opis" type="textarea" :error="errors.description" />
-      <BaseInput id="start" v-model="form.start" name="start" label="Data rozpoczęcia" type="datetime-local" :error="errors.start" />
-      <BaseInput id="end" v-model="form.end" name="end" label="Data zakończenia" type="datetime-local" :error="errors.end" />
-      <BaseInput id="location" v-model="form.location" name="location" label="Lokalizacja" :error="errors.location" />
-      <BaseInput id="address" v-model="form.address" name="address" label="Adres" :error="errors.address" />
+      <BaseInput id="title" v-model="form.title" name="title" :label="t('event.title')" :error="errors.title" />
+      <BaseInput id="description" v-model="form.description" name="description" :label="t('event.description')" type="textarea" :error="errors.description" />
+      <BaseInput id="start" v-model="form.start" name="start" :label="t('event.startDate')" type="datetime-local" :error="errors.start" />
+      <BaseInput id="end" v-model="form.end" name="end" :label="t('event.endDate')" type="datetime-local" :error="errors.end" />
+      <BaseInput id="location" v-model="form.location" name="location" :label="t('event.location')" :error="errors.location" />
+      <BaseInput id="address" v-model="form.address" name="address" :label="t('event.address')" :error="errors.address" />
+      <BaseInput id="image_url" v-model="form.image_url" name="image_url" :label="t('event.imageUrl')" :error="errors.image_url" />
 
       <div>
         <label class="block text-sm font-medium mb-2">Wybierz lokalizację na mapie</label>
@@ -116,6 +117,7 @@ function onMapAddressUpdate(address: string | null) {
           name="price"
           :label="t('event.price')"
           type="number"
+          step="0.01"
           min="0"
           :error="errors.price"
         />

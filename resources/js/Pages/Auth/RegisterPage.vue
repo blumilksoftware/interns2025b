@@ -9,12 +9,9 @@ import { Link as InertiaLink, router } from '@inertiajs/vue3'
 import LoginFacebook from '@/Components/LoginFacebook.vue'
 import PasswordInput from '@/Components/PasswordInput.vue'
 import AppHead from '@/Components/AppHead.vue'
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 
-const { t, locale } = useI18n()
-
-function switchLanguage(lang: string) {
-  locale.value = lang
-}
+const { t } = useI18n()
 
 const { formData: form, fieldErrors: errors, isSubmitting, submitForm, reset } = useApiForm<RegisterForm>(
   {
@@ -44,8 +41,7 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm, reset } =
 <template>
   <app-head :title="t('auth.register')" />
   <div class="fixed top-0 right-0 z-50 flex gap-3 p-4">
-    <button class="underline" @click="switchLanguage('pl')">PL</button>
-    <button class="underline" @click="switchLanguage('en')">EN</button>
+    <language-switcher />
   </div>
   <AuthLayout>
     <template #header>

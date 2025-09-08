@@ -41,6 +41,13 @@
         "search_events": "Wyszukaj wydarzenia",
         "date": "Data",
         "fetch_error": "Nie udało się pobrać eventów",
+        "show_map": "Pokaż mapę wyadarzeń",
+        "show_list": "Pokaż liste waydarzeń",
+        "age_category": {
+            "kids": "Dzieci",
+            "teens": "Nastolatki",
+            "adults": "Dorośli"
+        },
         "heroLine1": "Bądź na bieżąco",
         "heroLine2": "dołącz do LetsEvent",
         "createEvents": "Dodawaj własne wydarzenia",
@@ -191,6 +198,12 @@
             "moderator": "Moderator",
             "administrator": "Administrator",
             "superAdministrator": "Super Administrator"
+        }
+    },
+    "owner": {
+        "type": {
+            "Interns2025b\\Models\\User": "Użytkownik",
+            "Interns2025b\\Models\\Organization": "Organizacja"
         }
     }
 }

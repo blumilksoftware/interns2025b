@@ -2,6 +2,7 @@
 import { Link as InertiaLink, usePage } from '@inertiajs/vue3'
 import { useAuth } from '@/composables/useAuth'
 import { computed } from 'vue'
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 import { useI18n } from 'vue-i18n'
 
 const page = usePage()
@@ -10,11 +11,8 @@ const { isLoggedIn, logout } = useAuth()
 
 const isHomePage = computed(() => page.url === '/')
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
-function switchLanguage(lang: string) {
-  locale.value = lang
-}
 </script>
 
 <template>
@@ -27,10 +25,6 @@ function switchLanguage(lang: string) {
         >
           {{ t('auth.register') }}
         </InertiaLink>
-        <div class="mr-8 pr-2 flex gap-3">
-          <button class="underline" @click="switchLanguage('pl')">PL</button>
-          <button class="underline" @click="switchLanguage('en')">EN</button>
-        </div>
       </template>
 
       <template v-else>
@@ -40,11 +34,8 @@ function switchLanguage(lang: string) {
         >
           {{ t('auth.logout') }}
         </button>
-        <div class="mr-8 pr-2 flex gap-3">
-          <button class="underline" @click="switchLanguage('pl')">PL</button>
-          <button class="underline" @click="switchLanguage('en')">EN</button>
-        </div>
       </template>
+      <language-switcher />
     </div>
 
     <div
