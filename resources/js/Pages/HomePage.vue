@@ -100,7 +100,7 @@ onMounted(() => {
           </div>
 
           <div class="w-full relative bg-white rounded-b-xl">
-            <div class="absolute top-2 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-2 pointer-events-auto">
+            <div class="absolute top-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 pointer-events-auto">
               <button
                 type="button"
                 :class="[

@@ -24,13 +24,7 @@ const { t } = useI18n()
 const props = defineProps<{ eventId: number }>()
 const { authUserId } = useAuth()
 
-const {
-  toggleFollow,
-  participateEvent,
-  useIsFollowing,
-  useIsParticipating,
-  fetchFollowings,
-} = useInteractions()
+const { toggleFollow, participateEvent, useIsFollowing, fetchFollowings } = useInteractions()
 
 const page = usePage()
 const authProps = computed(() => (page.props as unknown) as AuthProps)
@@ -39,32 +33,32 @@ const isAdmin = computed(() => roles.value.includes('administrator') || roles.va
 
 const event = ref<RawEvent | null>(null)
 const loading = ref(true)
+const isEventParticipating = ref(false)
 
 onMounted(async () => {
   try {
     const res = await api.get<{ data: RawEvent }>(`/events/${props.eventId}`)
     event.value = res.data.data
+
+    isEventParticipating.value = event.value.is_participating ?? false
+
+    if (authUserId.value) {
+      await fetchFollowings()
+    }
   } catch (error) {
     alert(t('event.fetchError'))
   } finally {
     loading.value = false
   }
-  if (authUserId.value) {
-    await fetchFollowings()
-  }
 })
 
 const ownerIdRef = computed(() => event.value?.owner_id ?? 0)
-const eventIdRef = computed(() => props.eventId)
-
 const isOwnerFollowed = useIsFollowing('user', ownerIdRef)
-const isParticipating = useIsParticipating('event', eventIdRef)
 
 const isOwner = computed(() => {
   return event.value?.owner_id === authProps.value.auth.user?.id &&
     event.value?.owner_type === 'Interns2025b\\Models\\User'
 })
-
 const canEdit = computed(() => isAdmin.value || isOwner.value)
 
 async function handleToggleFollow() {
@@ -75,12 +69,18 @@ async function handleToggleFollow() {
 
 async function handleParticipate() {
   if (!event.value) return
-  await participateEvent(event.value.id)
+  try {
+    await participateEvent(event.value.id)
 
-  const wasParticipating = isParticipating.value
-  event.value.participation_count = wasParticipating
-    ? Math.max((event.value.participation_count ?? 1) - 1, 0)
-    : (event.value.participation_count ?? 0) + 1
+    isEventParticipating.value = !isEventParticipating.value
+
+    event.value.participation_count = isEventParticipating.value
+      ? (event.value.participation_count ?? 0) + 1
+      : Math.max((event.value.participation_count ?? 1) - 1, 0)
+  } catch (error) {
+    console.error(error)
+    alert(t('event.participationError'))
+  }
 }
 
 const ownerInfo = computed(() => ({
@@ -89,10 +89,7 @@ const ownerInfo = computed(() => ({
     event.value?.owner?.first_name,
     event.value?.owner?.last_name,
     (event.value?.owner as any)?.name,
-  ]
-    .filter(Boolean)
-    .join(' ')
-    .trim() ?? t('event.unknown'),
+  ].filter(Boolean).join(' ').trim() ?? t('event.unknown'),
   ownerType: event.value?.owner_type ?? '',
 }))
 
@@ -111,14 +108,12 @@ const participantsMessage = computed(() => {
     <div class="w-full h-[400px] relative bg-gray-200">
       <img :src="event.image_url ?? 'https://picsum.photos/640/480'" alt="Event Banner" class="size-full object-cover">
       <div class="sm:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] flex justify-between items-center bg-white rounded-full shadow px-6 py-3 w-fit max-w-full">
-        <p class="text-brand-dark font-medium whitespace-nowrap">
-          {{ participantsMessage }}
-        </p>
+        <p class="text-brand-dark font-medium whitespace-nowrap">{{ participantsMessage }}</p>
         <BaseButton v-if="authUserId"
                     class="ml-4 h-7 bg-brand-dark text-white px-4 py-1 rounded-lg text-sm whitespace-nowrap"
                     @click="handleParticipate"
         >
-          {{ isParticipating ? t('event.cancel') : t('event.participate') }}
+          {{ isEventParticipating ? t('event.cancel') : t('event.participate') }}
         </BaseButton>
       </div>
     </div>
@@ -127,25 +122,18 @@ const participantsMessage = computed(() => {
       <div class="w-full py-16 p-8 bg-white sm:shadow-lg sm:border sm:border-gray-300 flex justify-center items-center">
         <div class="sm:w-11/12 w-full space-y-2">
           <div class="flex max-sm:hidden justify-between items-center w-full text-center">
-            <h2 class="text-2xl text-brand-light font-semibold">
-              {{ formatDate(event.start) }} - {{ formatTime(event.start) }}
-            </h2>
-            <p
-              class="inline-block px-8 py-2 rounded-2xl font-semibold"
-              :class="event.is_paid ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'"
-            >
+            <h2 class="text-2xl text-brand-light font-semibold">{{ formatDate(event.start) }} - {{ formatTime(event.start) }}</h2>
+            <p class="inline-block px-8 py-2 rounded-2xl font-semibold" :class="event.is_paid ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'">
               {{ event.is_paid ? t('event.paid') : t('event.free') }}
             </p>
           </div>
 
           <h1 class="sm:text-5xl text-3xl font-bold">{{ event.title }}</h1>
 
-          <div class="flex max-sm:hidden max-xl:flex-col sm:justify-between items-start w-full">
+          <div class="flex max-sm:hidden max-xl:flex-col sm:justify-between items-start w-full gap-3">
             <div>
               <h3 class="text-2xl font-medium">{{ event.location || t('event.noLocation') }}</h3>
-              <h4 class="text-lg text-gray-400 font-normal">
-                {{ event.age_category ?? t('event.noAgeLimit') }}
-              </h4>
+              <h4 class="text-lg text-gray-400 font-normal">{{ event.age_category ?? t('event.noAgeLimit') }}</h4>
             </div>
 
             <div class="flex gap-3">
@@ -155,7 +143,7 @@ const participantsMessage = computed(() => {
               >
                 <span class="inline-flex items-center space-x-2">
                   <CheckCircleIcon class="size-6" />
-                  <span>{{ isParticipating ? t('event.cancel') : t('event.participate') }}</span>
+                  <span>{{ isEventParticipating ? t('event.cancel') : t('event.participate') }}</span>
                 </span>
               </BaseButton>
 
@@ -175,33 +163,16 @@ const participantsMessage = computed(() => {
         <div class="flex w-full max-lg:flex-col lg:space-x-6 max-lg:space-y-6">
           <div class="flex w-full flex-col rounded-lg shadow-lg bg-white lg:py-16 p-8 max-sm:pt-2 lg:px-32 lg:w-4/6 max-w-full">
             <div class="flex flex-col sm:gap-y-8 gap-y-3 w-full">
-              <InfoBlock
-                :icon="UsersIcon"
-                :title="participantsMessage" class="max-sm:hidden"
-              />
-              <InfoBlock
-                :icon="CalendarIcon"
-                :title="formatDate(event.start)"
-                :info-items="[`${formatDay(event.start)} ${formatTime(event.start)}`]"
-              />
-              <InfoBlock
-                :title="event.location"
-                :info-items="[event.address]"
-              />
+              <InfoBlock :icon="UsersIcon" :title="participantsMessage" class="max-sm:hidden" />
+              <InfoBlock :icon="CalendarIcon" :title="formatDate(event.start)" :info-items="[`${formatDay(event.start)} ${formatTime(event.start)}`]" />
+              <InfoBlock :title="event.location" :info-items="[event.address]" />
 
               <div class="w-full flex justify-between gap-4">
                 <InertiaLink :href="`/profile/${ownerIdRef}`" class="hover:scale-105 transition-transform">
-                  <InfoBlock
-                    :image-url="ownerInfo.imageUrl"
-                    :title="ownerInfo.title"
-                    :info-items="[t(`owner.type.${ownerInfo.ownerType}`)]"
-                  />
+                  <InfoBlock :image-url="ownerInfo.imageUrl" :title="ownerInfo.title" :info-items="[t(`owner.type.${ownerInfo.ownerType}`)]" />
                 </InertiaLink>
                 <div v-if="authUserId" class="flex items-center justify-end">
-                  <BaseButton
-                    class="bg-brand/10 h-10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl"
-                    @click="handleToggleFollow"
-                  >
+                  <BaseButton class="bg-brand/10 h-10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl" @click="handleToggleFollow">
                     <span>{{ isOwnerFollowed ? t('event.unfollow') : t('event.follow') }}</span>
                   </BaseButton>
                 </div>
@@ -236,12 +207,7 @@ const participantsMessage = computed(() => {
 
             <div class="rounded-lg shadow-lg bg-white space-y-6 lg:py-11 lg:px-16 p-8">
               <div class="lg:-mx-16 lg:-mt-11 -mt-8 -mx-8 bg-red-200 h-96 rounded-2xl">
-                <Map
-                  :events="[event]"
-                  :center="[event.latitude ?? 0, event.longitude ?? 0]"
-                  disable-fetch
-                  class="min-h-96"
-                />
+                <Map :events="[event]" :center="[event.latitude ?? 0, event.longitude ?? 0]" disable-fetch class="min-h-96" />
               </div>
               <div class="content-center">
                 <p class="font-medium sm:text-xl text-sm">{{ event.location }}</p>

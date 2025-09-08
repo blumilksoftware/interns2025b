@@ -13,6 +13,7 @@ function getStartingLocale() {
 }
 
 export const i18n = createI18n({
+  legacy: false,
   globalInjection: true,
   locale: getStartingLocale(),
   fallbackLocale: 'en',
