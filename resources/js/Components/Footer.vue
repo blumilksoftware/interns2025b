@@ -27,9 +27,6 @@ const isAdmin = computed(() => roles.value.includes('administrator') || roles.va
           <InertiaLink href="/event/create" class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]">
             {{ t('footer.createEvent') }}
           </InertiaLink>
-          <InertiaLink href="/event" class="border border-[#FFFFFF1A] rounded-full px-[13px] py-[5px]">
-            {{ t('footer.joinEvents') }}
-          </InertiaLink>
           <InertiaLink
             v-if="isAdmin"
             href="/organizations/create"

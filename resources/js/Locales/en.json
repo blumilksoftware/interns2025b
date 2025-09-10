@@ -40,6 +40,13 @@
         "search_events": "Search events",
         "date": "Date",
         "fetch_error": "Failed to fetch events",
+        "show_map": "Show event map",
+        "show_list": "Show event list",
+        "age_category": {
+            "kids": "Kids",
+            "teens": "Teens",
+            "adults": "Adults"
+        },
         "heroLine1": "Be up to date",
         "heroLine2": "join LetsEvent",
         "createEvents": "Add your events",
@@ -192,5 +199,19 @@
             "administrator": "Administrator",
             "superAdministrator": "Super Administrator"
         }
+    },
+    "owner": {
+        "type": {
+            "Interns2025b\\Models\\User": "User",
+            "Interns2025b\\Models\\Organization": "Organization"
+        }
+    },
+    "filters": {
+        "button": "Filters",
+        "title": "Title",
+        "location": "Location",
+        "age_category": "Age category",
+        "id": "ID"
     }
 }
+

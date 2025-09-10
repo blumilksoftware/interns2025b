@@ -9,12 +9,9 @@ import type { LoginForm, LoginResponse } from '@/types/types'
 import LoginFacebook from '@/Components/LoginFacebook.vue'
 import PasswordInput from '@/Components/PasswordInput.vue'
 import AppHead from '@/Components/AppHead.vue'
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 
-const { t, locale } = useI18n()
-
-function switchLanguage(lang: string) {
-  locale.value = lang
-}
+const { t } = useI18n()
 
 const { notification } = defineProps<{ notification?: string }>()
 
@@ -42,8 +39,7 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
 <template>
   <app-head :title="t('auth.login')" />
   <div class="fixed top-0 right-0 z-50 flex gap-3 p-4">
-    <button @click="switchLanguage('pl')" class="underline">PL</button>
-    <button @click="switchLanguage('en')" class="underline">EN</button>
+    <language-switcher />
   </div>
   <AuthLayout>
     <template #header>
@@ -73,7 +69,8 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
           <div class="flex items-center justify-between w-5/6">
             <label class="flex items-center">
               <input id="remember_password" v-model="form.remember" name="remember_password" type="checkbox"
-                     class="mr-2 size-4 accent-brand-light bg-gray-100 rounded-sm border-gray-300" />
+                     class="mr-2 size-4 accent-brand-light bg-gray-100 rounded-sm border-gray-300"
+              >
               <span class="text-base text-gray-700">{{ t('auth.rememberMe') }}</span>
             </label>
             <inertia-link href="/forgot-password" class="font-bold text-base text-brand-light hover:text-brand-dark">

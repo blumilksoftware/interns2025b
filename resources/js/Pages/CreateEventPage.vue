@@ -6,6 +6,7 @@ import BaseInput from '@/Components/BaseInput.vue'
 import BaseSelect from '@/Components/BaseSelect.vue'
 import BaseButton from '@/Components/BaseButton.vue'
 import Footer from '@/Components/Footer.vue'
+import MapPicker from '@/Components/MapPicker.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { EventForm, SelectOption } from '@/types/types'
 import { computed } from 'vue'
@@ -60,6 +61,20 @@ const priceString = computed({
   get: () => (form.price !== null ? String(form.price) : ''),
   set: (value: string) => { form.price = value === '' ? null : Number(value) },
 })
+
+const coords = computed({
+  get: () => ({ lat: form.latitude ?? null, lng: form.longitude ?? null }),
+  set: (val: { lat: number | null, lng: number | null }) => {
+    form.latitude = val.lat ?? null
+    form.longitude = val.lng ?? null
+  },
+})
+
+function onMapAddressUpdate(address: string | null) {
+  if (address !== null && address !== undefined) {
+    form.address = address
+  }
+}
 </script>
 
 <template>
@@ -78,6 +93,23 @@ const priceString = computed({
       <BaseInput id="end" v-model="form.end" name="end" :label="t('event.endDate')" type="datetime-local" :error="errors.end" />
       <BaseInput id="location" v-model="form.location" name="location" :label="t('event.location')" :error="errors.location" />
       <BaseInput id="address" v-model="form.address" name="address" :label="t('event.address')" :error="errors.address" />
+
+      <div>
+        <label class="block text-sm font-medium mb-2">Wybierz lokalizację na mapie</label>
+        <MapPicker
+          v-model="coords"
+          :center="[51.21,16.16]"
+          :zoom="14"
+          :reverse-geocode="true"
+          :create-on-click="true"
+          @update:address="onMapAddressUpdate"
+        />
+        <div v-if="form.address" class="mt-3 text-sm text-gray-700">
+          <strong>Wybrany adres:</strong>
+          <div class="mt-1 break-words">{{ form.address }}</div>
+        </div>
+        <div v-else class="mt-3 text-sm text-gray-500">Kliknij na mapie, aby ustawić lokalizację.</div>
+      </div>
       <BaseInput id="image_url" v-model="form.image_url" name="image_url" :label="t('event.imageUrl')" :error="errors.image_url" />
 
       <BaseSelect
@@ -101,6 +133,7 @@ const priceString = computed({
           name="price"
           :label="t('event.price')"
           type="number"
+          step="0.01"
           min="0"
           :error="errors.price"
         />

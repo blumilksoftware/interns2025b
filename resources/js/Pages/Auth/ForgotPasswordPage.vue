@@ -6,12 +6,9 @@ import BaseButton from '@/Components/BaseButton.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { ForgotPasswordForm } from '@/types/types'
 import AppHead from '@/Components/AppHead.vue'
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue'
 
-const { t, locale } = useI18n()
-
-function switchLanguage(lang: string) {
-  locale.value = lang
-}
+const { t } = useI18n()
 
 const { formData: form, fieldErrors: errors, isSubmitting, submitForm, globalMessage } = useApiForm<ForgotPasswordForm>(
   {
@@ -32,8 +29,7 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm, globalMes
 <template>
   <app-head :title="t('auth.forgotPassword')" />
   <div class="fixed top-0 right-0 z-50 flex gap-3 p-4">
-    <button @click="switchLanguage('pl')" class="underline">PL</button>
-    <button @click="switchLanguage('en')" class="underline">EN</button>
+    <language-switcher />
   </div>
   <AuthLayout>
     <template #header>

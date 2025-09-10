@@ -56,21 +56,20 @@ export function useInteractions() {
     })
   }
 
-  const isParticipating = ref<boolean>(false)
+  const isParticipating = ref<Record<number, boolean>>({})
 
   async function participateEvent(eventId: number) {
     try {
-      const { data } = await api.post<{ message: string }>(`/events/${eventId}/participate`)
-      isParticipating.value = !isParticipating.value
-      return data.message
+      await api.post<{ message: string }>(`/events/${eventId}/participate`)
+      isParticipating.value[eventId] = !isParticipating.value[eventId]
     } catch (e: any) {
-      alert('Participation error:')
+      alert('Participation error')
       throw e
     }
   }
 
-  function useIsParticipating() {
-    return computed(() => isParticipating.value)
+  function useIsParticipating(eventId: number) {
+    return computed(() => isParticipating.value[eventId] ?? false)
   }
 
   return {
