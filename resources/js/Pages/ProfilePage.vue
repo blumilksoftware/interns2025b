@@ -120,7 +120,6 @@ async function onFollow() {
       </div>
       <p v-else class="text-gray-500">{{ t('profile.noEvents') }}</p>
     </div>
-
     <Footer class="mt-16" />
   </div>
 </template>

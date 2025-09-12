@@ -9,7 +9,9 @@ const { t } = useI18n()
 const page = usePage()
 const authProps = computed(() => (page.props as unknown) as AuthProps)
 const isLoggedIn = computed(() => !!authProps.value.auth.user)
-const isHome = computed(() => page.url === '/')
+const isHomeOrProfile = computed(() => {
+  return page.url === '/' || page.url.startsWith('/profile')
+})
 const roles = computed<string[]>(() => (authProps.value.auth.user as any)?.roles ?? [])
 const isAdmin = computed(() => roles.value.includes('administrator') || roles.value.includes('superAdministrator'))
 </script>
@@ -17,8 +19,8 @@ const isAdmin = computed(() => roles.value.includes('administrator') || roles.va
 <template>
   <div class="w-full bg-gradient-to-tr from-brand font-normal to-brand-light py-16 max-sm:pt-8 max-sm:pb-3">
     <div class="flex flex-col items-center justify-center text-center text-white space-y-16 max-sm:space-y-8">
-      <template v-if="isHome">
-        <h1 class="text-6xl font-bold pt-6">
+      <template v-if="isHomeOrProfile">
+        <h1 v-if="!isLoggedIn" class="text-6xl font-bold pt-6">
           {{ t('home.heroLine1') }}<br>
           <span class="text-gradient-teal-light">{{ t('home.heroLine2') }}</span>
         </h1>
