@@ -16,14 +16,22 @@ const { t } = useI18n()
 const page = usePage()
 const event = page.props.event as EventForm
 
-const statusOptions = computed<SelectOption[]>(() => {
-  const options = page.props.statusOptions as SelectOption[] | undefined
-  return options?.length ? options : [
-    { label: t('status.draft'), value: 'draft' },
-    { label: t('status.published'), value: 'published' },
-    { label: t('status.ongoing'), value: 'ongoing' },
-  ]
-})
+function toDatetimeLocal(value: string | null | undefined): string {
+  if (!value) return ''
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return ''
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const hh = String(d.getHours()).padStart(2, '0')
+  const min = String(d.getMinutes()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}`
+}
+
+const statusOptions = computed<Array<{ label: string, value: string }>>(() => [
+  { label: t('status.draft'), value: 'draft' },
+  { label: t('status.published'), value: 'published' },
+])
 
 const ageCategoryOptions = computed<SelectOption[]>(() => [
   { label: t('event.ageKids'), value: 'kids' },
@@ -32,12 +40,18 @@ const ageCategoryOptions = computed<SelectOption[]>(() => [
   { label: t('event.ageEveryone'), value: 'everyone' },
 ])
 
+const initialForm: EventForm = {
+  ...event,
+  start: toDatetimeLocal(event.start),
+  end: toDatetimeLocal(event.end),
+}
+
 const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApiForm<EventForm>(
-  { ...event },
+  initialForm,
   {
     endpoint: `/api/events/${event.id}`,
     method: 'put',
-    onSuccess: () => router.visit('/event'),
+    onSuccess: () => router.visit('/'),
   },
 )
 
@@ -59,6 +73,27 @@ function onMapAddressUpdate(address: string | null) {
     form.address = address
   }
 }
+
+async function handleSubmit() {
+  const prevStart = form.start
+  const prevEnd = form.end
+
+  try {
+    if (form.start) {
+      const d = new Date(String(form.start))
+      if (!isNaN(d.getTime())) form.start = d.toISOString()
+    }
+    if (form.end) {
+      const d2 = new Date(String(form.end))
+      if (!isNaN(d2.getTime())) form.end = d2.toISOString()
+    }
+
+    await submitForm()
+  } finally {
+    form.start = prevStart as any
+    form.end = prevEnd as any
+  }
+}
 </script>
 
 <template>
@@ -70,7 +105,7 @@ function onMapAddressUpdate(address: string | null) {
       </Navbar>
     </div>
 
-    <form class="w-full md:w-3/4 space-y-6 p-6 bg-white rounded-xl shadow-md" @submit.prevent="submitForm">
+    <form class="w-full md:w-3/4 space-y-6 p-6 bg-white rounded-xl shadow-md" @submit.prevent="handleSubmit">
       <BaseInput id="title" v-model="form.title" name="title" :label="t('event.title')" :error="errors.title" />
       <BaseInput id="description" v-model="form.description" name="description" :label="t('event.description')" type="textarea" :error="errors.description" />
       <BaseInput id="start" v-model="form.start" name="start" :label="t('event.startDate')" type="datetime-local" :error="errors.start" />
@@ -80,7 +115,7 @@ function onMapAddressUpdate(address: string | null) {
       <BaseInput id="image_url" v-model="form.image_url" name="image_url" :label="t('event.imageUrl')" :error="errors.image_url" />
 
       <div>
-        <label class="block text-sm font-medium mb-2">Wybierz lokalizację na mapie</label>
+        <label class="block text-sm font-medium mb-2">{{ t('event.clickToSet') }}</label>
         <MapPicker
           v-model="coords"
           :center="[51.21,16.16]"
@@ -90,10 +125,10 @@ function onMapAddressUpdate(address: string | null) {
           @update:address="onMapAddressUpdate"
         />
         <div v-if="form.address" class="mt-3 text-sm text-gray-700">
-          <strong>Wybrany adres:</strong>
+          <strong>{{ t('event.selectedAddress') }}:</strong>
           <div class="mt-1 break-words">{{ form.address }}</div>
         </div>
-        <div v-else class="mt-3 text-sm text-gray-500">Kliknij na mapie, aby ustawić lokalizację.</div>
+        <div v-else class="mt-3 text-sm text-gray-500">{{ t('event.clickToSet') }}</div>
       </div>
 
       <BaseSelect

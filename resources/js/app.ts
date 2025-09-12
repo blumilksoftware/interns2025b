@@ -2,6 +2,7 @@ import '../css/app.css'
 import { createApp, h, type DefineComponent } from 'vue'
 import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import BaseImage from '@/Components/BaseImage.vue'
 import Layout from '@/Layouts/Layout.vue'
 import AppHead from '@/Components/AppHead.vue'
 import 'leaflet/dist/leaflet.css'
@@ -25,6 +26,7 @@ createInertiaApp({
       .use(i18n)
       .component('AppHead', AppHead)
       .component('InertiaLink', Link)
+      .component('BaseImage', BaseImage)
       .use(plugin)
       .mount(el)
   },

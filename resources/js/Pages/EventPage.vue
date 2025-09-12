@@ -19,6 +19,7 @@ import {
 import { useI18n } from 'vue-i18n'
 import { usePage, Link as InertiaLink } from '@inertiajs/vue3'
 import type { AuthProps } from '@/types/types'
+import BaseImage from '@/Components/BaseImage.vue'
 
 const { t } = useI18n()
 const props = defineProps<{ eventId: number }>()
@@ -56,12 +57,15 @@ const ownerIdRef = computed(() => event.value?.owner_id ?? 0)
 const isOwnerFollowed = useIsFollowing('user', ownerIdRef)
 
 const isOwner = computed(() => {
-  return event.value?.owner_id === authProps.value.auth.user?.id &&
-    event.value?.owner_type === 'Interns2025b\\Models\\User'
+  if (!event.value || !authUserId.value) return false
+  return event.value.owner_id === authUserId.value
 })
 const canEdit = computed(() => isAdmin.value || isOwner.value)
 
 async function handleToggleFollow() {
+  if (isOwner.value) {
+    return
+  }
   if (ownerIdRef.value) {
     await toggleFollow('user', ownerIdRef.value)
   }
@@ -106,7 +110,13 @@ const participantsMessage = computed(() => {
   <div v-if="!loading && event" class="w-full mb-16 sm:mb-12 flex-col">
     <Navbar class="mb-[72px]" />
     <div class="w-full h-[400px] relative bg-gray-200">
-      <img :src="event.image_url ?? 'https://picsum.photos/640/480'" alt="Event Banner" class="size-full object-cover">
+      <BaseImage
+        :src="event.image_url ?? null"
+        :alt="event.title"
+        class="size-full object-cover"
+        width="1600"
+        height="400"
+      />
       <div class="sm:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] flex justify-between items-center bg-white rounded-full shadow px-6 py-3 w-fit max-w-full">
         <p class="text-brand-dark font-medium whitespace-nowrap">{{ participantsMessage }}</p>
         <BaseButton v-if="authUserId"

@@ -7,6 +7,8 @@ import Navbar from '@/Components/Navbar.vue'
 import Footer from '@/Components/Footer.vue'
 import BaseButton from '@/Components/BaseButton.vue'
 import EventCard from '@/Components/EventCard.vue'
+import BaseImage from '@/Components/BaseImage.vue'
+import placeholderAvatar from '@/assets/PlaceholderAvatar.png'
 import type { UserDetail } from '@/types/types'
 import { useAuth } from '@/composables/useAuth'
 import { useInteractions } from '@/composables/useInteractions'
@@ -66,11 +68,14 @@ async function onFollow() {
     </div>
 
     <div class="flex flex-col items-center space-y-4">
-      <img
-        :src="user?.avatar_url || 'https://via.placeholder.com/150'"
+      <BaseImage
+        :src="user?.avatar_url ?? null"
+        :placeholder="placeholderAvatar"
         alt="Avatar"
         class="size-32 rounded-3xl border border-white object-cover shadow-lg"
-      >
+        width="128"
+        height="128"
+      />
       <div class="flex gap-x-8 text-center">
         <p class="font-bold">
           {{ user?.followers_count ?? 0 }}<br>

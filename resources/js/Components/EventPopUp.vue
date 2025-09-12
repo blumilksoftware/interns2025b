@@ -4,6 +4,7 @@ import { formatDate, formatTime } from '@/utilities/formatDate'
 import BaseButton from '@/Components/BaseButton.vue'
 import { useI18n } from 'vue-i18n'
 import type { RawEvent } from '@/types/events'
+import BaseImage from '@/Components/BaseImage.vue'
 
 defineProps<{ event: RawEvent }>()
 
@@ -12,11 +13,13 @@ const { t, locale } = useI18n()
 
 <template>
   <div class="bg-white rounded-xl shadow-lg size-full overflow-hidden">
-    <img
-      :src="event.image_url ?? '/images/placeholder.png'"
+    <BaseImage
+      :src="event.image_url ?? null"
       :alt="event.title"
       class="w-full h-24 object-cover"
-    >
+      width="640"
+      height="240"
+    />
 
     <div class="px-3 py-2">
       <div class="space-y-2">
@@ -34,7 +37,7 @@ const { t, locale } = useI18n()
             {{ event.title }}
           </h3>
         </div>
-        <div class="">
+        <div>
           <p class="text-base font-medium text-gray-800">
             {{ event.location ?? t('event.no_location') }}
           </p>
