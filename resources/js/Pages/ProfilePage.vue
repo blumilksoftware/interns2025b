@@ -95,7 +95,7 @@ async function onFollow() {
         </InertiaLink>
         <BaseButton
           v-else
-          class="bg-black text-white"
+          class="bg-black text-white px-6 py-3 rounded-xl shadow-md hover:scale-105 transition-transform"
           @click="onFollow"
         >
           {{ isFollowingTarget ? t('profile.unfollow') : t('profile.follow') }}

@@ -15,6 +15,7 @@ import {
   ArrowRightCircleIcon,
   CalendarIcon,
   UsersIcon,
+  MapPinIcon,
 } from '@heroicons/vue/24/outline'
 import { useI18n } from 'vue-i18n'
 import { usePage, Link as InertiaLink } from '@inertiajs/vue3'
@@ -175,11 +176,15 @@ const participantsMessage = computed(() => {
             <div class="flex flex-col sm:gap-y-8 gap-y-3 w-full">
               <InfoBlock :icon="UsersIcon" :title="participantsMessage" class="max-sm:hidden" />
               <InfoBlock :icon="CalendarIcon" :title="formatDate(event.start)" :info-items="[`${formatDay(event.start)} ${formatTime(event.start)}`]" />
-              <InfoBlock :title="event.location" :info-items="[event.address]" />
+              <InfoBlock :icon="MapPinIcon" :title="event.location" :info-items="[event.address]" />
 
               <div class="w-full flex justify-between gap-4">
                 <InertiaLink :href="`/profile/${ownerIdRef}`" class="hover:scale-105 transition-transform">
-                  <InfoBlock :image-url="ownerInfo.imageUrl" :title="ownerInfo.title" :info-items="[t(`owner.type.${ownerInfo.ownerType}`)]" />
+                  <InfoBlock
+                    :image-url="ownerInfo.imageUrl ?? null"
+                    :title="ownerInfo.title"
+                    :info-items="[ t(`owner.type.${ownerInfo.ownerType}`) ]"
+                  />
                 </InertiaLink>
                 <div v-if="authUserId" class="flex items-center justify-end">
                   <BaseButton class="bg-brand/10 h-10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl" @click="handleToggleFollow">
