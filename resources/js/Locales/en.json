@@ -43,6 +43,7 @@
         "show_map": "Show event map",
         "show_list": "Show event list",
         "age_category": {
+            "everyone": "All ages",
             "kids": "Kids",
             "teens": "Teens",
             "adults": "Adults"
@@ -114,6 +115,8 @@
         "cancel": "Cancel",
         "edit": "Edit",
         "information": "Information",
+        "selectedAddress": "Selected address",
+        "clickToSet": "Click to set address",
         "ageKids": "Kids",
         "ageTeens": "Teens",
         "ageAdults": "Adults",

@@ -23,11 +23,11 @@ withDefaults(
     :href="`/events/${id}`"
     class="block max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition delay-100 duration-300 hover:scale-105"
   >
-    <img
+    <BaseImage
       :src="imageUrl"
-      alt="Event Banner"
+      :alt="title"
       class="w-full h-48 object-cover"
-    >
+    />
 
     <div class="p-4 space-y-2">
       <div class="flex items-center justify-between">

@@ -19,10 +19,11 @@ class UserFactory extends Factory
 {
     public function definition(): array
     {
+        $seed = str_replace('-', '', fake()->uuid());
         return [
             "first_name" => fake()->firstName(),
             "last_name" => fake()->lastName(),
-            "avatar_url" => $this->faker->imageUrl(200, 200),
+            "avatar_url" => "https://picsum.photos/seed/{$seed}/200/200",
             "email" => fake()->unique()->safeEmail(),
             "email_verified_at" => now(),
             "password" => Hash::make("password"),

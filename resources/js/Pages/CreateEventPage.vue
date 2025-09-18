@@ -15,13 +15,18 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const page = usePage()
 
+const allowedStatuses = ['draft', 'published'] as const
 const statusOptions = computed<SelectOption[]>(() => {
   const options = page.props.statusOptions as SelectOption[] | undefined
-  if (options && Array.isArray(options) && options.length > 0) return options
+  if (options && Array.isArray(options) && options.length > 0) {
+    const filtered = options
+      .filter(o => allowedStatuses.includes(o.value as typeof allowedStatuses[number]))
+      .map(o => ({ label: t(`status.${o.value}`), value: o.value }))
+    if (filtered.length > 0) return filtered
+  }
   return [
     { label: t('status.draft'), value: 'draft' },
     { label: t('status.published'), value: 'published' },
-    { label: t('status.ongoing'), value: 'ongoing' },
   ]
 })
 
@@ -58,7 +63,7 @@ const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApi
 )
 
 const priceString = computed({
-  get: () => (form.price !== null ? String(form.price) : ''),
+  get: () => (form.price !== null && form.price !== undefined ? String(form.price) : ''),
   set: (value: string) => { form.price = value === '' ? null : Number(value) },
 })
 
@@ -95,7 +100,7 @@ function onMapAddressUpdate(address: string | null) {
       <BaseInput id="address" v-model="form.address" name="address" :label="t('event.address')" :error="errors.address" />
 
       <div>
-        <label class="block text-sm font-medium mb-2">Wybierz lokalizację na mapie</label>
+        <label class="block text-sm font-medium mb-2">{{ t('event.clickToSet') }}</label>
         <MapPicker
           v-model="coords"
           :center="[51.21,16.16]"
@@ -105,10 +110,10 @@ function onMapAddressUpdate(address: string | null) {
           @update:address="onMapAddressUpdate"
         />
         <div v-if="form.address" class="mt-3 text-sm text-gray-700">
-          <strong>Wybrany adres:</strong>
+          <strong>{{ t('event.address') }}:</strong>
           <div class="mt-1 break-words">{{ form.address }}</div>
         </div>
-        <div v-else class="mt-3 text-sm text-gray-500">Kliknij na mapie, aby ustawić lokalizację.</div>
+        <div v-else class="mt-3 text-sm text-gray-500">{{ t('event.clickToSet') }}</div>
       </div>
       <BaseInput id="image_url" v-model="form.image_url" name="image_url" :label="t('event.imageUrl')" :error="errors.image_url" />
 

@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { setAcceptLanguageHeader } from '@/services/api'
+
+type LanguageCode = 'en' | 'pl'
+const { locale } = useI18n()
 
 const dropdownOpen = ref(false)
-type LanguageCode = 'en' | 'pl'
 
-const { locale } = useI18n()
-const selected = ref<LanguageCode>(locale.value as LanguageCode)
+const initial = (sessionStorage.getItem('locale') as LanguageCode) || (locale.value as LanguageCode) || 'en'
+const selected = ref<LanguageCode>(initial)
+
+setAcceptLanguageHeader(selected.value)
 
 const languageMap: Record<LanguageCode, { name: string, flag: string }> = {
   en: { name: 'English', flag: 'https://flagcdn.com/w40/us.png' },
@@ -16,7 +21,7 @@ const languageMap: Record<LanguageCode, { name: string, flag: string }> = {
 const availableLocales: LanguageCode[] = ['en', 'pl']
 
 const languageOptions = computed(() =>
-  availableLocales.map(l => ({ code: l, name: languageMap[l].name, flag: languageMap[l].flag })),
+  availableLocales.map((l) => ({ code: l, name: languageMap[l].name, flag: languageMap[l].flag })),
 )
 
 const currentLanguage = computed(() => languageMap[selected.value])
@@ -24,13 +29,14 @@ const currentLanguage = computed(() => languageMap[selected.value])
 watch(selected, (val) => {
   locale.value = val
   sessionStorage.setItem('locale', val)
+  setAcceptLanguageHeader(val)
 })
 
 function toggleDropdown() {
   dropdownOpen.value = !dropdownOpen.value
 }
 
-function selectLocale(l: LanguageCode) {
+function chooseLocale(l: LanguageCode) {
   selected.value = l
   dropdownOpen.value = false
 }
@@ -79,7 +85,7 @@ onBeforeUnmount(() => {
           class="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer"
           role="option"
           :aria-selected="selected === opt.code"
-          @click="selectLocale(opt.code)"
+          @click="chooseLocale(opt.code)"
         >
           <img :src="opt.flag" alt="" class="w-5 h-4 mr-2 rounded-sm">
           {{ opt.name }}

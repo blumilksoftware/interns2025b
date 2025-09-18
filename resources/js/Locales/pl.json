@@ -23,7 +23,7 @@
         "send": "Wyślij",
         "rememberMe": "Zapamiętaj mnie",
         "noAccount": "Nie masz konta?",
-        "invalidCredentials": "Nie poprawne dane"
+        "invalidCredentials": "Niepoprawne dane"
 
     },
     "card": {
@@ -41,9 +41,10 @@
         "search_events": "Wyszukaj wydarzenia",
         "date": "Data",
         "fetch_error": "Nie udało się pobrać eventów",
-        "show_map": "Pokaż mapę wyadarzeń",
-        "show_list": "Pokaż liste waydarzeń",
+        "show_map": "Pokaż mape wydarzeń",
+        "show_list": "Pokaż liste wydarzeń",
         "age_category": {
+            "everyone": "Wszyscy",
             "kids": "Dzieci",
             "teens": "Nastolatki",
             "adults": "Dorośli"
@@ -110,6 +111,8 @@
         "browseEvents": "Przeglądaj wydarzenia",
         "noResults": "Brak wyników wyszukiwania",
         "information": "Informacje",
+        "selectedAddress": "Wybierz adres",
+        "clickToSet": "Naciśnij aby wybrać adres",
         "edit": "Edytuj",
         "unknown": "Nieznany",
         "participantCount": "{count} uczestników",
