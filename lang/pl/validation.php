@@ -9,17 +9,17 @@ return [
         'array' => 'Pole :attribute musi mieć co najmniej :min elementów.',
     ],
 
-    'required' => ' :attribute jest wymagana.',
+    'required' => 'Pole :attribute jest wymagane.',
     'date' => 'Pole :attribute nie jest prawidłową datą.',
-    'after' => 'Pole :attribute musi być datą po :date.',
-    'after_or_equal' => ':attribute musi być datą nie wcześniejszą niż :date.',
-    'before' => ':attribute musi być datą przed :date.',
+    'after' => 'Pole :attribute musi być datą po polu :date.',
+    'after_or_equal' => 'Pole :attribute musi być datą nie wcześniejszą niż :date.',
+    'before' => 'Pole :attribute musi być datą przed :date.',
     'before_or_equal' => 'Pole :attribute musi być datą nie późniejszą niż :date.',
     'confirmed' => 'Pole :attribute nie zgadza się.',
 
     'attributes' => [
         'title' => 'Tytuł',
-        'email' => 'E-mail',
+        'email' => 'e-mail',
         'name' => 'Nazwa',
         'first_name' => 'Imie',
         'password' => 'Hasło',

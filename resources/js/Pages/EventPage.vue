@@ -186,7 +186,7 @@ const participantsMessage = computed(() => {
                     :info-items="[ t(`owner.type.${ownerInfo.ownerType}`) ]"
                   />
                 </InertiaLink>
-                <div v-if="authUserId" class="flex items-center justify-end">
+                <div v-if="authUserId && !isOwner" class="flex items-center justify-end">
                   <BaseButton class="bg-brand/10 h-10 text-brand px-3 text-sm sm:text-base py-1 rounded-xl" @click="handleToggleFollow">
                     <span>{{ isOwnerFollowed ? t('event.unfollow') : t('event.follow') }}</span>
                   </BaseButton>
