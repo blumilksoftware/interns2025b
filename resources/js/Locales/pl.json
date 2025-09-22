@@ -41,8 +41,9 @@
         "search_events": "Wyszukaj wydarzenia",
         "date": "Data",
         "fetch_error": "Nie udało się pobrać eventów",
-        "show_map": "Pokaż mape wydarzeń",
-        "show_list": "Pokaż liste wydarzeń",
+        "show_map": "Pokaż mapę wydarzeń",
+        "show_list": "Pokaż listę wydarzeń",
+        "no_results": "Brak Wyników",
         "age_category": {
             "everyone": "Wszyscy",
             "kids": "Dzieci",

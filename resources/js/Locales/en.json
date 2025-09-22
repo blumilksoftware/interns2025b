@@ -42,6 +42,7 @@
         "fetch_error": "Failed to fetch events",
         "show_map": "Show event map",
         "show_list": "Show event list",
+        "no_results": "No results found",
         "age_category": {
             "everyone": "All ages",
             "kids": "Kids",
@@ -210,6 +211,7 @@
         }
     },
     "filters": {
+        "remove": "Remove",
         "button": "Filters",
         "title": "Title",
         "location": "Location",

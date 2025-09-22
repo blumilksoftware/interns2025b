@@ -149,10 +149,10 @@ const participantsMessage = computed(() => {
 
             <div class="flex gap-3">
               <BaseButton v-if="authUserId"
-                          class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+                          class="bg-gray-200 items-center hover:bg-gray-300 justify-evenly  px-3 py-1 rounded"
                           @click="handleParticipate"
               >
-                <span class="inline-flex items-center space-x-2">
+                <span class="inline-flex h-full items-center space-x-2">
                   <CheckCircleIcon class="size-6" />
                   <span>{{ isEventParticipating ? t('event.cancel') : t('event.participate') }}</span>
                 </span>
@@ -161,7 +161,7 @@ const participantsMessage = computed(() => {
               <InertiaLink
                 v-if="canEdit"
                 :href="`/event/${event.id}/edit`"
-                class="bg-brand-dark text-white px-3 py-1 rounded flex items-center hover:bg-brand"
+                class="bg-brand-dark text-white px-3 py-1 shadow-sm transition delay-100 duration-300 hover:scale-105 rounded flex items-center hover:bg-brand"
               >
                 <span>{{ t('event.edit') }}</span>
               </InertiaLink>
