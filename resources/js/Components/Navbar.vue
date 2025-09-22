@@ -17,30 +17,47 @@ const { t } = useI18n()
 
 <template>
   <div class="w-full">
-    <div class="flex font-medium items-center md:justify-end justify-between gap-y-5 pt-10 sm:gap-x-10 mr-10 mb-10">
-      <template v-if="!isLoggedIn">
-        <InertiaLink href="/login" class="hover:underline">{{ t('auth.login') }}</InertiaLink>
-        <InertiaLink href="/register"
-                     class="bg-black text-white rounded-full shadow-shadow-blue hover:scale-105 shadow-sm py-2 px-8"
-        >
-          {{ t('auth.register') }}
-        </InertiaLink>
-      </template>
+    <div class="flex items-center justify-between pt-10 px-6 mb-10">
+      <div />
 
-      <template v-else>
-        <InertiaLink href="/profile" class="hover:underline">{{ t('auth.profile') }}</InertiaLink>
-        <button class="bg-black text-white rounded-full shadow-shadow-blue hover:scale-105 shadow-sm py-2 px-8"
-                @click.prevent="logout"
-        >
-          {{ t('auth.logout') }}
-        </button>
-      </template>
-      <language-switcher />
+      <div class="hidden md:flex items-center gap-4">
+        <template v-if="!isLoggedIn">
+          <InertiaLink href="/login" class="hover:underline text-sm">
+            {{ t('auth.login') }}
+          </InertiaLink>
+          <InertiaLink href="/register" class="bg-black text-white rounded-full shadow-shadow-blue hover:scale-105 shadow-sm py-2 px-6 text-sm">
+            {{ t('auth.register') }}
+          </InertiaLink>
+        </template>
+        <template v-else>
+          <InertiaLink href="/event/create" class="bg-brand-light text-white rounded-full py-2 px-6 shadow-md hover:scale-105 transition text-sm">
+            {{ t('event.addEvent') }}
+          </InertiaLink>
+          <InertiaLink href="/profile" class="bg-brand-light text-white rounded-full py-2 px-6 shadow-md hover:scale-105 transition text-sm">
+            {{ t('auth.profile') }}
+          </InertiaLink>
+          <button class="text-sm text-gray-600 hover:underline" @click.prevent="logout">
+            {{ t('auth.logout') }}
+          </button>
+        </template>
+        <LanguageSwitcher />
+      </div>
+
+      <div class="flex md:hidden items-center gap-3">
+        <template v-if="!isLoggedIn">
+          <InertiaLink href="/login" class="hover:underline text-sm">{{ t('auth.login') }}</InertiaLink>
+          <InertiaLink href="/register" class="bg-black text-white rounded-full py-2 px-4 text-sm">{{ t('auth.register') }}</InertiaLink>
+        </template>
+        <template v-else>
+          <InertiaLink href="/profile" class="bg-brand-light text-white rounded-full py-2 px-4 text-sm">{{ t('auth.profile') }}</InertiaLink>
+          <InertiaLink href="/event/create" class="bg-black text-white rounded-full py-2 px-4 text-sm">{{ t('event.addEvent') }}</InertiaLink>
+          <button class="bg-black text-white rounded-full py-2 px-4 text-sm" @click.prevent="logout">{{ t('auth.logout') }}</button>
+        </template>
+        <LanguageSwitcher />
+      </div>
     </div>
 
-    <div
-      class="flex flex-col space-y-6 items-center justify-center text-center mb-6"
-    >
+    <div class="flex flex-col space-y-6 items-center justify-center text-center mb-6">
       <template v-if="isHomePage">
         <img src="/images/LogoBrand.png" alt="LetsEvent">
       </template>
