@@ -12,6 +12,7 @@ const props = defineProps<{
   label?: string
   options: SelectOption[]
   error?: string | null
+  placeholderKey?: string
 }>()
 
 const model = defineModel<string>()
@@ -19,14 +20,16 @@ const isFocused = ref(false)
 
 const classes = computed(() =>
   [
-    'block w-full rounded-md border px-4 py-2 text-sm transition focus:outline-none',
-    props.error ? 'border-red-500 focus:border-red-500 focus:ring-red-300' : 'border-gray-300 focus:border-brand-light focus:ring focus:ring-brand-light',
+    'w-full h-12 font-medium bg-white rounded-lg transition duration-100 ease-in-out focus:outline-none border pl-4 pr-4 text-brand-light',
+    props.error
+      ? 'border-red-500 hover:bg-red-50 focus:bg-red-50 focus:ring-1 focus:ring-red-300 focus:border-red-500'
+      : 'border-brand hover:bg-gray-100 focus:bg-gray-100 focus:ring-1 focus:ring-brand-light focus:border-brand-light',
   ].join(' '),
 )
 </script>
 
 <template>
-  <label v-if="props.label" :for="props.id" class="block text-gray-500 mb-1">
+  <label v-if="props.label" :for="props.id" class="block text-gray-600 mb-1.5 font-medium">
     {{ props.label }}
   </label>
   <select
@@ -37,7 +40,6 @@ const classes = computed(() =>
     @focus="isFocused = true"
     @blur="isFocused = false"
   >
-    <option disabled value="">-- wybierz --</option>
     <option v-for="opt in props.options" :key="opt.value" :value="opt.value">
       {{ opt.label }}
     </option>
