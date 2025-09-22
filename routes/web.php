@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use Interns2025b\Enums\EventStatus;
-use Interns2025b\Http\Controllers\FacebookController;
 use Interns2025b\Models\Event;
 use Interns2025b\Models\Organization;
 use Interns2025b\Models\User;
