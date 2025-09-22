@@ -133,7 +133,14 @@ const participantsMessage = computed(() => {
       <div class="w-full py-16 p-8 bg-white sm:shadow-lg sm:border sm:border-gray-300 flex justify-center items-center">
         <div class="sm:w-11/12 w-full space-y-2">
           <div class="flex max-sm:hidden justify-between items-center w-full text-center">
-            <h2 class="text-2xl text-brand-light font-semibold">{{ formatDate(event.start) }} - {{ formatTime(event.start) }}</h2>
+            <h2 class="text-2xl text-brand-light font-semibold">
+              <span v-if="event.end">
+                {{ formatDate(event.start) }} - {{ formatTime(event.start) }} — {{ formatDate(event.end) }} - {{ formatTime(event.end) }}
+              </span>
+              <span v-else>
+                {{ formatDate(event.start) }} - {{ formatTime(event.start) }}
+              </span>
+            </h2>
             <p class="inline-block px-8 py-2 rounded-2xl font-semibold" :class="event.is_paid ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'">
               {{ event.is_paid ? t('event.paid') : t('event.free') }}
             </p>
@@ -175,7 +182,7 @@ const participantsMessage = computed(() => {
           <div class="flex w-full flex-col rounded-lg shadow-lg bg-white lg:py-16 p-8 max-sm:pt-2 lg:px-32 lg:w-4/6 max-w-full">
             <div class="flex flex-col sm:gap-y-8 gap-y-3 w-full">
               <InfoBlock :icon="UsersIcon" :title="participantsMessage" class="max-sm:hidden" />
-              <InfoBlock :icon="CalendarIcon" :title="formatDate(event.start)" :info-items="[`${formatDay(event.start)} ${formatTime(event.start)}`]" />
+              <InfoBlock :icon="CalendarIcon" :title="event.end ? `${formatDate(event.start)} – ${formatDate(event.end)}` : formatDate(event.start)" :info-items="[`${formatDay(event.start)} ${formatTime(event.start)}${ event.end ? ' — ' + formatDay(event.end) + ' ' + formatTime(event.end) : '' }`]" />
               <InfoBlock :icon="MapPinIcon" :title="event.location" :info-items="[event.address]" />
 
               <div class="w-full flex justify-between gap-4">
