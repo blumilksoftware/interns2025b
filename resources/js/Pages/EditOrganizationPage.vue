@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router, usePage } from '@inertiajs/vue3'
+import { usePage } from '@inertiajs/vue3'
 import AppHead from '@/Components/AppHead.vue'
 import Navbar from '@/Components/Navbar.vue'
 import Footer from '@/Components/Footer.vue'
@@ -8,18 +8,26 @@ import BaseButton from '@/Components/BaseButton.vue'
 import { useApiForm } from '@/composables/useApiForm'
 import type { OrganizationForm } from '@/types/types'
 import { useI18n } from 'vue-i18n'
+import axios from 'axios'
+
+axios.defaults.withCredentials = true
 
 const { t } = useI18n()
 
 const page = usePage()
 const organization = page.props.organization as OrganizationForm & { id: number }
 
+const endpoint = `/api/admin/organizations/${organization.id}`
+
 const { formData: form, fieldErrors: errors, isSubmitting, submitForm } = useApiForm<OrganizationForm>(
   { ...organization },
   {
-    endpoint: `/api/admin/organizations/${organization.id}`,
+    endpoint,
     method: 'put',
-    onSuccess: () => router.visit('/admin/organizations'),
+    onSuccess: () => {},
+    onError: (err: unknown) => {
+      console.error('Organization update error:', err)
+    },
   },
 )
 </script>
