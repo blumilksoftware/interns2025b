@@ -31,7 +31,7 @@ class EventFactory extends Factory
             "is_paid" => $isPaid,
             "price" => $isPaid ? fake()->randomFloat(2, 1, 100) : 0,
             "status" => fake()->randomElement(EventStatus::cases()),
-            "image_url" => "https://picsum.photos/seed/{$seed}/640/480",
+            "image_url" => "https://picsum.photos/seed/{$seed}/1920/1080",
             "age_category" => fake()->randomElement(["kids", "teens", "adults"]),
             "owner_type" => $ownerType,
             "owner_id" => $ownerId,

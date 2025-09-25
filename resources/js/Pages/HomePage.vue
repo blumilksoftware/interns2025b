@@ -138,7 +138,7 @@ onMounted(() => {
               />
             </div>
 
-            <div v-else class="size-full overflow-auto pt-12">
+            <div v-else class="size-full overflow-auto min-h-96 py-12">
               <div class="max-w-5xl mx-auto">
                 <div v-if="filtered.length > 0" class="mb-6">
                   <h3 class="text-left font-medium text-gray-800 mb-4">{{ t('event.browseEvents') }}</h3>
